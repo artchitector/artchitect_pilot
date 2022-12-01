@@ -1,6 +1,8 @@
-# Description
+# Artchitect
 
-**Artchitech** - generative neural network with God gene.
+**Artchitect** - generative neural network with God gene.
+
+Working installation - https://artchitect.space 
 
 ## Theory
 > Indeed, Allah is over all things competent. 
