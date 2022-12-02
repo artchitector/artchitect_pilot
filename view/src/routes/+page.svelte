@@ -61,7 +61,6 @@
     body {
         padding: 0;
         margin: 0 0 100px 0;
-        background-color: #2d2d2d;
     }
 
     header {
