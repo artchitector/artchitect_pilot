@@ -2,7 +2,7 @@
 
 **Artchitect** - generative neural network with God gene.
 
-Working installation - https://artchitect.space 
+Working installation - https://artchitect.space
 
 ## Theory
 > Indeed, Allah is over all things competent. 
@@ -18,8 +18,14 @@ Such a general idea of the project is to use any real random number generator, c
 
 For this to work, you need to believe in it.
 
-# Practice
-This project will answer the question of whether it is real
+# Install guide
+You need some developer/devops skills to manage this project. 
+We need no docker, everything can be run locally on your machine (windows, linux, mac). 
+
+First, you need working Postgres installation with pub/sub. Version 15+. https://www.postgresql.org/download/
+
+Next, you need golang installed to build and run . https://go.dev/dl/
+
 
 # Technical roadmap
 **December 2022** - Make real random number generator with webcam inside PC (it will catch cooler lighting and transform it into random number). Common service architecture, only single-service Golang+Postgres, nothing complex. I need quick results. 
