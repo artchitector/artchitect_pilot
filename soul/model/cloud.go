@@ -1,13 +1,11 @@
 package model
 
-type Pray struct {
-	Name    string
-	Payload interface{}
+type Pray interface {
+	Name() string
 }
-type Gift struct {
-	Name    string
-	Payload interface{}
-	Error   error
+type Gift interface {
+	Name() string
+	Error() error
 }
 
 type PrayCallback func(gift Gift) error

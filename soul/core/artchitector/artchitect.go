@@ -15,14 +15,29 @@ type cloud interface {
 	Pray(ctx context.Context, pray model.Pray) (chan model.Gift, error)
 }
 
-type Artchitect struct {
-	logger   zerolog.Logger
-	schedule *Schedule
-	cloud    cloud
+type paintingRepo interface {
+	SavePainting(ctx context.Context, painting model.Painting) (model.Painting, error)
 }
 
-func NewArtchitect(logger zerolog.Logger, schedule *Schedule, cld cloud) *Artchitect {
-	return &Artchitect{logger, schedule, cld}
+type Artchitect struct {
+	logger       zerolog.Logger
+	schedule     *Schedule
+	cloud        cloud
+	paintingRepo paintingRepo
+}
+
+func NewArtchitect(
+	logger zerolog.Logger,
+	schedule *Schedule,
+	cld cloud,
+	paintingRepo paintingRepo,
+) *Artchitect {
+	return &Artchitect{
+		logger,
+		schedule,
+		cld,
+		paintingRepo,
+	}
 }
 
 // Run starts main loop
@@ -43,7 +58,7 @@ func (a *Artchitect) Run(ctx context.Context) error {
 }
 
 func (a *Artchitect) paintingFlow(ctx context.Context) error {
-	gifts, err := a.cloud.Pray(ctx, model.Pray{Name: model.EntityPainting})
+	gifts, err := a.cloud.Pray(ctx, model.PaintingPray{Caption: "hello world"})
 	if err != nil {
 		return errors.Wrap(err, "failed pray")
 	}
@@ -52,12 +67,32 @@ func (a *Artchitect) paintingFlow(ctx context.Context) error {
 	case <-ctx.Done():
 		a.logger.Info().Msgf("stop waiting pray, ctx.Done")
 		return nil
-	case gift := <-gifts:
-		if gift.Error != nil {
-			return errors.Wrap(gift.Error, "artchitect got error instead painting")
+	case gft := <-gifts:
+		gift, isGift := gft.(model.PaintingGift)
+		if !isGift {
+			return errors.Errorf("gift is not type model.PaintingGift")
+		}
+		if gift.Error() != nil {
+			return errors.Wrap(gift.Error(), "artchitect got error instead painting")
 		} else {
-			a.logger.Debug().Msgf("artchitect got gift %+v", gift)
+			a.logger.Debug().Msgf("artchitect saving gift %s", gift.Caption)
+			if err := a.savePainting(ctx, gift); err != nil {
+				return errors.Wrap(err, "artchitect failed to save painting")
+			}
 		}
 		return nil
 	}
+}
+
+func (a *Artchitect) savePainting(ctx context.Context, gift model.PaintingGift) error {
+	painting := model.Painting{
+		Caption: gift.Caption,
+		Bytes:   gift.Painting,
+	}
+	painting, err := a.paintingRepo.SavePainting(ctx, painting)
+	if err != nil {
+		return errors.Wrapf(err, "failed to save painting with caption %s", painting.Caption)
+	}
+	a.logger.Debug().Msgf("saved painting ID=%d", painting.ID)
+	return nil
 }

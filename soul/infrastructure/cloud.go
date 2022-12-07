@@ -43,7 +43,7 @@ func NewCloud(logger zerolog.Logger) *Cloud {
 }
 
 func (c *Cloud) Pray(ctx context.Context, pray model.Pray) (chan model.Gift, error) {
-	if pray.Name == "" {
+	if pray.Name() == "" {
 		return make(chan model.Gift), errors.New("empty pray name")
 	}
 	prayer := Prayer{
@@ -53,11 +53,11 @@ func (c *Cloud) Pray(ctx context.Context, pray model.Pray) (chan model.Gift, err
 
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	_, found := c.prayers[pray.Name]
+	_, found := c.prayers[pray.Name()]
 	if !found {
-		c.prayers[pray.Name] = []Prayer{prayer}
+		c.prayers[pray.Name()] = []Prayer{prayer}
 	} else {
-		c.prayers[pray.Name] = append(c.prayers[pray.Name], prayer)
+		c.prayers[pray.Name()] = append(c.prayers[pray.Name()], prayer)
 	}
 
 	if err := c.emitPray(ctx, pray); err != nil {
@@ -102,7 +102,7 @@ func (c *Cloud) Serve(ctx context.Context, prayName string) (chan model.Pray, ch
 }
 
 func (c *Cloud) emitPray(ctx context.Context, pray model.Pray) error {
-	giver, found := c.givers[pray.Name]
+	giver, found := c.givers[pray.Name()]
 	if !found {
 		return errors.Errorf("no giver for prays %s", pray.Name)
 	}

@@ -5,6 +5,7 @@ import (
 	"github.com/artchitector/artchitect.git/soul/model"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
+	"os"
 	"time"
 )
 
@@ -38,21 +39,24 @@ func (a *Artist) Run(ctx context.Context) error {
 				a.logger.Info().Msg("stop artist via ctx.Done")
 				return
 			case pray := <-prays:
+				paintingPray, isPaintingPray := pray.(model.PaintingPray)
+				if !isPaintingPray {
+					a.logger.Error().Msgf("pray type is not %s", model.EntityPainting)
+					continue
+				}
 				a.logger.Debug().Msg("artist got pray")
 				data, err := a.paint(ctx)
 				if err != nil {
 					a.logger.Error().Err(err).Msgf("failed to paint")
-					gifts <- model.Gift{
-						Name:    pray.Name,
-						Payload: nil,
-						Error:   errors.Wrap(err, "failed to paint"),
+					gifts <- model.PaintingGift{
+						Err: errors.Wrap(err, "failed to paint"),
 					}
 				} else {
 					a.logger.Debug().Msg("artist made gift")
-					gifts <- model.Gift{
-						Name:    pray.Name,
-						Payload: data,
-						Error:   nil,
+					gifts <- model.PaintingGift{
+						Caption:  paintingPray.Caption,
+						Painting: data,
+						Err:      nil,
 					}
 				}
 			}
@@ -64,5 +68,6 @@ func (a *Artist) Run(ctx context.Context) error {
 
 func (a *Artist) paint(ctx context.Context) ([]byte, error) {
 	time.Sleep(time.Second * 3)
-	return []byte{}, nil
+	content, err := os.ReadFile("files/allah.jpg")
+	return content, err
 }

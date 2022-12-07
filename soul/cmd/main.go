@@ -5,6 +5,7 @@ import (
 	"github.com/artchitector/artchitect.git/soul/core/artchitector"
 	"github.com/artchitector/artchitect.git/soul/core/artist"
 	"github.com/artchitector/artchitect.git/soul/infrastructure"
+	"github.com/artchitector/artchitect.git/soul/repository"
 	"github.com/artchitector/artchitect.git/soul/resources"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -13,7 +14,7 @@ import (
 )
 
 func main() {
-	resources.InitResources()
+	res := resources.InitResources()
 	log.Info().Msg("service started")
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -38,6 +39,8 @@ func main() {
 	//	}
 	//}()
 
+	paintingRepo := repository.NewPaintingRepository(res.GetDB())
+
 	cloud := infrastructure.NewCloud(log.With().Str("service", "cloud").Logger())
 	art := artist.NewArtist(
 		log.With().Str("service", "artist").Logger(),
@@ -51,6 +54,7 @@ func main() {
 		log.With().Str("service", "artchitector").Logger(),
 		schedule,
 		cloud,
+		paintingRepo,
 	)
 
 	if err := artchitect.Run(ctx); err != nil {
