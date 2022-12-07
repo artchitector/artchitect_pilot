@@ -50,8 +50,6 @@
         </section>
         <footer>
             github: <a href="https://github.com/artchitector/artchitect" target="_blank">https://github.com/artchitector/artchitect</a>
-            <br/>
-            patreon: <a href="https://patreon.com/artchitect?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=creatorshare_creator&utm_content=join_link">artchitect</a>
         </footer>
     </main>
 
