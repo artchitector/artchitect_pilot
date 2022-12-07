@@ -16,10 +16,11 @@ func NewSchedule(logger zerolog.Logger) *Schedule {
 
 func (s *Schedule) MakePaintingSchedule(ctx context.Context) chan struct{} {
 	ch := make(chan struct{})
+	tick := time.NewTicker(time.Second * 10)
 	go func() {
 		for {
 			select {
-			case <-time.After(time.Second):
+			case <-tick.C:
 				// request new painting via chan, that used by artchitector
 				ch <- struct{}{}
 			case <-ctx.Done():

@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"github.com/artchitector/artchitect.git/soul/core/artchitector"
+	"github.com/artchitector/artchitect.git/soul/core/artist"
+	"github.com/artchitector/artchitect.git/soul/infrastructure"
 	"github.com/artchitector/artchitect.git/soul/resources"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -36,10 +38,19 @@ func main() {
 	//	}
 	//}()
 
+	cloud := infrastructure.NewCloud(log.With().Str("service", "cloud").Logger())
+	art := artist.NewArtist(
+		log.With().Str("service", "artist").Logger(),
+		cloud,
+	)
+	if err := art.Run(ctx); err != nil {
+		log.Fatal().Err(err).Msg("artist.Run failed")
+	}
 	schedule := artchitector.NewSchedule(log.With().Str("service", "schedule").Logger())
 	artchitect := artchitector.NewArtchitect(
 		log.With().Str("service", "artchitector").Logger(),
 		schedule,
+		cloud,
 	)
 
 	if err := artchitect.Run(ctx); err != nil {

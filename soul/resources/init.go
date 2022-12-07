@@ -3,8 +3,7 @@ package resources
 import "gorm.io/gorm"
 
 type Resources struct {
-	db  *gorm.DB
-	bus *Bus
+	db *gorm.DB
 }
 
 func (r *Resources) GetDB() *gorm.DB {
@@ -13,7 +12,6 @@ func (r *Resources) GetDB() *gorm.DB {
 
 func InitResources() *Resources {
 	db := initDB()
-	bus := initBus()
 
-	return &Resources{db, bus}
+	return &Resources{db}
 }
