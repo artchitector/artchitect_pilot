@@ -15,7 +15,7 @@ import (
 
 func main() {
 	res := resources.InitResources()
-	log.Info().Msg("service started")
+	log.Info().Msg("service soul started")
 
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -25,19 +25,6 @@ func main() {
 		<-done
 		cancel()
 	}()
-
-	//go func() {
-	//	for {
-	//		payload := struct {
-	//			Payload int64 `json:"payload"`
-	//		}{
-	//			Payload: int64(rand.Intn(1000)),
-	//		}
-	//		body, _ := json.Marshal(payload)
-	//		res.GetDB().Exec(fmt.Sprintf("NOTIFY events, '%s';", string(body)))
-	//		time.Sleep(time.Second)
-	//	}
-	//}()
 
 	paintingRepo := repository.NewPaintingRepository(res.GetDB())
 
@@ -61,5 +48,5 @@ func main() {
 		log.Fatal().Err(err).Msg("artchitect.Run failed")
 	}
 
-	log.Info().Msg("artchitect.Run finished. System shutdown")
+	log.Info().Msg("soul.Run finished")
 }
