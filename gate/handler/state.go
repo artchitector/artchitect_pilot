@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"github.com/artchitector/artchitect.git/gate/model"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -11,10 +10,6 @@ import (
 type StateResponse struct {
 	Hash  string
 	State model.State
-}
-
-type retriever interface {
-	CollectState(ctx context.Context) (model.State, error)
 }
 
 type StateHandler struct {

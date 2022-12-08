@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/artchitector/artchitect.git/gate/handler"
+	"github.com/artchitector/artchitect.git/gate/repository"
 	"github.com/artchitector/artchitect.git/gate/resources"
 	"github.com/artchitector/artchitect.git/gate/state"
 	"github.com/gin-gonic/gin"
@@ -24,11 +25,17 @@ func main() {
 		cancel()
 	}()
 
+	paintingRepository := repository.NewPaintingRepository(res.GetDB())
 	retriever := state.NewRetriever(
 		log.With().Str("service", "retriever").Logger(),
+		paintingRepository,
 	)
 	stateHandler := handler.NewStateHandler(
 		log.With().Str("service", "state_handler").Logger(),
+		retriever,
+	)
+	paintingHandler := handler.NewPaintingHandler(
+		log.With().Str("service", "painting_handler").Logger(),
 		retriever,
 	)
 
@@ -41,6 +48,7 @@ func main() {
 			c.JSON(200, gin.H{"message": "pong"})
 		})
 		r.GET("/state", stateHandler.Handle)
+		r.GET("/painting/:id", paintingHandler.Handle)
 
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()
