@@ -6,6 +6,7 @@ import (
 	"github.com/artchitector/artchitect.git/gate/repository"
 	"github.com/artchitector/artchitect.git/gate/resources"
 	"github.com/artchitector/artchitect.git/gate/state"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -41,6 +42,10 @@ func main() {
 
 	go func() {
 		r := gin.Default()
+		r.Use(cors.New(cors.Config{
+			AllowAllOrigins: true,
+			//AllowOrigins:           nil,
+		}))
 		if err := r.SetTrustedProxies([]string{"127.0.0.1"}); err != nil {
 			log.Fatal().Err(err).Send()
 		}
