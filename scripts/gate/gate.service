@@ -1,0 +1,21 @@
+# /etc/systemd/system/gate.service
+[Unit]
+Description=Gate
+ConditionPathExists=/root/artchitect/gate/
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+
+WorkingDirectory=/root/artchitect/gate
+ExecStart=/root/artchitect/gate/gate
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=gate
+
+[Install]
+WantedBy=multi-user.target

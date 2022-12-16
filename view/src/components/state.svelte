@@ -16,10 +16,11 @@
         try {
             state.error = null;
             state.loading = true;
-            const response = await fetch("http://localhost:8082/state");
+            const response = await fetch(import.meta.env.VITE_API_HOST + "/state");
             const json = await response.json();
             console.log("State received: ", json)
             state.state = json;
+
         } catch (err) {
             state.error = err;
         } finally {
@@ -39,7 +40,7 @@
         <hr/>
         <div class="lastimage_block">
             <pre><b>Current image (id={state.state.State.LastPainting.ID}): "{state.state.State.LastPainting.Caption}"</b></pre>
-            <img class="lastimage" src="http://localhost:8082/painting/{state.state.State.LastPainting.ID}"/>
+            <img class="lastimage" src="{import.meta.env.VITE_API_HOST}/painting/{state.state.State.LastPainting.ID}"/>
         </div>
     {/if}
 </div>
