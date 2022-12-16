@@ -16,7 +16,7 @@ func NewSchedule(logger zerolog.Logger) *Schedule {
 
 func (s *Schedule) MakePaintingSchedule(ctx context.Context) chan struct{} {
 	ch := make(chan struct{})
-	tick := time.NewTicker(time.Second * 10)
+	tick := time.NewTicker(time.Second * 60)
 	go func() {
 		for {
 			select {
