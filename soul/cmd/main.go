@@ -7,6 +7,7 @@ import (
 	"github.com/artchitector/artchitect.git/soul/infrastructure"
 	"github.com/artchitector/artchitect.git/soul/repository"
 	"github.com/artchitector/artchitect.git/soul/resources"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
 	"os/signal"
@@ -14,6 +15,8 @@ import (
 )
 
 func main() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "2006-01-02T15:04:05"})
+
 	res := resources.InitResources()
 	log.Info().Msg("service soul started")
 

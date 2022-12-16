@@ -8,6 +8,7 @@ import (
 	"github.com/artchitector/artchitect.git/gate/state"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
 	"os/signal"
@@ -15,6 +16,8 @@ import (
 )
 
 func main() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "2006-01-02T15:04:05"})
+
 	res := resources.InitResources()
 	log.Info().Msg("service gate started")
 
