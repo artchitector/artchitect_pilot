@@ -1,0 +1,20 @@
+
+$link: #d4d1c3;
+$link-hover: #d4d1c3;
+$body-background-color: #d4d1c3;
+
+// Import Bulma's core, Bulma and Buefy styles
+@import "~bulma/sass/utilities/_all";
+@import "~bulma";
+@import "~buefy/src/scss/buefy";
+
+// Nothing work for me here, i tried to change base-colors, but nothing changed
+// TODO need to overwrite bulma-variables and minify template styles
+
+//.navbar {
+//  background-color: #2d2d2d;
+//}
+//
+//body {
+//  background-color: #d4d1c3;
+//}
