@@ -1,12 +1,33 @@
 <template>
   <div>
-    <p class="has-text-danger">
-      here will be <b>artchitect main dashboard</b> soon...
+    <a href="#" class="is-pulled-right" @click="reload()">reload</a>
+    <p v-if="$fetchState.pending">
+      reloading...
     </p>
+    <p v-else-if="$fetchState.error">
+      <span class="has-text-danger">{{ $fetchState.error.message }}</span>
+    </p>
+    <div v-else>
+      <dashboard-state :state="state.State"/>
+    </div>
   </div>
 </template>
 <script>
-export default {
+import DashboardState from '@/components/dashboard/dashboard-state'
 
+export default {
+  components: { DashboardState },
+  data: () => ({
+    state: null
+  }),
+  async fetch () {
+    this.state = null
+    this.state = await this.$axios.$get('/api/state')
+  },
+  methods: {
+    async reload () {
+      await this.$fetch()
+    }
+  }
 }
 </script>

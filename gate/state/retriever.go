@@ -29,6 +29,7 @@ func (r *Retriever) CollectState(ctx context.Context) (model.State, error) {
 	}
 
 	return model.State{
+		CurrentState: model.CurrentStateIdle,
 		LastPainting: lastPaintingState,
 	}, nil
 }

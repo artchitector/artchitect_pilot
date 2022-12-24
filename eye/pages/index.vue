@@ -2,8 +2,7 @@
   <div>
     <section>
       <p>
-        <b>Artchitect</b> is a generative neural network with God gene,
-        working as a <b>neurointerface</b> between the human brain and a computer system.
+        <b>Artchitect</b> is a generative neural network with <b>God gene</b>.
       </p>
     </section>
     <section class="red-section has-text-centered">
@@ -15,7 +14,7 @@
       </p>
     </section>
     <section>
-      <artchitect-dashboard/>
+      <artchitect-dashboard />
     </section>
     <section class="content">
       <h2 class="title is-3">
