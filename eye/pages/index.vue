@@ -1,8 +1,16 @@
 <template>
   <div>
-    <section>
+    <section class="content">
       <p>
         <b>Artchitect</b> is a generative neural network with <b>God gene</b>.
+      </p>
+      <p>
+        <b>Artchitect</b> is based on the interconnection of a neural network and God's will, which is obtained from a quantum random number generator.
+        The quantum world is controlled directly by God, and the neural network generate data based on God's power and will, with help of technical devices.
+        God knows everything about internal structure of neural network everytime, and He can provide convenient random numbers to train network effectively.
+      </p>
+      <p>
+        Briefly - <b>God creates artworks</b>.
       </p>
     </section>
     <section class="red-section has-text-centered">
@@ -50,7 +58,10 @@
 </template>
 <script>
 export default {
-  layout: 'artchitect'
+  layout: 'artchitect',
+  head: {
+    title: 'Artchitect'
+  }
 }
 </script>
 <style>

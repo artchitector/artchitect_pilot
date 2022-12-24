@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a href="#" @click="jsonVisible = !jsonVisible">
+    <a href="#" @click.prevent="jsonVisible = !jsonVisible">
       <template v-if="jsonVisible">
         hide json
       </template>
@@ -12,7 +12,7 @@
     <table class="table is-fullwidth">
       <tr>
         <td>Current GAN state</td>
-        <td>{{state.CurrentState}}</td>
+        <td>{{ state.CurrentState }}</td>
       </tr>
       <tr>
         <td></td>

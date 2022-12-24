@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a href="#" class="is-pulled-right" @click="reload()">reload</a>
+    <a href="#" class="is-pulled-right" @click.prevent="reload()">reload</a>
     <p v-if="$fetchState.pending">
       reloading...
     </p>
@@ -8,7 +8,7 @@
       <span class="has-text-danger">{{ $fetchState.error.message }}</span>
     </p>
     <div v-else>
-      <dashboard-state :state="state.State"/>
+      <dashboard-state :state="state.State" />
     </div>
   </div>
 </template>

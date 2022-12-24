@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"net/http"
-	"time"
 )
 
 type StateResponse struct {
@@ -23,7 +22,6 @@ func NewStateHandler(logger zerolog.Logger, retriever retriever) *StateHandler {
 }
 
 func (sh *StateHandler) Handle(c *gin.Context) {
-	time.Sleep(time.Millisecond * 300) // slow down, like in 1990th
 	state, err := sh.retriever.CollectState(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
