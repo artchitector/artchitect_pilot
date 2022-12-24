@@ -1,7 +1,7 @@
 # /etc/systemd/system/gate.service
 [Unit]
 Description=Gate
-ConditionPathExists=/root/artchitect/gate/
+ConditionPathExists=/root/artchitect/gate/bin/
 After=network.target
 
 [Service]
@@ -10,7 +10,7 @@ User=root
 Group=root
 
 WorkingDirectory=/root/artchitect/gate
-ExecStart=/root/artchitect/gate/gate
+ExecStart=/root/artchitect/gate/bin/gate
 Restart=on-failure
 RestartSec=10
 StandardOutput=syslog

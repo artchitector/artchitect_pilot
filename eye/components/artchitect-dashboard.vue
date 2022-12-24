@@ -22,7 +22,7 @@ export default {
   }),
   async fetch () {
     this.state = null
-    this.state = await this.$axios.$get('/api/state')
+    this.state = await this.$axios.$get('/state')
   },
   methods: {
     async reload () {
