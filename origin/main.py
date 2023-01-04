@@ -7,6 +7,7 @@ camera = cv2.VideoCapture(0)
 
 def gen_frames():
     while True:
+        global camera
         success, frame = camera.read()  # read the camera frame
         if not success:
             break
@@ -24,8 +25,10 @@ def stream():
 
 @app.route('/')
 def index():
+    global camera
     success, frame = camera.read()
     if not success:
+        camera = cv2.VideoCapture(0)
         abort(404)
     else:
         ret, buffer = cv2.imencode('.jpg', frame)
