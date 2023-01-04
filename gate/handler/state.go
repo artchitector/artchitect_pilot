@@ -9,7 +9,7 @@ import (
 
 type StateResponse struct {
 	Hash  string
-	State model.State
+	State model.CurrentState
 }
 
 type StateHandler struct {

@@ -1,7 +1,6 @@
 package resources
 
 import (
-	"github.com/artchitector/artchitect.git/gate/model"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"gorm.io/driver/postgres"
@@ -30,10 +29,6 @@ func initDB(env *Env) *gorm.DB {
 	})
 	if err != nil {
 		log.Fatal().Err(errors.Wrap(err, "failed to connect to postgres"))
-	}
-
-	if err := db.AutoMigrate(&model.Painting{}); err != nil {
-		log.Fatal().Err(errors.Wrap(err, "failed to auto-migrate"))
 	}
 
 	if err != nil {

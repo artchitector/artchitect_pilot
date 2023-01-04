@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/artchitector/artchitect.git/soul/core/artchitector"
-	"github.com/artchitector/artchitect.git/soul/core/artist"
-	"github.com/artchitector/artchitect.git/soul/infrastructure"
+	"github.com/artchitector/artchitect.git/soul/core/origin"
+	"github.com/artchitector/artchitect.git/soul/core/origin/driver"
+	stateService "github.com/artchitector/artchitect.git/soul/core/state"
 	"github.com/artchitector/artchitect.git/soul/repository"
 	"github.com/artchitector/artchitect.git/soul/resources"
 	"github.com/rs/zerolog"
@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -29,26 +30,33 @@ func main() {
 		cancel()
 	}()
 
-	paintingRepo := repository.NewPaintingRepository(res.GetDB())
+	//paintingRepo := repository.NewPaintingRepository(res.GetDB())
+	decisionRepo := repository.NewDecisionRepository(res.GetDB())
+	stateRepository := repository.NewStateRepository(res.GetDB())
 
-	cloud := infrastructure.NewCloud(log.With().Str("service", "cloud").Logger())
-	art := artist.NewArtist(
-		log.With().Str("service", "artist").Logger(),
-		cloud,
-	)
-	if err := art.Run(ctx); err != nil {
-		log.Fatal().Err(err).Msg("artist.Run failed")
-	}
-	schedule := artchitector.NewSchedule(log.With().Str("service", "schedule").Logger())
-	artchitect := artchitector.NewArtchitect(
-		log.With().Str("service", "artchitector").Logger(),
-		schedule,
-		cloud,
-		paintingRepo,
-	)
+	//randProvider := driver.NewRandDriver()
+	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL, decisionRepo)
+	originInstance := origin.NewOrigin(webcamDriver)
 
-	if err := artchitect.Run(ctx); err != nil {
-		log.Fatal().Err(err).Msg("artchitect.Run failed")
+	state := stateService.NewState(stateRepository)
+	go func() {
+		if err := state.Run(ctx); err != nil {
+			log.Fatal().Err(err).Send()
+		}
+	}()
+
+	for {
+		select {
+		case <-ctx.Done():
+			break
+		case <-time.Tick(time.Second):
+			yes, err := originInstance.YesNo(ctx)
+			if err != nil {
+				log.Error().Err(err).Send()
+			} else {
+				log.Info().Msgf("[main] origin answered yes=%t", yes)
+			}
+		}
 	}
 
 	log.Info().Msg("soul.Run finished")

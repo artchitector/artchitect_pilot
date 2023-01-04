@@ -14,6 +14,14 @@
         <td>Current GAN state</td>
         <td>{{ state.CurrentState }}</td>
       </tr>
+      <tr v-if="!!state.LastDecision">
+        <td>Last decision made</td>
+        <td>
+          {{ state.LastDecision.Result }}
+          <img class="seedImage" :src="`data:image/jpeg;base64, ${state.LastDecision.Image}`"/>
+        </td>
+      </tr>
+      <!-- empty line -->
       <tr>
         <td></td>
         <td></td>

@@ -6,6 +6,6 @@ import (
 )
 
 type retriever interface {
-	CollectState(ctx context.Context) (model.State, error)
+	CollectState(ctx context.Context) (model.CurrentState, error)
 	GetPaintingData(ctx context.Context, paintingID uint) ([]byte, error)
 }
