@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/artchitector/artchitect.git/soul/core/origin"
+	originService "github.com/artchitector/artchitect.git/soul/core/origin"
 	"github.com/artchitector/artchitect.git/soul/core/origin/driver"
+	spellerService "github.com/artchitector/artchitect.git/soul/core/speller"
 	stateService "github.com/artchitector/artchitect.git/soul/core/state"
 	"github.com/artchitector/artchitect.git/soul/repository"
 	"github.com/artchitector/artchitect.git/soul/resources"
@@ -33,10 +34,12 @@ func main() {
 	//paintingRepo := repository.NewPaintingRepository(res.GetDB())
 	decisionRepo := repository.NewDecisionRepository(res.GetDB())
 	stateRepository := repository.NewStateRepository(res.GetDB())
+	spellRepository := repository.NewSpellRepository(res.GetDB())
 
 	//randProvider := driver.NewRandDriver()
 	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL, decisionRepo)
-	originInstance := origin.NewOrigin(webcamDriver)
+	origin := originService.NewOrigin(webcamDriver)
+	speller := spellerService.NewSpeller(spellRepository, origin)
 
 	state := stateService.NewState(stateRepository)
 	go func() {
@@ -49,12 +52,13 @@ func main() {
 		select {
 		case <-ctx.Done():
 			break
-		case <-time.Tick(time.Second):
-			yes, err := originInstance.YesNo(ctx)
+		case <-time.Tick(time.Second * 10):
+			spell, err := speller.MakeSpell(ctx)
 			if err != nil {
 				log.Error().Err(err).Send()
 			} else {
-				log.Info().Msgf("[main] origin answered yes=%t", yes)
+				log.Info().Msgf("[main] spell: %+v", spell)
+
 			}
 		}
 	}

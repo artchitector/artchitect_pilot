@@ -8,4 +8,6 @@ const (
 	StateIdle       = "idle"        // Nothing to do, waiting
 
 	ArtifactContentTypeJpeg = "image/jpeg"
+
+	MaxSeed = uint64(10000000000)
 )

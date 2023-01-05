@@ -17,3 +17,7 @@ type decisionRepository interface {
 type stateRepository interface {
 	GetLastState(ctx context.Context) (model.State, error)
 }
+
+type spellRepository interface {
+	GetLastSpell(ctx context.Context) (model.Spell, error)
+}

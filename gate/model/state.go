@@ -34,4 +34,5 @@ type CurrentState struct {
 	CurrentState CurrentStateStr
 	LastPainting *LastPainting
 	LastDecision *LastDecision
+	LastSpell    *Spell
 }

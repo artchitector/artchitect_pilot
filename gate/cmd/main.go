@@ -32,11 +32,13 @@ func main() {
 	paintingRepository := repository.NewPaintingRepository(res.GetDB())
 	decisionRepository := repository.NewDecisionRepository(res.GetDB())
 	stateRepository := repository.NewStateRepository(res.GetDB())
+	spellRepository := repository.NewSpellRepository(res.GetDB())
 	retriever := state.NewRetriever(
 		log.With().Str("service", "retriever").Logger(),
 		paintingRepository,
 		decisionRepository,
 		stateRepository,
+		spellRepository,
 	)
 	stateHandler := handler.NewStateHandler(
 		log.With().Str("service", "state_handler").Logger(),

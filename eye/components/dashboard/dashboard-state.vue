@@ -14,11 +14,29 @@
         <td>Current GAN state</td>
         <td>{{ state.CurrentState }}</td>
       </tr>
-      <tr v-if="!!state.LastDecision">
+      <tr >
         <td>Last decision made</td>
         <td>
+          <template v-if="!!state.LastDecision">
           {{ state.LastDecision.Result }}
           <img class="seedImage" :src="`data:image/jpeg;base64, ${state.LastDecision.Image}`"/>
+          </template>
+          <template v-else>
+            no decision
+          </template>
+        </td>
+      </tr>
+      <tr>
+        <td>Last spell (artwork keywords)</td>
+        <td>
+          <template v-if="!!state.LastSpell">
+            idea: {{state.LastSpell.Idea}}<br/>
+            tags for artist: {{state.LastSpell.Tags}}<br/>
+            seed: {{state.LastSpell.Seed}}
+          </template>
+          <template v-else>
+            no last spell
+          </template>
         </td>
       </tr>
       <!-- empty line -->

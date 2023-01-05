@@ -3,6 +3,7 @@ package origin
 import (
 	"context"
 	"github.com/pkg/errors"
+	"math"
 )
 
 // Origin - source of everything. Origin generates random seed based on God's will.
@@ -25,7 +26,15 @@ type Driver interface {
 func (o *Origin) YesNo(ctx context.Context) (bool, error) {
 	val, err := o.provider.GetValue(ctx)
 	if err != nil {
-		return false, errors.Wrap(err, "failed to getValue from provider")
+		return false, errors.Wrap(err, "[origin] failed to getValue from provider")
 	}
 	return val > 0.5, nil
+}
+
+func (o *Origin) Select(ctx context.Context, totalVariants uint64) (uint64, error) {
+	val, err := o.provider.GetValue(ctx)
+	if err != nil {
+		return 0, errors.Wrap(err, "[origin] failed to getValue from provider")
+	}
+	return uint64(math.Round(float64(totalVariants) * val)), nil
 }

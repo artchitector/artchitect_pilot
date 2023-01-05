@@ -19,6 +19,7 @@ type Retriever struct {
 	paintingRepository paintingRepository
 	decisionRepository decisionRepository
 	stateRepository    stateRepository
+	spellRepository    spellRepository
 }
 
 func NewRetriever(
@@ -26,8 +27,9 @@ func NewRetriever(
 	paintingRepository paintingRepository,
 	decisionRepository decisionRepository,
 	stateRepository stateRepository,
+	spellRepository spellRepository,
 ) *Retriever {
-	return &Retriever{logger, paintingRepository, decisionRepository, stateRepository}
+	return &Retriever{logger, paintingRepository, decisionRepository, stateRepository, spellRepository}
 }
 
 func (r *Retriever) CollectState(ctx context.Context) (model.CurrentState, error) {
@@ -47,10 +49,13 @@ func (r *Retriever) CollectState(ctx context.Context) (model.CurrentState, error
 		return model.CurrentState{}, errors.Wrap(err, "failed to get last decision")
 	}
 
+	lastSpell, err := r.GetLastSpell(ctx)
+
 	return model.CurrentState{
 		CurrentState: r.GetLastState(ctx),
 		LastPainting: &lastPaintingState,
 		LastDecision: lastDecision,
+		LastSpell:    lastSpell,
 	}, nil
 }
 
@@ -102,9 +107,20 @@ func (r *Retriever) GetLastState(ctx context.Context) model.CurrentStateStr {
 
 	now := time.Now()
 	if state.CreatedAt.Before(now.Add(-1 * time.Minute)) {
-		log.Warn().Msgf("too old state. %+v (id=%d)", state.CreatedAt, state.ID)
+		log.Warn().Msgf("[retriever] too old state. %+v (id=%d)", state.CreatedAt, state.ID)
 		return model.CurrentStateNotWorking
 	} else {
 		return model.CurrentStateStr(state.State)
+	}
+}
+
+func (r *Retriever) GetLastSpell(ctx context.Context) (*model.Spell, error) {
+	spell, err := r.spellRepository.GetLastSpell(ctx)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil // empty
+	} else if err != nil {
+		return nil, errors.Wrap(err, "[retriever] failed to get last spell")
+	} else {
+		return &spell, err
 	}
 }

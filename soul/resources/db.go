@@ -32,7 +32,7 @@ func initDB(env *Env) *gorm.DB {
 		log.Fatal().Err(errors.Wrap(err, "failed to connect to postgres"))
 	}
 
-	if err := db.AutoMigrate(&model.Painting{}, &model.Decision{}, &model.State{}); err != nil {
+	if err := db.AutoMigrate(&model.Painting{}, &model.Decision{}, &model.State{}, &model.Spell{}); err != nil {
 		log.Fatal().Err(errors.Wrap(err, "failed to auto-migrate"))
 	}
 
