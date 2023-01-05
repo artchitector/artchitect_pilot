@@ -15,7 +15,7 @@ type State struct {
 }
 
 func NewState(stateRepository stateRepository) *State {
-	return &State{stateRepository, sync.Mutex{}, model.StateIdle}
+	return &State{stateRepository, sync.Mutex{}, model.StateNotWorking}
 }
 
 type stateRepository interface {

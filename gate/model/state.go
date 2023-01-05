@@ -5,12 +5,12 @@ import (
 	"time"
 )
 
-type CurrentStateStr string
-
 const (
-	CurrentStateError      = CurrentStateStr("error")
-	CurrentStateIdle       = CurrentStateStr("idle")
-	CurrentStateNotWorking = CurrentStateStr("not_working")
+	StateError          = "error"
+	StateNotWorking     = "not_working"
+	StateMakingSpell    = "making_spell"
+	StateMakingArtifact = "making_artifact"
+	StateMakingRest     = "making_rest"
 )
 
 // State - Current system state
@@ -33,8 +33,9 @@ type LastDecision struct {
 }
 
 type CurrentState struct {
-	CurrentState CurrentStateStr
-	LastPainting *LastPainting
-	LastDecision *LastDecision
-	LastSpell    *Spell
+	CurrentState                   State
+	CurrentStateDefaultTimeSeconds uint64
+	LastPainting                   *LastPainting
+	LastDecision                   *LastDecision
+	LastSpell                      *Spell
 }
