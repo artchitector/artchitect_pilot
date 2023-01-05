@@ -39,7 +39,7 @@ func (r *Retriever) CollectState(ctx context.Context) (model.CurrentState, error
 	}
 	var lastPaintingState model.LastPainting
 	if found {
-		lastPaintingState = model.LastPainting{ID: lastPainting.ID, Caption: lastPainting.Caption}
+		lastPaintingState = model.LastPainting{ID: lastPainting.ID, Caption: lastPainting.Spell.Idea, Spell: lastPainting.Spell}
 	} else {
 		lastPaintingState = model.LastPainting{ID: 0}
 	}
@@ -51,11 +51,13 @@ func (r *Retriever) CollectState(ctx context.Context) (model.CurrentState, error
 
 	lastSpell, err := r.GetLastSpell(ctx)
 
+	state, seconds := r.GetLastState(ctx)
 	return model.CurrentState{
-		CurrentState: r.GetLastState(ctx),
-		LastPainting: &lastPaintingState,
-		LastDecision: lastDecision,
-		LastSpell:    lastSpell,
+		CurrentState:                   state,
+		CurrentStateDefaultTimeSeconds: seconds,
+		LastPainting:                   &lastPaintingState,
+		LastDecision:                   lastDecision,
+		LastSpell:                      lastSpell,
 	}, nil
 }
 
@@ -66,7 +68,7 @@ func (r *Retriever) GetPaintingData(ctx context.Context, paintingID uint) ([]byt
 	} else if !found {
 		return []byte{}, errors.Errorf("not found painting id=%d", painting)
 	} else {
-		return painting.Bytes, nil
+		return painting.Image, nil
 	}
 }
 
@@ -92,25 +94,33 @@ func (r *Retriever) getLastDecision(ctx context.Context) (*model.LastDecision, e
 	}
 
 	return &model.LastDecision{
-		Result: ld.Output,
-		Cdate:  ld.CreatedAt,
-		Image:  base64.StdEncoding.EncodeToString(buf.Bytes()),
+		ID:        ld.ID,
+		Result:    ld.Output,
+		CreatedAt: ld.CreatedAt,
+		Image:     base64.StdEncoding.EncodeToString(buf.Bytes()),
 	}, err
 }
 
-func (r *Retriever) GetLastState(ctx context.Context) model.CurrentStateStr {
+func (r *Retriever) GetLastState(ctx context.Context) (model.State, uint64) {
 	state, err := r.stateRepository.GetLastState(ctx)
 	if err != nil {
 		log.Error().Err(err).Send()
-		return model.CurrentStateError
+		return model.State{State: model.StateError}, 0
 	}
 
 	now := time.Now()
-	if state.CreatedAt.Before(now.Add(-1 * time.Minute)) {
+	if state.CreatedAt.Before(now.Add(-2 * time.Minute)) {
 		log.Warn().Msgf("[retriever] too old state. %+v (id=%d)", state.CreatedAt, state.ID)
-		return model.CurrentStateNotWorking
+		return model.State{State: model.StateNotWorking}, 0
 	} else {
-		return model.CurrentStateStr(state.State)
+		if state.State == model.StateMakingSpell {
+			return state, 2 // 2 seconds to generate spell
+		} else if state.State == model.StateMakingArtifact {
+			return state, 50 // painting creates in 50 seconds
+		} else if state.State == model.StateMakingRest {
+			return state, 120 // need 120 seconds to rest
+		}
+		return state, 0
 	}
 }
 

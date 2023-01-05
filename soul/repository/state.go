@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/artchitector/artchitect.git/soul/model"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -15,6 +16,13 @@ func NewStateRepository(db *gorm.DB) *StateRepository {
 }
 
 func (dr *StateRepository) SaveState(ctx context.Context, state model.State) (model.State, error) {
+	var lastState model.State
+	if err := dr.db.Last(&lastState).Error; err != nil {
+		return model.State{}, errors.Wrap(err, "failed to get last state")
+	}
+	if lastState.State == state.State {
+		return lastState, nil
+	}
 	err := dr.db.Save(&state).Error
 	return state, err
 }
