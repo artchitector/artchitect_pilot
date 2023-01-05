@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
+	artistService "github.com/artchitector/artchitect.git/soul/core/artist"
 	originService "github.com/artchitector/artchitect.git/soul/core/origin"
 	"github.com/artchitector/artchitect.git/soul/core/origin/driver"
 	spellerService "github.com/artchitector/artchitect.git/soul/core/speller"
-	stateService "github.com/artchitector/artchitect.git/soul/core/state"
 	"github.com/artchitector/artchitect.git/soul/repository"
 	"github.com/artchitector/artchitect.git/soul/resources"
 	"github.com/rs/zerolog"
@@ -31,35 +31,42 @@ func main() {
 		cancel()
 	}()
 
-	//paintingRepo := repository.NewPaintingRepository(res.GetDB())
+	paintingRepo := repository.NewPaintingRepository(res.GetDB())
 	decisionRepo := repository.NewDecisionRepository(res.GetDB())
-	stateRepository := repository.NewStateRepository(res.GetDB())
+	//stateRepository := repository.NewStateRepository(res.GetDB())
 	spellRepository := repository.NewSpellRepository(res.GetDB())
 
 	//randProvider := driver.NewRandDriver()
 	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL, decisionRepo)
 	origin := originService.NewOrigin(webcamDriver)
 	speller := spellerService.NewSpeller(spellRepository, origin)
+	artist := artistService.NewArtist(res.GetEnv().ArtistURL, paintingRepo)
 
-	state := stateService.NewState(stateRepository)
-	go func() {
-		if err := state.Run(ctx); err != nil {
-			log.Fatal().Err(err).Send()
-		}
-	}()
+	//state := stateService.NewState(stateRepository)
+	//go func() {
+	//	if err := state.Run(ctx); err != nil {
+	//		log.Fatal().Err(err).Send()
+	//	}
+	//}()
 
 	for {
 		select {
 		case <-ctx.Done():
 			break
 		case <-time.Tick(time.Second * 10):
+			log.Info().Msgf("[main] start main loop")
 			spell, err := speller.MakeSpell(ctx)
 			if err != nil {
 				log.Error().Err(err).Send()
-			} else {
-				log.Info().Msgf("[main] spell: %+v", spell)
-
+				continue
 			}
+			log.Info().Msgf("[main] spell: %+v", spell)
+			painting, err := artist.GetPainting(ctx, spell)
+			if err != nil {
+				log.Error().Err(err).Send()
+				continue
+			}
+			log.Info().Msgf("[main] painting: id=%d, spell_id=%d", painting.ID, spell.ID)
 		}
 	}
 

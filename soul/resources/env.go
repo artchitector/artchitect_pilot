@@ -9,6 +9,7 @@ import (
 type Env struct {
 	DbDSN     string
 	OriginURL string
+	ArtistURL string
 }
 
 func initEnv() *Env {
@@ -20,5 +21,6 @@ func initEnv() *Env {
 	return &Env{
 		DbDSN:     os.Getenv("DB_DSN"),
 		OriginURL: os.Getenv("ORIGIN_URL"),
+		ArtistURL: os.Getenv("ARTIST_URL"),
 	}
 }

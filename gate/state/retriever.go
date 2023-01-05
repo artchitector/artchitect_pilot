@@ -39,7 +39,7 @@ func (r *Retriever) CollectState(ctx context.Context) (model.CurrentState, error
 	}
 	var lastPaintingState model.LastPainting
 	if found {
-		lastPaintingState = model.LastPainting{ID: lastPainting.ID, Caption: lastPainting.Caption}
+		lastPaintingState = model.LastPainting{ID: lastPainting.ID, Caption: lastPainting.Spell.Idea, Spell: lastPainting.Spell}
 	} else {
 		lastPaintingState = model.LastPainting{ID: 0}
 	}
@@ -66,7 +66,7 @@ func (r *Retriever) GetPaintingData(ctx context.Context, paintingID uint) ([]byt
 	} else if !found {
 		return []byte{}, errors.Errorf("not found painting id=%d", painting)
 	} else {
-		return painting.Bytes, nil
+		return painting.Image, nil
 	}
 }
 
@@ -92,9 +92,10 @@ func (r *Retriever) getLastDecision(ctx context.Context) (*model.LastDecision, e
 	}
 
 	return &model.LastDecision{
-		Result: ld.Output,
-		Cdate:  ld.CreatedAt,
-		Image:  base64.StdEncoding.EncodeToString(buf.Bytes()),
+		ID:        ld.ID,
+		Result:    ld.Output,
+		CreatedAt: ld.CreatedAt,
+		Image:     base64.StdEncoding.EncodeToString(buf.Bytes()),
 	}, err
 }
 

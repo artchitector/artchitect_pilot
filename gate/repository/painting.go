@@ -17,7 +17,7 @@ func NewPaintingRepository(db *gorm.DB) *PaintingRepository {
 
 func (pr *PaintingRepository) GetLastPainting(ctx context.Context) (model.Painting, bool, error) {
 	painting := model.Painting{}
-	err := pr.db.Last(&painting).Error
+	err := pr.db.Preload("Spell").Last(&painting).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return painting, false, nil
 	} else if err != nil {
@@ -29,7 +29,7 @@ func (pr *PaintingRepository) GetLastPainting(ctx context.Context) (model.Painti
 
 func (pr *PaintingRepository) GetPainting(ctx context.Context, ID uint) (model.Painting, bool, error) {
 	painting := model.Painting{}
-	err := pr.db.Where("id = ?", ID).Last(&painting).Error
+	err := pr.db.Preload("Spell").Where("id = ?", ID).Last(&painting).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return painting, false, nil
 	} else if err != nil {

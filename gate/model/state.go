@@ -22,12 +22,14 @@ type State struct {
 type LastPainting struct {
 	ID      uint
 	Caption string
+	Spell   Spell
 }
 
 type LastDecision struct {
-	Result float64
-	Cdate  time.Time
-	Image  string
+	ID        uint
+	Result    float64
+	CreatedAt time.Time
+	Image     string
 }
 
 type CurrentState struct {
