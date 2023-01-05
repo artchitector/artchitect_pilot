@@ -9,5 +9,6 @@ const (
 
 	ArtifactContentTypeJpeg = "image/jpeg"
 
-	MaxSeed = uint64(10000000000)
+	//MaxSeed = uint64(10000000000)
+	MaxSeed = uint64(4294967295)
 )

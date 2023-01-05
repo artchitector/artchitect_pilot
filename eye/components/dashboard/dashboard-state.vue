@@ -44,7 +44,7 @@
       <!-- empty line -->
       <tr>
         <td></td>
-        <td></td>rrrrrrrrrrrrrrrrrr
+        <td></td>
       </tr>
       <tr>
         <th colspan="2" class="has-text-centered is-selected">

@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"github.com/artchitector/artchitect.git/soul/model"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"image/jpeg"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type paintingRepository interface {
@@ -25,7 +27,11 @@ func NewArtist(artistURL string, paintingRepository paintingRepository) *Artist 
 }
 
 func (a *Artist) GetPainting(ctx context.Context, spell model.Spell) (model.Painting, error) {
-	response, err := http.PostForm(a.artistURL+"/painting", url.Values{
+	client := http.Client{
+		Timeout: time.Second * 90,
+	}
+	log.Info().Msgf("Start get painting process from artist. Idea: %s, tags: %s, seed: %d", spell.Idea, spell.Tags, spell.Seed)
+	response, err := client.PostForm(a.artistURL+"/painting", url.Values{
 		"idea": {spell.Idea},
 		"tags": {spell.Tags},
 		"seed": {fmt.Sprintf("%d", spell.Seed)},
@@ -49,5 +55,6 @@ func (a *Artist) GetPainting(ctx context.Context, spell model.Spell) (model.Pain
 		Image: buf.Bytes(),
 	}
 	painting, err = a.paintingRepository.SavePainting(ctx, painting)
+	log.Info().Msgf("Received and saved painting from artist: id=%d", painting.ID)
 	return painting, err
 }
