@@ -17,15 +17,12 @@ export default {
   position: relative;
 }
 .image-container p {
-  visibility: hidden;
+  visibility: visible;
   position: absolute;
   margin: auto;
   word-break: break-all;
   background-color: rgba(0, 0, 0, 0.6);
   padding: 5px;
-}
-.image-container:hover p {
-  visibility: visible;
 }
 .image-container p.tags {
   bottom: 30px;
