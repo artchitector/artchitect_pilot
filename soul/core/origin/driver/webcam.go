@@ -3,6 +3,7 @@ package driver
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
 	"github.com/artchitector/artchitect.git/soul/model"
 	"github.com/nfnt/resize"
 	"github.com/pkg/errors"
@@ -10,6 +11,7 @@ import (
 	"image"
 	"image/color"
 	"image/jpeg"
+	"image/png"
 	"math"
 	"math/bits"
 	"net/http"
@@ -32,7 +34,7 @@ type decisionRepository interface {
 	SaveDecision(ctx context.Context, decision model.Decision) (model.Decision, error)
 }
 
-func (w *WebcamDriver) GetValue(ctx context.Context) (float64, error) {
+func (w *WebcamDriver) GetValue(ctx context.Context, strategy string) (float64, error) {
 	response, err := http.Get(w.originUrl)
 	if err != nil {
 		return 0.0, errors.Wrapf(err, "failed to get %s", w.originUrl)
@@ -40,16 +42,55 @@ func (w *WebcamDriver) GetValue(ctx context.Context) (float64, error) {
 	defer response.Body.Close()
 
 	img, err := jpeg.Decode(response.Body)
-	//jpeg.Decode()
 	if err != nil {
 		return 0.0, errors.Wrap(err, "failed to decode image from response.Body")
 	}
 
-	return w.imageToNumber(ctx, img)
+	return w.imageToNumber(ctx, img, strategy)
 }
 
-func (w *WebcamDriver) imageToNumber(ctx context.Context, img image.Image) (float64, error) {
-	img = resize.Resize(4, 2, img, resize.Lanczos3)
+func (w *WebcamDriver) imageToNumber(ctx context.Context, originalImg image.Image, strategy string) (float64, error) {
+	var result float64
+	var err error
+	if strategy == model.StrategyHash {
+		result, err = w.imageToNumberHash(ctx, originalImg)
+	} else if strategy == model.StrategyScale {
+		result, err = w.imageToNumberScale(ctx, originalImg)
+	} else {
+		return 0.0, errors.Errorf("[webcam] wrong strategy")
+	}
+	if err != nil {
+		return 0.0, errors.Wrapf(err, "failed to imageToNumber with strategy %s", strategy)
+	}
+	go func() {
+		img := resize.Resize(4, 2, originalImg, resize.Lanczos3)
+		if err := w.saveDecision(ctx, img, result); err != nil {
+			log.Error().Err(err).Msg("[webcam] failed to save decision")
+		}
+	}()
+	return result, nil
+}
+
+func (w *WebcamDriver) imageToNumberHash(ctx context.Context, originalImg image.Image) (float64, error) {
+	buf := new(bytes.Buffer)
+	if err := png.Encode(buf, originalImg); err != nil {
+		return 0.0, errors.Wrap(err, "failed to encode png to bytes")
+	}
+
+	hash := md5.Sum(buf.Bytes())
+
+	var result uint64
+	for _, b := range hash[:8] {
+		result = (result << 8) | uint64(b)
+	}
+
+	flResult := float64(result) / float64(math.MaxUint64)
+	log.Debug().Msgf("[webcam][imageToNumberHash] generated number: %d. Meaning: %.12f", result, flResult)
+	return flResult, nil
+}
+
+func (w *WebcamDriver) imageToNumberScale(ctx context.Context, originalImg image.Image) (float64, error) {
+	img := resize.Resize(4, 2, originalImg, resize.Lanczos3)
 
 	size := img.Bounds().Size()
 	bts := make([]uint8, 0, size.X*size.Y)
@@ -67,19 +108,9 @@ func (w *WebcamDriver) imageToNumber(ctx context.Context, img image.Image) (floa
 		}
 	}
 
-	// another strategy of random generation. I don't know, what is best.
-	//result := uint64(0)
-	//for idx, bt := range bts {
-	//	// each 8bit number reverts. this hack gives more "random" results.
-	//	mask := uint64(bits.Reverse8(bt))
-	//	// integers shifted into it's place in 64-bit map
-	//	maskShifted := mask << ((len(bts) - 1 - idx) * 8)
-	//	// result is a combination of 8 bitmasks (size of 8bit), reversed and shifted.
-	//	result = result | maskShifted
-	//}
-
 	result := uint64(0)
 	for idx, bt := range bts {
+		// yes/no decision make strategy
 		mask := uint64(bt)
 		// integers shifted into it's place in 64-bit map
 		maskShifted := mask << ((len(bts) - 1 - idx) * 8)
@@ -90,12 +121,7 @@ func (w *WebcamDriver) imageToNumber(ctx context.Context, img image.Image) (floa
 	}
 
 	flResult := float64(result) / float64(math.MaxUint64)
-	log.Info().Msgf("[webcam] generated number: %d. Meaning: %f", result, flResult)
-	go func() {
-		if err := w.saveDecision(ctx, img, flResult); err != nil {
-			log.Error().Err(err).Msg("[webcam] failed to save decision")
-		}
-	}()
+	log.Debug().Msgf("[webcam] generated number: %d. Meaning: %.12f", result, flResult)
 	return flResult, nil
 }
 
@@ -111,7 +137,7 @@ func (w *WebcamDriver) saveDecision(ctx context.Context, img image.Image, result
 	}); err != nil {
 		return errors.Wrapf(err, "failed to save decision with result=%f", result)
 	} else {
-		log.Info().Msgf("[webcam] save decision id=%d with result=%f", decision.ID, decision.Output)
+		log.Debug().Msgf("[webcam][imageToNumberScale] save decision id=%d with result=%f", decision.ID, decision.Output)
 	}
 
 	return nil

@@ -20,6 +20,7 @@ import (
 
 func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "2006-01-02T15:04:05"})
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
 	res := resources.InitResources()
 	log.Info().Msg("service soul started")
@@ -45,17 +46,25 @@ func main() {
 	artist := artistService.NewArtist(res.GetEnv().ArtistURL, paintingRepo)
 
 	state := stateService.NewState(stateRepository)
+
+	if !res.GetEnv().Enabled {
+		log.Info().Msg("[main] Soul service is not enabled")
+		return
+	}
+
+	// state saving (in DB) process
 	go func() {
 		if err := state.Run(ctx); err != nil {
 			log.Fatal().Err(err).Send()
 		}
 	}()
 
+	// main loop to make artworks
 	for {
 		select {
 		case <-ctx.Done():
 			break
-		case <-time.Tick(time.Second * 120):
+		case <-time.Tick(time.Second * 10):
 			state.SetState(ctx, model.StateMakingSpell)
 			log.Info().Msgf("[main] start main loop")
 			spell, err := speller.MakeSpell(ctx)

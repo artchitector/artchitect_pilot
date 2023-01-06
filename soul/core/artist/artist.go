@@ -30,9 +30,8 @@ func (a *Artist) GetPainting(ctx context.Context, spell model.Spell) (model.Pain
 	client := http.Client{
 		Timeout: time.Second * 90,
 	}
-	log.Info().Msgf("Start get painting process from artist. Idea: %s, tags: %s, seed: %d", spell.Idea, spell.Tags, spell.Seed)
+	log.Info().Msgf("Start get painting process from artist. tags: %s, seed: %d", spell.Tags, spell.Seed)
 	response, err := client.PostForm(a.artistURL+"/painting", url.Values{
-		"idea": {spell.Idea},
 		"tags": {spell.Tags},
 		"seed": {fmt.Sprintf("%d", spell.Seed)},
 	})
