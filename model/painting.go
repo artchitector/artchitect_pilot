@@ -10,5 +10,5 @@ type Painting struct {
 	gorm.Model
 	SpellID uint64
 	Spell   Spell
-	Image   sql.RawBytes
+	Image   sql.RawBytes `json:"-"`
 }
