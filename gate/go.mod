@@ -1,4 +1,4 @@
-module github.com/artchitector/artchitect.git/gate
+module github.com/artchitector/artchitect/gate
 
 go 1.19
 
