@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/artchitector/artchitect.git/gate/model"
+	"github.com/artchitector/artchitect.git/model"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"net/http"

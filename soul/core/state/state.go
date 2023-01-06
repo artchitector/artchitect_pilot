@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	model2 "github.com/artchitector/artchitect.git/model"
 	"github.com/artchitector/artchitect.git/soul/model"
 	"github.com/rs/zerolog/log"
 	"sync"
@@ -15,7 +16,7 @@ type State struct {
 }
 
 func NewState(stateRepository stateRepository) *State {
-	return &State{stateRepository, sync.Mutex{}, model.StateNotWorking}
+	return &State{stateRepository, sync.Mutex{}, model2.StateNotWorking}
 }
 
 type stateRepository interface {

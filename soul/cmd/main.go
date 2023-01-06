@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
+	"github.com/artchitector/artchitect.git/model"
 	artistService "github.com/artchitector/artchitect.git/soul/core/artist"
 	originService "github.com/artchitector/artchitect.git/soul/core/origin"
 	"github.com/artchitector/artchitect.git/soul/core/origin/driver"
 	spellerService "github.com/artchitector/artchitect.git/soul/core/speller"
 	stateService "github.com/artchitector/artchitect.git/soul/core/state"
-	"github.com/artchitector/artchitect.git/soul/model"
 	"github.com/artchitector/artchitect.git/soul/repository"
 	"github.com/artchitector/artchitect.git/soul/resources"
 	"github.com/rs/zerolog"

@@ -5,14 +5,6 @@ import (
 	"time"
 )
 
-const (
-	StateError          = "error"
-	StateNotWorking     = "not_working"
-	StateMakingSpell    = "making_spell"
-	StateMakingArtifact = "making_artifact"
-	StateMakingRest     = "making_rest"
-)
-
 // State - Current system state
 type State struct {
 	gorm.Model

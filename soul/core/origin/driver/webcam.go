@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
+	model2 "github.com/artchitector/artchitect.git/model"
 	"github.com/artchitector/artchitect.git/soul/model"
 	"github.com/nfnt/resize"
 	"github.com/pkg/errors"
@@ -34,7 +35,7 @@ type decisionRepository interface {
 	SaveDecision(ctx context.Context, decision model.Decision) (model.Decision, error)
 }
 
-func (w *WebcamDriver) GetValue(ctx context.Context, strategy string) (float64, error) {
+func (w *WebcamDriver) GetValue(ctx context.Context, strategy string, saveDecision bool) (float64, error) {
 	response, err := http.Get(w.originUrl)
 	if err != nil {
 		return 0.0, errors.Wrapf(err, "failed to get %s", w.originUrl)
@@ -46,15 +47,24 @@ func (w *WebcamDriver) GetValue(ctx context.Context, strategy string) (float64, 
 		return 0.0, errors.Wrap(err, "failed to decode image from response.Body")
 	}
 
-	return w.imageToNumber(ctx, img, strategy)
+	result, err := w.imageToNumber(ctx, img, strategy)
+	if saveDecision {
+		go func() {
+			img := resize.Resize(4, 2, img, resize.Lanczos3)
+			if err := w.saveDecision(ctx, img, result); err != nil {
+				log.Error().Err(err).Msg("[webcam] failed to save decision")
+			}
+		}()
+	}
+	return result, err
 }
 
 func (w *WebcamDriver) imageToNumber(ctx context.Context, originalImg image.Image, strategy string) (float64, error) {
 	var result float64
 	var err error
-	if strategy == model.StrategyHash {
+	if strategy == model2.StrategyHash {
 		result, err = w.imageToNumberHash(ctx, originalImg)
-	} else if strategy == model.StrategyScale {
+	} else if strategy == model2.StrategyScale {
 		result, err = w.imageToNumberScale(ctx, originalImg)
 	} else {
 		return 0.0, errors.Errorf("[webcam] wrong strategy")
@@ -62,12 +72,7 @@ func (w *WebcamDriver) imageToNumber(ctx context.Context, originalImg image.Imag
 	if err != nil {
 		return 0.0, errors.Wrapf(err, "failed to imageToNumber with strategy %s", strategy)
 	}
-	go func() {
-		img := resize.Resize(4, 2, originalImg, resize.Lanczos3)
-		if err := w.saveDecision(ctx, img, result); err != nil {
-			log.Error().Err(err).Msg("[webcam] failed to save decision")
-		}
-	}()
+
 	return result, nil
 }
 
@@ -133,7 +138,7 @@ func (w *WebcamDriver) saveDecision(ctx context.Context, img image.Image, result
 	if decision, err := w.decisionRepository.SaveDecision(ctx, model.Decision{
 		Output:              result,
 		Artifact:            buf.Bytes(),
-		ArtifactContentType: model.ArtifactContentTypeJpeg,
+		ArtifactContentType: model2.ArtifactContentTypeJpeg,
 	}); err != nil {
 		return errors.Wrapf(err, "failed to save decision with result=%f", result)
 	} else {

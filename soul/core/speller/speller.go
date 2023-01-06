@@ -2,10 +2,10 @@ package speller
 
 import (
 	"context"
+	model2 "github.com/artchitector/artchitect.git/model"
 	"github.com/artchitector/artchitect.git/soul/model"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"gopkg.in/yaml.v3"
 	"os"
 	"strings"
 )
@@ -17,7 +17,7 @@ type spellRepository interface {
 }
 
 type origin interface {
-	Select(ctx context.Context, totalVariants uint64) (uint64, error)
+	Select(ctx context.Context, totalVariants uint64, saveDecision bool) (uint64, error)
 }
 
 /*
@@ -47,7 +47,7 @@ func (s *Speller) MakeSpell(ctx context.Context) (model.Spell, error) {
 }
 
 func (s *Speller) generateSpell(ctx context.Context) (model.Spell, error) {
-	selection, err := s.origin.Select(ctx, model.MaxSeed)
+	selection, err := s.origin.Select(ctx, model2.MaxSeed, true)
 	if err != nil {
 		return model.Spell{}, errors.Wrap(err, "[speller] failed to get selection")
 	}
@@ -67,7 +67,7 @@ func (s *Speller) generateTags(ctx context.Context) ([]string, error) {
 		return []string{}, errors.Wrap(err, "failed to get Dictionary")
 	}
 
-	tagsToTake, err := s.origin.Select(ctx, MaxTags)
+	tagsToTake, err := s.origin.Select(ctx, MaxTags, false)
 	tags := make([]string, 0, tagsToTake)
 	if err != nil {
 		return []string{}, errors.Wrap(err, "[speller][generateTags] failed get tagsToTake")
@@ -75,7 +75,7 @@ func (s *Speller) generateTags(ctx context.Context) ([]string, error) {
 
 	allowedTagsLen := uint64(len(dictionary))
 	for i := uint64(0); i < tagsToTake; i++ {
-		tag, err := s.origin.Select(ctx, allowedTagsLen)
+		tag, err := s.origin.Select(ctx, allowedTagsLen, false)
 		if err != nil {
 			return []string{}, errors.Wrap(err, "[speller][generateTags] failed get tag number")
 		}

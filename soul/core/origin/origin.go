@@ -2,7 +2,7 @@ package origin
 
 import (
 	"context"
-	"github.com/artchitector/artchitect.git/soul/model"
+	"github.com/artchitector/artchitect.git/model"
 	"github.com/pkg/errors"
 	"math"
 )
@@ -21,11 +21,11 @@ func NewOrigin(provider Driver) *Origin {
 // Driver is randomNumberGetter interface. We can take new random value with GetValue method. Min and Max made to understand whole scale.
 type Driver interface {
 	// GetValue returns float64 from 0 to 1
-	GetValue(ctx context.Context, strategy string) (float64, error)
+	GetValue(ctx context.Context, strategy string, saveDecision bool) (float64, error)
 }
 
 func (o *Origin) RawValue(ctx context.Context) (float64, error) {
-	val, err := o.provider.GetValue(ctx, model.StrategyHash)
+	val, err := o.provider.GetValue(ctx, model.StrategyHash, false)
 	if err != nil {
 		return 0.0, errors.Wrap(err, "[origin] failed to getValue from provider")
 	}
@@ -33,15 +33,15 @@ func (o *Origin) RawValue(ctx context.Context) (float64, error) {
 }
 
 func (o *Origin) YesNo(ctx context.Context) (bool, error) {
-	val, err := o.provider.GetValue(ctx, model.StrategyScale)
+	val, err := o.provider.GetValue(ctx, model.StrategyScale, false)
 	if err != nil {
 		return false, errors.Wrap(err, "[origin] failed to getValue from provider")
 	}
 	return val > 0.5, nil
 }
 
-func (o *Origin) Select(ctx context.Context, totalVariants uint64) (uint64, error) {
-	val, err := o.provider.GetValue(ctx, model.StrategyHash)
+func (o *Origin) Select(ctx context.Context, totalVariants uint64, saveDecision bool) (uint64, error) {
+	val, err := o.provider.GetValue(ctx, model.StrategyHash, saveDecision)
 	if err != nil {
 		return 0, errors.Wrap(err, "[origin] failed to getValue from provider")
 	}

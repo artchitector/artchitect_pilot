@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"github.com/artchitector/artchitect.git/gate/model"
+	model2 "github.com/artchitector/artchitect.git/model"
 )
 
 type paintingRepository interface {
@@ -15,7 +16,7 @@ type decisionRepository interface {
 }
 
 type stateRepository interface {
-	GetLastState(ctx context.Context) (model.State, error)
+	GetLastState(ctx context.Context) (model2.State, error)
 }
 
 type spellRepository interface {
