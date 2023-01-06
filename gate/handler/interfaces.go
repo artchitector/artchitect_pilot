@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	"github.com/artchitector/artchitect.git/model"
+	"github.com/artchitector/artchitect/model"
 )
 
 type retriever interface {

@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"github.com/artchitector/artchitect.git/gate/model"
-	model2 "github.com/artchitector/artchitect.git/model"
+	"github.com/artchitector/artchitect/model"
+	model2 "github.com/artchitector/artchitect/model"
 	"github.com/nfnt/resize"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
@@ -40,7 +40,7 @@ func (r *Retriever) CollectState(ctx context.Context) (model2.CurrentState, erro
 	}
 	var lastPaintingState model2.LastPainting
 	if found {
-		lastPaintingState = model2.LastPainting{ID: lastPainting.ID, Caption: lastPainting.Spell.Idea, Spell: lastPainting.Spell}
+		lastPaintingState = model2.LastPainting{ID: lastPainting.ID, Spell: lastPainting.Spell}
 	} else {
 		lastPaintingState = model2.LastPainting{ID: 0}
 	}

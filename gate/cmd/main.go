@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"github.com/artchitector/artchitect.git/gate/handler"
-	"github.com/artchitector/artchitect.git/gate/repository"
-	"github.com/artchitector/artchitect.git/gate/resources"
-	"github.com/artchitector/artchitect.git/gate/state"
+	"github.com/artchitector/artchitect/gate/handler"
+	"github.com/artchitector/artchitect/gate/repository"
+	"github.com/artchitector/artchitect/gate/resources"
+	"github.com/artchitector/artchitect/gate/state"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"

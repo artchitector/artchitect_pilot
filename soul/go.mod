@@ -9,11 +9,11 @@ require (
 	github.com/rs/zerolog v1.28.0
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/postgres v1.4.5
-	gorm.io/gorm v1.24.2
-	github.com/artchitector/artchitect/model latest
+	gorm.io/gorm v1.24.3
 )
 
 require (
+	github.com/artchitector/artchitect/model v0.0.0-20230106173218-d6f998a32b38 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.13.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect

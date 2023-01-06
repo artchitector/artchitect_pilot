@@ -10,10 +10,11 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.28.0
 	gorm.io/driver/postgres v1.4.5
-	gorm.io/gorm v1.24.2
+	gorm.io/gorm v1.24.3
 )
 
 require (
+	github.com/artchitector/artchitect/model v0.0.0-20230106173218-d6f998a32b38 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect

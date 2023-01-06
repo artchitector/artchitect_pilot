@@ -2,7 +2,7 @@ package origin
 
 import (
 	"context"
-	"github.com/artchitector/artchitect.git/model"
+	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
 	"math"
 )

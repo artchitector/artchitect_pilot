@@ -4,8 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
-	model2 "github.com/artchitector/artchitect.git/model"
-	"github.com/artchitector/artchitect.git/soul/model"
+	model "github.com/artchitector/artchitect/model"
 	"github.com/nfnt/resize"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -62,9 +61,9 @@ func (w *WebcamDriver) GetValue(ctx context.Context, strategy string, saveDecisi
 func (w *WebcamDriver) imageToNumber(ctx context.Context, originalImg image.Image, strategy string) (float64, error) {
 	var result float64
 	var err error
-	if strategy == model2.StrategyHash {
+	if strategy == model.StrategyHash {
 		result, err = w.imageToNumberHash(ctx, originalImg)
-	} else if strategy == model2.StrategyScale {
+	} else if strategy == model.StrategyScale {
 		result, err = w.imageToNumberScale(ctx, originalImg)
 	} else {
 		return 0.0, errors.Errorf("[webcam] wrong strategy")
@@ -138,7 +137,7 @@ func (w *WebcamDriver) saveDecision(ctx context.Context, img image.Image, result
 	if decision, err := w.decisionRepository.SaveDecision(ctx, model.Decision{
 		Output:              result,
 		Artifact:            buf.Bytes(),
-		ArtifactContentType: model2.ArtifactContentTypeJpeg,
+		ArtifactContentType: model.ArtifactContentTypeJpeg,
 	}); err != nil {
 		return errors.Wrapf(err, "failed to save decision with result=%f", result)
 	} else {

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/artchitector/artchitect.git/soul/model"
+	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )

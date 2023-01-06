@@ -2,10 +2,10 @@ package speller
 
 import (
 	"context"
-	model2 "github.com/artchitector/artchitect.git/model"
-	"github.com/artchitector/artchitect.git/soul/model"
+	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"gopkg.in/yaml.v3"
 	"os"
 	"strings"
 )
@@ -47,7 +47,7 @@ func (s *Speller) MakeSpell(ctx context.Context) (model.Spell, error) {
 }
 
 func (s *Speller) generateSpell(ctx context.Context) (model.Spell, error) {
-	selection, err := s.origin.Select(ctx, model2.MaxSeed, true)
+	selection, err := s.origin.Select(ctx, model.MaxSeed, true)
 	if err != nil {
 		return model.Spell{}, errors.Wrap(err, "[speller] failed to get selection")
 	}

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/artchitector/artchitect.git/model"
+	"github.com/artchitector/artchitect/model"
 	"gorm.io/gorm"
 )
 

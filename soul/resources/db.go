@@ -1,7 +1,7 @@
 package resources
 
 import (
-	"github.com/artchitector/artchitect.git/soul/model"
+	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"gorm.io/driver/postgres"

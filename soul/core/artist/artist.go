@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/artchitector/artchitect.git/soul/model"
+	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"image/jpeg"

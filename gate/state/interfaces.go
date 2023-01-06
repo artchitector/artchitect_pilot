@@ -2,8 +2,8 @@ package state
 
 import (
 	"context"
-	"github.com/artchitector/artchitect.git/gate/model"
-	model2 "github.com/artchitector/artchitect.git/model"
+	"github.com/artchitector/artchitect/model"
+	model2 "github.com/artchitector/artchitect/model"
 )
 
 type paintingRepository interface {
