@@ -28,6 +28,7 @@ type CurrentState struct {
 	CurrentState                   State
 	CurrentStateDefaultTimeSeconds uint64
 	LastPainting                   *LastPainting
+	LastNPaintings                 []Painting
 	LastDecision                   *LastDecision
 	LastSpell                      *Spell
 }

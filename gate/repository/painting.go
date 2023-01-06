@@ -27,6 +27,12 @@ func (pr *PaintingRepository) GetLastPainting(ctx context.Context) (model.Painti
 	}
 }
 
+func (pr *PaintingRepository) GetLastPaintings(ctx context.Context, count uint64) ([]model.Painting, error) {
+	paintings := make([]model.Painting, 0, count)
+	err := pr.db.Preload("Spell").Limit(int(count)).Order("id desc").Find(&paintings).Error
+	return paintings, err
+}
+
 func (pr *PaintingRepository) GetPainting(ctx context.Context, ID uint) (model.Painting, bool, error) {
 	painting := model.Painting{}
 	err := pr.db.Preload("Spell").Where("id = ?", ID).Last(&painting).Error

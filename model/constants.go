@@ -18,5 +18,5 @@ const (
 	StateNotWorking     = "not_working"
 	StateMakingSpell    = "making_spell"
 	StateMakingArtifact = "making_artifact"
-	StateMakingRest     = "enjoying the result"
+	StateMakingRest     = "enjoying_the_result"
 )

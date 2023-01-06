@@ -8,6 +8,7 @@ import (
 
 type paintingRepository interface {
 	GetLastPainting(ctx context.Context) (model.Painting, bool, error)
+	GetLastPaintings(ctx context.Context, count uint64) ([]model.Painting, error)
 	GetPainting(ctx context.Context, ID uint) (model.Painting, bool, error)
 }
 
