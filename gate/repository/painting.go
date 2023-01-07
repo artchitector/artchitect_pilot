@@ -44,3 +44,22 @@ func (pr *PaintingRepository) GetPainting(ctx context.Context, ID uint) (model.P
 		return painting, true, nil
 	}
 }
+func (pr *PaintingRepository) GetPaintingsRange(ctx context.Context, from uint, to uint) ([]model.Painting, error) {
+	var min, max uint
+	var order string
+	if from < to {
+		min = from
+		max = to
+		order = "id asc"
+	} else {
+		min = to
+		max = from
+		order = "id desc"
+	}
+	if max-min > 100 {
+		return []model.Painting{}, errors.Errorf("maximum 100 paintings allowed")
+	}
+	paintings := make([]model.Painting, 0, max-min)
+	err := pr.db.Preload("Spell").Where("id between ? and ?", min, max).Order(order).Find(&paintings).Error
+	return paintings, err
+}

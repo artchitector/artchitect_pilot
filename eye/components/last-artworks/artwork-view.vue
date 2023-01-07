@@ -15,6 +15,7 @@ export default {
 <style>
 .image-container {
   position: relative;
+  min-height: 431px;
 }
 .image-container p {
   visibility: visible;

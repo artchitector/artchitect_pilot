@@ -12,4 +12,5 @@ type retriever interface {
 
 type paintingsRepository interface {
 	GetLastPaintings(ctx context.Context, count uint64) ([]model.Painting, error)
+	GetPaintingsRange(ctx context.Context, from uint, to uint) ([]model.Painting, error)
 }

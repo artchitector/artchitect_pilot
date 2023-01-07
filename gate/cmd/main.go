@@ -49,6 +49,7 @@ func main() {
 		retriever,
 	)
 	lastPaintingsHandler := handler.NewLastPaintingsHandler(paintingRepository)
+	listHandler := handler.NewListHandler(paintingRepository)
 
 	go func() {
 		r := gin.Default()
@@ -64,7 +65,8 @@ func main() {
 		})
 		r.GET("/state", stateHandler.Handle)
 		r.GET("/painting/:id", paintingHandler.Handle)
-		r.GET("last_paintings/:quantity", lastPaintingsHandler.Handle)
+		r.GET("/last_paintings/:quantity", lastPaintingsHandler.Handle)
+		r.GET("/list/:from/:to", listHandler.Handle)
 
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()

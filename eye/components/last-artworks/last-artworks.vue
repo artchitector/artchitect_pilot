@@ -10,11 +10,19 @@
     <pre v-if="jsonVisible">{{this.artworks}}</pre>
     <h3 class="is-size-4 has-text-centered mb-4" v-if="count > 0">last {{count}} artworks</h3>
     <h3 class="is-size-4"v-else>last artworks</h3>
-    <div class="notification is-danger" v-if="$fetchState.error">
+    <div class="notification is-primary" v-if="!artworks.length && $fetchState.pending">
+      loading...
+    </div>
+    <div class="notification is-danger" v-else-if="$fetchState.error">
       {{ $fetchState.error.message }}
     </div>
 
     <div v-else>
+      <div class="has-text-centered mb-4">
+          <nuxt-link v-for="page in pages" :to="page.url">
+            {{page.caption}}
+          </nuxt-link>
+      </div>
       <div class="columns" v-for="line in lines">
         <div class="column" v-for="artwork in line">
           <artwork-view :artwork="artwork"/>
@@ -37,7 +45,7 @@ export default {
     }
   },
   async fetch() {
-    this.artworks = await this.$axios.$get('/last_paintings/20')
+    this.artworks = await this.$axios.$get('/last_paintings/100')
   },
   mounted() {
     this.updater = setInterval(() => {this.$fetch()}, 5000)
@@ -46,6 +54,23 @@ export default {
     clearInterval(this.updater)
   },
   computed: {
+    pages() {
+      if (!this.artworks.length) {
+        return []
+      }
+      const lastId = this.artworks[0].ID
+      const pages = []
+      let from, to
+      for (let i = 0; i < 5; i++) {
+        from = lastId - (i * 100) - 1
+        to = from - 100
+        pages.push({
+          "url": `/list?from=${from}&to=${to}`,
+          "caption": `(page${i+1}:${from}-${to})`
+        })
+      }
+      return pages
+    },
     count() {
       return this.artworks.length
     },
