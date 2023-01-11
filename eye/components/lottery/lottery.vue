@@ -5,15 +5,15 @@
     <p>Collection period: {{ lottery.CollectPeriodStart }} - {{ lottery.CollectPeriodEnd }}</p>
     <div v-if="lottery.Winners && lottery.Winners.length" class="has-text-centered box has-background-link-light">
       Winners<br/>
-      <a :href="`/api/painting/${cardID}`" v-for="cardID in lottery.Winners" target="_blank">
+      <NuxtLink :to="`/card/${cardID}`" v-for="cardID in lottery.Winners" target="_blank">
         <img class="mini-preview ml-1 mr-1" :src="`/api/painting/${cardID}`"/>
-      </a>
+      </NuxtLink>
     </div>
     <div v-if="isRunning && ours.length" v-for="tour in tours" class="has-text-centered box">
       tour <b>{{ tour.Name }}</b> winners (id={{ tour.ID }}) <br/>
-      <a :href="`/api/painting/${cardID}`" v-for="cardID in tour.Winners" target="_blank">
+      <NuxtLink :to="`/card/${cardID}`" v-for="cardID in tour.Winners" target="_blank">
         <img class="micro-preview ml-1 mr-1" :src="`/api/painting/${cardID}`"/>
-      </a>
+      </NuxtLink>
     </div>
   </div>
 </template>

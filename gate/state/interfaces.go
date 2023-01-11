@@ -7,9 +7,9 @@ import (
 )
 
 type paintingRepository interface {
-	GetLastPainting(ctx context.Context) (model.Card, bool, error)
-	GetLastPaintings(ctx context.Context, count uint64) ([]model.Card, error)
-	GetPainting(ctx context.Context, ID uint) (model.Card, bool, error)
+	GetLastCard(ctx context.Context) (model.Card, bool, error)
+	GetLastCards(ctx context.Context, count uint64) ([]model.Card, error)
+	GetCard(ctx context.Context, ID uint) (model.Card, bool, error)
 }
 
 type decisionRepository interface {

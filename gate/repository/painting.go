@@ -7,15 +7,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type PaintingRepository struct {
+type CardRepository struct {
 	db *gorm.DB
 }
 
-func NewPaintingRepository(db *gorm.DB) *PaintingRepository {
-	return &PaintingRepository{db}
+func NewCardRepository(db *gorm.DB) *CardRepository {
+	return &CardRepository{db}
 }
 
-func (pr *PaintingRepository) GetLastPainting(ctx context.Context) (model.Card, bool, error) {
+func (pr *CardRepository) GetLastCard(ctx context.Context) (model.Card, bool, error) {
 	painting := model.Card{}
 	err := pr.db.Preload("Spell").Last(&painting).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
@@ -27,13 +27,13 @@ func (pr *PaintingRepository) GetLastPainting(ctx context.Context) (model.Card, 
 	}
 }
 
-func (pr *PaintingRepository) GetLastPaintings(ctx context.Context, count uint64) ([]model.Card, error) {
+func (pr *CardRepository) GetLastCards(ctx context.Context, count uint64) ([]model.Card, error) {
 	paintings := make([]model.Card, 0, count)
 	err := pr.db.Preload("Spell").Limit(int(count)).Order("id desc").Find(&paintings).Error
 	return paintings, err
 }
 
-func (pr *PaintingRepository) GetPainting(ctx context.Context, ID uint) (model.Card, bool, error) {
+func (pr *CardRepository) GetCard(ctx context.Context, ID uint) (model.Card, bool, error) {
 	painting := model.Card{}
 	err := pr.db.Preload("Spell").Where("id = ?", ID).Last(&painting).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
@@ -44,7 +44,7 @@ func (pr *PaintingRepository) GetPainting(ctx context.Context, ID uint) (model.C
 		return painting, true, nil
 	}
 }
-func (pr *PaintingRepository) GetPaintingsRange(ctx context.Context, from uint, to uint) ([]model.Card, error) {
+func (pr *CardRepository) GetCardsRange(ctx context.Context, from uint, to uint) ([]model.Card, error) {
 	var min, max uint
 	var order string
 	if from < to {

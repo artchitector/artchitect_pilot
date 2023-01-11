@@ -10,10 +10,10 @@ type LastPaintingsRequest struct {
 }
 
 type LastPaintingsHandler struct {
-	paintingsRepository paintingsRepository
+	paintingsRepository cardsRepository
 }
 
-func NewLastPaintingsHandler(paintingsRepository paintingsRepository) *LastPaintingsHandler {
+func NewLastPaintingsHandler(paintingsRepository cardsRepository) *LastPaintingsHandler {
 	return &LastPaintingsHandler{paintingsRepository: paintingsRepository}
 }
 
@@ -28,7 +28,7 @@ func (lph *LastPaintingsHandler) Handle(c *gin.Context) {
 		c.JSON(http.StatusBadGateway, "quantity required less than 100")
 		return
 	}
-	paintings, err := lph.paintingsRepository.GetLastPaintings(c, uint64(quantity))
+	paintings, err := lph.paintingsRepository.GetLastCards(c, uint64(quantity))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "internal error")
 		return

@@ -29,14 +29,14 @@ func main() {
 		cancel()
 	}()
 
-	paintingRepository := repository.NewPaintingRepository(res.GetDB())
+	cardsRepository := repository.NewCardRepository(res.GetDB())
 	decisionRepository := repository.NewDecisionRepository(res.GetDB())
 	stateRepository := repository.NewStateRepository(res.GetDB())
 	spellRepository := repository.NewSpellRepository(res.GetDB())
 	lotteryRepository := repository.NewLotteryRepository(res.GetDB())
 	retriever := state.NewRetriever(
 		log.With().Str("service", "retriever").Logger(),
-		paintingRepository,
+		cardsRepository,
 		decisionRepository,
 		stateRepository,
 		spellRepository,
@@ -49,12 +49,13 @@ func main() {
 		log.With().Str("service", "painting_handler").Logger(),
 		retriever,
 	)
-	lastPaintingsHandler := handler.NewLastPaintingsHandler(paintingRepository)
-	listHandler := handler.NewListHandler(paintingRepository)
+	lastPaintingsHandler := handler.NewLastPaintingsHandler(cardsRepository)
+	listHandler := handler.NewListHandler(cardsRepository)
 	lotteryHandler := handler.NewLotteryHandler(
 		log.With().Str("service", "lottery_handler").Logger(),
 		lotteryRepository,
 	)
+	cardHandler := handler.NewCardHandler(cardsRepository)
 
 	go func() {
 		r := gin.Default()
@@ -73,6 +74,7 @@ func main() {
 		r.GET("/last_paintings/:quantity", lastPaintingsHandler.Handle)
 		r.GET("/list/:from/:to", listHandler.Handle)
 		r.GET("/lottery/:lastN", lotteryHandler.HandleLast)
+		r.GET("/card/:id", cardHandler.Handle)
 
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()

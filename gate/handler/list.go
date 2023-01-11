@@ -11,11 +11,11 @@ type ListRequest struct {
 }
 
 type ListHandler struct {
-	paintingsRepository paintingsRepository
+	cardsRepository cardsRepository
 }
 
-func NewListHandler(paintingsRepository paintingsRepository) *ListHandler {
-	return &ListHandler{paintingsRepository}
+func NewListHandler(cardsRepository cardsRepository) *ListHandler {
+	return &ListHandler{cardsRepository}
 }
 
 func (lh *ListHandler) Handle(c *gin.Context) {
@@ -27,7 +27,7 @@ func (lh *ListHandler) Handle(c *gin.Context) {
 	if request.From < 0 || request.To < 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "from or to must be positive numbers"})
 	}
-	paintings, err := lh.paintingsRepository.GetPaintingsRange(c, request.From, request.To)
+	paintings, err := lh.cardsRepository.GetCardsRange(c, request.From, request.To)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 	}

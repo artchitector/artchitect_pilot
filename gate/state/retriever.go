@@ -33,7 +33,7 @@ func NewRetriever(
 }
 
 func (r *Retriever) CollectState(ctx context.Context) (model.CurrentState, error) {
-	lastPainting, found, err := r.paintingRepository.GetLastPainting(ctx)
+	lastPainting, found, err := r.paintingRepository.GetLastCard(ctx)
 	if err != nil {
 		return model.CurrentState{}, errors.Wrap(err, "failed to get last painting from repo")
 	}
@@ -52,7 +52,7 @@ func (r *Retriever) CollectState(ctx context.Context) (model.CurrentState, error
 	lastSpell, err := r.GetLastSpell(ctx)
 	state, seconds := r.GetLastState(ctx)
 	var lastNPaintingsAmount uint64 = 22 // (3*7+1)
-	lastNPaintings, err := r.paintingRepository.GetLastPaintings(ctx, lastNPaintingsAmount)
+	lastNPaintings, err := r.paintingRepository.GetLastCards(ctx, lastNPaintingsAmount)
 	if err != nil {
 		return model.CurrentState{}, errors.Wrapf(err, "failed to get last %d paintings", lastNPaintingsAmount)
 	}
@@ -67,7 +67,7 @@ func (r *Retriever) CollectState(ctx context.Context) (model.CurrentState, error
 }
 
 func (r *Retriever) GetPaintingData(ctx context.Context, paintingID uint) ([]byte, error) {
-	painting, found, err := r.paintingRepository.GetPainting(ctx, paintingID)
+	painting, found, err := r.paintingRepository.GetCard(ctx, paintingID)
 	if err != nil {
 		return []byte{}, errors.Wrapf(err, "failed to get painting id=%d", paintingID)
 	} else if !found {
