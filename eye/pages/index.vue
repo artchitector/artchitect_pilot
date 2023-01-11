@@ -30,7 +30,7 @@
   </div>
 </template>
 <script>
-import LastArtworks from '@/components/last-artworks/last-artworks.vue'
+import LastArtworks from '@/components/last-cards/last-artworks.vue'
 
 export default {
   components: {LastArtworks},

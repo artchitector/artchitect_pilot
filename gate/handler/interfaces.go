@@ -19,4 +19,5 @@ type cardsRepository interface {
 type lotteryRepository interface {
 	GetActiveLottery(ctx context.Context) (model.Lottery, error)
 	GetLastLotteries(ctx context.Context, lastN uint) ([]model.Lottery, error)
+	GetSelection(ctx context.Context) ([]uint64, error)
 }

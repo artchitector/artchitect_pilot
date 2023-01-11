@@ -56,6 +56,7 @@ func main() {
 		lotteryRepository,
 	)
 	cardHandler := handler.NewCardHandler(cardsRepository)
+	selectionHander := handler.NewSelectionHandler(lotteryRepository)
 
 	go func() {
 		r := gin.Default()
@@ -75,6 +76,7 @@ func main() {
 		r.GET("/list/:from/:to", listHandler.Handle)
 		r.GET("/lottery/:lastN", lotteryHandler.HandleLast)
 		r.GET("/card/:id", cardHandler.Handle)
+		r.GET("/selection", selectionHander.Handle)
 
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()

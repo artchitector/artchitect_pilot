@@ -21,7 +21,7 @@
   </section>
 </template>
 <script>
-import ArtworkView from "@/components/last-artworks/artwork-view";
+import ArtworkView from "@/components/last-cards/artwork-view";
 export default {
   components: {ArtworkView},
   data () {

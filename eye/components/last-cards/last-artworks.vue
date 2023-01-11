@@ -7,10 +7,10 @@
       </div>
     </div>
 
-    <pre v-if="jsonVisible">{{this.artworks}}</pre>
-    <h3 class="is-size-4 has-text-centered mb-4" v-if="count > 0">last {{count}} artworks</h3>
-    <h3 class="is-size-4"v-else>last artworks</h3>
-    <div class="notification is-primary" v-if="!artworks.length && $fetchState.pending">
+    <pre v-if="jsonVisible">{{cards}}</pre>
+    <h3 class="is-size-4 has-text-centered mb-4" v-if="count > 0">last {{count}} cards</h3>
+    <h3 class="is-size-4"v-else>last cards</h3>
+    <div class="notification is-primary" v-if="!cards.length && $fetchState.pending">
       loading...
     </div>
     <div class="notification is-danger" v-else-if="$fetchState.error">
@@ -32,20 +32,20 @@
   </div>
 </template>
 <script>
-import ArtworkView from "~/components/last-artworks/artwork-view.vue";
+import ArtworkView from "~/components/last-cards/artwork-view.vue";
 
 export default {
   components: {ArtworkView},
   data() {
     return {
-      artworks: [],
+      cards: [],
       error: null,
       updater: null,
       jsonVisible: false
     }
   },
   async fetch() {
-    this.artworks = await this.$axios.$get('/last_paintings/100')
+    this.cards = await this.$axios.$get('/last_paintings/100')
   },
   mounted() {
     this.updater = setInterval(() => {this.$fetch()}, 5000)
@@ -55,10 +55,10 @@ export default {
   },
   computed: {
     pages() {
-      if (!this.artworks.length) {
+      if (!this.cards.length) {
         return []
       }
-      const lastId = this.artworks[0].ID
+      const lastId = this.cards[0].ID
       const pages = []
       let from, to
       for (let i = 0; i < 5; i++) {
@@ -72,17 +72,17 @@ export default {
       return pages
     },
     count() {
-      return this.artworks.length
+      return this.cards.length
     },
     lines() {
-      if (!this.artworks.length) {
+      if (!this.cards.length) {
         return [];
       }
       const lines = [
         []
       ]
-      for (let i = 0; i < this.artworks.length; i++) {
-        const artwork = this.artworks[i]
+      for (let i = 0; i < this.cards.length; i++) {
+        const artwork = this.cards[i]
         let lastLine = lines.length - 1
         if (lines[lastLine].length < 3) {
           lines[lastLine].push(artwork)
