@@ -5,10 +5,13 @@ import (
 	"gorm.io/gorm"
 )
 
-// TODO Need to move postgres-model to separate package and use it in both services
-type Painting struct {
+type Card struct {
 	gorm.Model
 	SpellID uint64
 	Spell   Spell
 	Image   sql.RawBytes `json:"-"`
+}
+
+func (c Card) TableName() string {
+	return "paintings"
 }

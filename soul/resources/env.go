@@ -7,10 +7,11 @@ import (
 )
 
 type Env struct {
-	Enabled   bool
-	DbDSN     string
-	OriginURL string
-	ArtistURL string
+	LotteryEnabled      bool
+	CardCreationEnabled bool
+	DbDSN               string
+	OriginURL           string
+	ArtistURL           string
 }
 
 func initEnv() *Env {
@@ -19,11 +20,13 @@ func initEnv() *Env {
 		log.Fatal().Err(err).Send()
 	}
 
-	enabledFlag := os.Getenv("ENABLED")
+	lotteryEnabledFlag := os.Getenv("LOTTERY_ENABLED")
+	cardsEnabledFlag := os.Getenv("CARDS_CREATION_ENABLED")
 	return &Env{
-		Enabled:   enabledFlag == "true" || enabledFlag == "TRUE",
-		DbDSN:     os.Getenv("DB_DSN"),
-		OriginURL: os.Getenv("ORIGIN_URL"),
-		ArtistURL: os.Getenv("ARTIST_URL"),
+		LotteryEnabled:      lotteryEnabledFlag == "true" || lotteryEnabledFlag == "TRUE",
+		CardCreationEnabled: cardsEnabledFlag == "true" || cardsEnabledFlag == "TRUE",
+		DbDSN:               os.Getenv("DB_DSN"),
+		OriginURL:           os.Getenv("ORIGIN_URL"),
+		ArtistURL:           os.Getenv("ARTIST_URL"),
 	}
 }

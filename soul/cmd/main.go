@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/artchitector/artchitect/model"
+	artchitectService "github.com/artchitector/artchitect/soul/core/artchitect"
 	artistService "github.com/artchitector/artchitect/soul/core/artist"
+	"github.com/artchitector/artchitect/soul/core/lottery"
 	originService "github.com/artchitector/artchitect/soul/core/origin"
 	"github.com/artchitector/artchitect/soul/core/origin/driver"
 	spellerService "github.com/artchitector/artchitect/soul/core/speller"
@@ -34,23 +35,26 @@ func main() {
 		cancel()
 	}()
 
-	paintingRepo := repository.NewPaintingRepository(res.GetDB())
+	paintingRepo := repository.NewCardRepository(res.GetDB())
 	decisionRepo := repository.NewDecisionRepository(res.GetDB())
 	stateRepository := repository.NewStateRepository(res.GetDB())
 	spellRepository := repository.NewSpellRepository(res.GetDB())
+	lotteryRepository := repository.NewLotteryRepository(res.GetDB())
 
 	//randProvider := driver.NewRandDriver()
 	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL, decisionRepo)
 	origin := originService.NewOrigin(webcamDriver)
 	speller := spellerService.NewSpeller(spellRepository, origin)
 	artist := artistService.NewArtist(res.GetEnv().ArtistURL, paintingRepo)
+	runner := lottery.NewRunner(lotteryRepository, paintingRepo, origin)
 
 	state := stateService.NewState(stateRepository)
 
-	if !res.GetEnv().Enabled {
-		log.Info().Msg("[main] Soul service is not enabled")
-		return
+	artchitectConfig := artchitectService.Config{
+		CardsCreationEnabled: res.GetEnv().CardCreationEnabled,
+		LotteryEnabled:       res.GetEnv().LotteryEnabled,
 	}
+	artchitect := artchitectService.NewArtchitect(artchitectConfig, state, speller, artist, lotteryRepository, runner)
 
 	// state saving (in DB) process
 	go func() {
@@ -64,23 +68,11 @@ func main() {
 		select {
 		case <-ctx.Done():
 			break
-		case <-time.Tick(time.Second * 10):
-			state.SetState(ctx, model.StateMakingSpell)
-			log.Info().Msgf("[main] start main loop")
-			spell, err := speller.MakeSpell(ctx)
+		case <-time.Tick(time.Second * 1):
+			err := artchitect.Run(ctx)
 			if err != nil {
-				log.Error().Err(err).Send()
-				continue
+				log.Error().Err(err).Msgf("failed to run artchitect task")
 			}
-			log.Info().Msgf("[main] spell: %+v", spell)
-			state.SetState(ctx, model.StateMakingArtifact)
-			painting, err := artist.GetPainting(ctx, spell)
-			if err != nil {
-				log.Error().Err(err).Send()
-				continue
-			}
-			log.Info().Msgf("[main] painting: id=%d, spell_id=%d", painting.ID, spell.ID)
-			state.SetState(ctx, model.StateMakingRest)
 		}
 	}
 

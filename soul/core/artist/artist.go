@@ -14,7 +14,7 @@ import (
 )
 
 type paintingRepository interface {
-	SavePainting(ctx context.Context, painting model.Painting) (model.Painting, error)
+	SavePainting(ctx context.Context, painting model.Card) (model.Card, error)
 }
 
 type Artist struct {
@@ -26,7 +26,7 @@ func NewArtist(artistURL string, paintingRepository paintingRepository) *Artist 
 	return &Artist{artistURL, paintingRepository}
 }
 
-func (a *Artist) GetPainting(ctx context.Context, spell model.Spell) (model.Painting, error) {
+func (a *Artist) GetPainting(ctx context.Context, spell model.Spell) (model.Card, error) {
 	client := http.Client{
 		Timeout: time.Second * 90,
 	}
@@ -36,20 +36,20 @@ func (a *Artist) GetPainting(ctx context.Context, spell model.Spell) (model.Pain
 		"seed": {fmt.Sprintf("%d", spell.Seed)},
 	})
 	if err != nil {
-		return model.Painting{}, errors.Wrap(err, "failed to make request to artist")
+		return model.Card{}, errors.Wrap(err, "failed to make request to artist")
 	}
 	defer response.Body.Close()
 
 	img, err := jpeg.Decode(response.Body)
 	if err != nil {
-		return model.Painting{}, errors.Wrap(err, "failed to decode jpeg from response")
+		return model.Card{}, errors.Wrap(err, "failed to decode jpeg from response")
 	}
 
 	buf := new(bytes.Buffer)
 	if err := jpeg.Encode(buf, img, nil); err != nil {
-		return model.Painting{}, errors.Wrap(err, "failed to encode image into jpeg data")
+		return model.Card{}, errors.Wrap(err, "failed to encode image into jpeg data")
 	}
-	painting := model.Painting{
+	painting := model.Card{
 		Spell: spell,
 		Image: buf.Bytes(),
 	}

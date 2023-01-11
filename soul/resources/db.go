@@ -22,7 +22,7 @@ func initDB(env *Env) *gorm.DB {
 			SlowThreshold:             time.Second,
 			Colorful:                  true,
 			IgnoreRecordNotFoundError: true,
-			LogLevel:                  logger.Warn,
+			LogLevel:                  logger.Warn, // logger.Info
 		},
 	)
 	db, err := gorm.Open(pg, &gorm.Config{
@@ -32,7 +32,14 @@ func initDB(env *Env) *gorm.DB {
 		log.Fatal().Err(errors.Wrap(err, "failed to connect to postgres"))
 	}
 
-	if err := db.AutoMigrate(&model.Painting{}, &model.Decision{}, &model.State{}, &model.Spell{}); err != nil {
+	if err := db.AutoMigrate(
+		&model.Card{},
+		&model.Decision{},
+		&model.State{},
+		&model.Spell{},
+		&model.Lottery{},
+		&model.LotteryTour{},
+	); err != nil {
 		log.Fatal().Err(errors.Wrap(err, "failed to auto-migrate"))
 	}
 

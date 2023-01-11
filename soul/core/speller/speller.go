@@ -21,7 +21,7 @@ type origin interface {
 }
 
 /*
-Speller generates Spell (combination of painting caption, tags and seed). Painting will be created with this Spell.
+Speller generates Spell (combination of painting caption, tags and seed). Card will be created with this Spell.
 */
 type Speller struct {
 	spellRepository spellRepository
