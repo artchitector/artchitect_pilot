@@ -27,15 +27,5 @@ export default {
 }
 </script>
 <style>
-section {
-  background-color: #fcfbf2;
-  padding: 30px;
-  margin: 15px 0 15px 0;
-}
 
-section.red-section {
-  background-color: #eee;
-  color: #8b0000;
-  border: 1px solid darkred;
-}
 </style>
