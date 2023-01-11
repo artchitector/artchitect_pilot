@@ -11,6 +11,11 @@ type retriever interface {
 }
 
 type paintingsRepository interface {
-	GetLastPaintings(ctx context.Context, count uint64) ([]model.Painting, error)
-	GetPaintingsRange(ctx context.Context, from uint, to uint) ([]model.Painting, error)
+	GetLastPaintings(ctx context.Context, count uint64) ([]model.Card, error)
+	GetPaintingsRange(ctx context.Context, from uint, to uint) ([]model.Card, error)
+}
+
+type lotteryRepository interface {
+	GetActiveLottery(ctx context.Context) (model.Lottery, error)
+	GetLastLotteries(ctx context.Context, lastN uint) ([]model.Lottery, error)
 }

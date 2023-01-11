@@ -22,6 +22,7 @@ type speller interface {
 
 type lotteryRepository interface {
 	GetActiveLottery(ctx context.Context) (model.Lottery, error)
+	InitDailyLottery(ctx context.Context) error
 }
 
 type lotteryRunner interface {
@@ -53,7 +54,10 @@ func NewArtchitect(
 	return &Artchitect{config, state, speller, artist, lotteryRepository, lotteryRunner}
 }
 
-func (a *Artchitect) Run(ctx context.Context) error {
+func (a *Artchitect) Run(ctx context.Context, tick int) error {
+	if tick%10 == 0 {
+		return a.maintenance(ctx)
+	}
 	if a.config.LotteryEnabled {
 		activeLottery, err := a.lotteryRepository.GetActiveLottery(ctx)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -90,4 +94,12 @@ func (a *Artchitect) runCardCreation(ctx context.Context) error {
 
 func (a *Artchitect) runLottery(ctx context.Context, lottery model.Lottery) error {
 	return a.lotteryRunner.RunLottery(ctx, lottery)
+}
+
+func (a *Artchitect) maintenance(ctx context.Context) error {
+	log.Info().Msgf("[artchitect] going to maintenance")
+	if err := a.lotteryRepository.InitDailyLottery(ctx); err != nil {
+		return errors.Wrap(err, "[artchitect] failed InitDailyLottery from maintenance")
+	}
+	return nil
 }

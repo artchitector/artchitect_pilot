@@ -16,6 +16,7 @@ type lotteryRepository interface {
 	SaveTourWinners(ctx context.Context, tour model.LotteryTour, winners []uint64) (model.LotteryTour, error)
 	FinishTour(ctx context.Context, tour model.LotteryTour) (model.LotteryTour, error)
 	GetNextAvailableTour(ctx context.Context, lotteryID uint) (model.LotteryTour, error)
+	GetLastTour(ctx context.Context, lottery model.Lottery) (model.LotteryTour, error)
 }
 
 type cardsRepository interface {
@@ -84,10 +85,12 @@ func (lr *Runner) getNextTour(ctx context.Context, lottery model.Lottery) (model
 
 func (lr *Runner) finishLottery(ctx context.Context, lottery model.Lottery) (model.Lottery, error) {
 	log.Info().Msgf("finish lottery id=%d", lottery.ID)
-	lastTour := lottery.Tours[len(lottery.Tours)-1]
+	lastTour, err := lr.lotteryRepository.GetLastTour(ctx, lottery)
+	if err != nil {
+		return model.Lottery{}, errors.Wrapf(err, "failed to get last tour for lottery(id=%d)", lottery.ID)
+	}
 	lottery.WinnersJSON = lastTour.WinnersJSON
 	lottery.State = model.LotteryStateFinished
-	var err error
 	lottery, err = lr.lotteryRepository.SaveLottery(ctx, lottery)
 	if err != nil {
 		return model.Lottery{}, errors.Wrapf(err, "failed to finish lottery")

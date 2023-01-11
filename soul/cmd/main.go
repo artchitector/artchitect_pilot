@@ -64,12 +64,14 @@ func main() {
 	}()
 
 	// main loop to make artworks
+	var tick int
 	for {
 		select {
 		case <-ctx.Done():
 			break
 		case <-time.Tick(time.Second * 1):
-			err := artchitect.Run(ctx)
+			tick += 1
+			err := artchitect.Run(ctx, tick)
 			if err != nil {
 				log.Error().Err(err).Msgf("failed to run artchitect task")
 			}

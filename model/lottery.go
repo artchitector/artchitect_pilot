@@ -12,6 +12,8 @@ const (
 	LotteryStateRunning  = "running"
 	LotteryStateFinished = "finished"
 
+	LotteryTypeDaily = "daily"
+
 	LotteryTour100 = "best-100"
 	LotteryTour10  = "best-10"
 	LotteryTour1   = "best-1"
@@ -21,6 +23,8 @@ const (
 // For example, at the end of every day artchitect selects ten best works.
 type Lottery struct {
 	gorm.Model
+	Name               string
+	Type               string
 	StartTime          time.Time
 	CollectPeriodStart time.Time
 	CollectPeriodEnd   time.Time
@@ -36,7 +40,8 @@ type LotteryTour struct {
 	LotteryID   uint64
 	Name        string
 	MaxWinners  uint64
-	WinnersJSON string // as a JSON-string [123,546,232,543]
+	WinnersJSON string   `json:"-"` // as a JSON-string [123,546,232,543]
+	Winners     []uint64 `gorm:"-"`
 	State       string
 }
 

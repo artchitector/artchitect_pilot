@@ -15,8 +15,8 @@ func NewPaintingRepository(db *gorm.DB) *PaintingRepository {
 	return &PaintingRepository{db}
 }
 
-func (pr *PaintingRepository) GetLastPainting(ctx context.Context) (model.Painting, bool, error) {
-	painting := model.Painting{}
+func (pr *PaintingRepository) GetLastPainting(ctx context.Context) (model.Card, bool, error) {
+	painting := model.Card{}
 	err := pr.db.Preload("Spell").Last(&painting).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return painting, false, nil
@@ -27,14 +27,14 @@ func (pr *PaintingRepository) GetLastPainting(ctx context.Context) (model.Painti
 	}
 }
 
-func (pr *PaintingRepository) GetLastPaintings(ctx context.Context, count uint64) ([]model.Painting, error) {
-	paintings := make([]model.Painting, 0, count)
+func (pr *PaintingRepository) GetLastPaintings(ctx context.Context, count uint64) ([]model.Card, error) {
+	paintings := make([]model.Card, 0, count)
 	err := pr.db.Preload("Spell").Limit(int(count)).Order("id desc").Find(&paintings).Error
 	return paintings, err
 }
 
-func (pr *PaintingRepository) GetPainting(ctx context.Context, ID uint) (model.Painting, bool, error) {
-	painting := model.Painting{}
+func (pr *PaintingRepository) GetPainting(ctx context.Context, ID uint) (model.Card, bool, error) {
+	painting := model.Card{}
 	err := pr.db.Preload("Spell").Where("id = ?", ID).Last(&painting).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return painting, false, nil
@@ -44,7 +44,7 @@ func (pr *PaintingRepository) GetPainting(ctx context.Context, ID uint) (model.P
 		return painting, true, nil
 	}
 }
-func (pr *PaintingRepository) GetPaintingsRange(ctx context.Context, from uint, to uint) ([]model.Painting, error) {
+func (pr *PaintingRepository) GetPaintingsRange(ctx context.Context, from uint, to uint) ([]model.Card, error) {
 	var min, max uint
 	var order string
 	if from < to {
@@ -57,9 +57,9 @@ func (pr *PaintingRepository) GetPaintingsRange(ctx context.Context, from uint, 
 		order = "id desc"
 	}
 	if max-min > 100 {
-		return []model.Painting{}, errors.Errorf("maximum 100 paintings allowed")
+		return []model.Card{}, errors.Errorf("maximum 100 paintings allowed")
 	}
-	paintings := make([]model.Painting, 0, max-min)
+	paintings := make([]model.Card, 0, max-min)
 	err := pr.db.Preload("Spell").Where("id between ? and ?", min, max).Order(order).Find(&paintings).Error
 	return paintings, err
 }
