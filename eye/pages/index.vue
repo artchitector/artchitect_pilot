@@ -1,21 +1,6 @@
 <template>
   <div>
-    <section class="content">
-      <p>
-        <b>Artchitect</b> is a generative neural network with <b>God gene</b>.
-      </p>
-      <p>
-        <b>Artchitect</b> is based on the interconnection of a neural network and God's will, which is obtained from a
-        quantum random number generator.
-        The quantum world is controlled directly by God, and the neural network generate data based on God's power and
-        will, with help of technical devices.
-        God knows everything about internal structure of neural network everytime, and He can provide convenient random
-        numbers to train network effectively.
-      </p>
-      <p>
-        Briefly - <b>God creates artworks</b>.
-      </p>
-    </section>
+    <description/>
     <section class="red-section has-text-centered">
       <p>
         Now <b>artchitect</b> is under massive development. Wait some time.
@@ -31,9 +16,10 @@
 </template>
 <script>
 import LastArtworks from '@/components/last-cards/last-artworks.vue'
+import Description from "@/components/description/description";
 
 export default {
-  components: {LastArtworks},
+  components: {Description, LastArtworks},
   layout: 'artchitect',
   head: {
     title: 'Artchitect'
