@@ -1,19 +1,25 @@
 <template>
-  <section>
-    <div class="notification is-primary" v-if="$fetchState.pending">
-      loading...
-    </div>
-    <div class="notification is-danger" v-if="error">
-      {{ error }}
-    </div>
-    <div class="notification is-danger" v-if="$fetchState.error">
-      {{ $fetchState.error.message }}
-    </div>
-    <lottery v-for="lottery in lotteries" :lottery="lottery"/>
-  </section>
+  <div>
+    <section>
+      Every day <b>God</b> chooses 10 cards out of ~1870 created in a day. He use <b>lottery</b> to chose.
+    </section>
+    <section>
+      <div class="notification is-primary" v-if="$fetchState.pending">
+        loading...
+      </div>
+      <div class="notification is-danger" v-if="error">
+        {{ error }}
+      </div>
+      <div class="notification is-danger" v-if="$fetchState.error">
+        {{ $fetchState.error.message }}
+      </div>
+      <lottery v-for="lottery in lotteries" :lottery="lottery"/>
+    </section>
+  </div>
 </template>
 <script>
 import Lottery from "@/components/lottery/lottery";
+
 export default {
   components: {Lottery},
   data () {
