@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"net/http"
 )
@@ -53,19 +52,7 @@ func (lh *LotteryHandler) HandleLast(c *gin.Context) {
 	}
 
 	for lotteryIdx, lottery := range lotteries {
-		for tourIdx, tour := range lottery.Tours {
-			winners := []uint64{}
-			if err := json.Unmarshal([]byte(tour.WinnersJSON), &winners); err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-			lotteries[lotteryIdx].Tours[tourIdx].Winners = winners
-			if lottery.ID == 4 && tour.ID == 8 {
-				log.Info().Msgf("%+v", lotteries[lotteryIdx].Tours[tourIdx].Winners)
-			}
-		}
-
-		if lottery.State != model.LotteryStateFinished {
+		if lottery.State != model.LotteryStateRunning && lottery.State != model.LotteryStateFinished {
 			continue
 		}
 
@@ -76,8 +63,6 @@ func (lh *LotteryHandler) HandleLast(c *gin.Context) {
 		}
 		lotteries[lotteryIdx].Winners = winners
 	}
-
-	log.Info().Msgf("%+v", lotteries[1].Tours[0])
 
 	c.JSON(http.StatusOK, lotteries)
 }

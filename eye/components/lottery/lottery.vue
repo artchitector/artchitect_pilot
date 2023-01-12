@@ -4,33 +4,16 @@
     <p>Start time: {{ lottery.StartTime }}</p>
     <p>Collection period: {{ lottery.CollectPeriodStart }} - {{ lottery.CollectPeriodEnd }}</p>
     <div v-if="lottery.Winners && lottery.Winners.length" class="has-text-centered box has-background-link-light">
-      Winners<br/>
+      Winners ({{lottery.Winners.length}} of total {{lottery.TotalWinners}})<br/>
       <NuxtLink :to="`/card/${cardID}`" v-for="cardID in lottery.Winners" target="_blank">
         <img class="mini-preview ml-1 mr-1" :src="`/api/painting/${cardID}`"/>
-      </NuxtLink>
-    </div>
-    <div v-if="isRunning && ours.length" v-for="tour in tours" class="has-text-centered box">
-      tour <b>{{ tour.Name }}</b> winners (id={{ tour.ID }}) <br/>
-      <NuxtLink :to="`/card/${cardID}`" v-for="cardID in tour.Winners" target="_blank">
-        <img class="micro-preview ml-1 mr-1" :src="`/api/painting/${cardID}`"/>
       </NuxtLink>
     </div>
   </div>
 </template>
 <script>
 export default {
-  props: ['lottery'],
-  computed: {
-    isRunning() {
-      return this.lottery.State == 'running'
-    },
-    tours () {
-      if (!this.lottery || !this.lottery.Tours || !this.lottery.Tours.length) {
-        return []
-      }
-      return this.lottery.Tours.slice()
-    }
-  }
+  props: ['lottery']
 }
 </script>
 <style>

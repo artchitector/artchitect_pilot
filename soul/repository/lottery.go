@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
@@ -22,7 +21,6 @@ func NewLotteryRepository(db *gorm.DB) *LotteryRepository {
 func (lr *LotteryRepository) GetActiveLottery(ctx context.Context) (model.Lottery, error) {
 	var lottery model.Lottery
 	err := lr.db.
-		Preload("Tours").
 		Where("(state = ? or state = ?)", model.LotteryStateWaiting, model.LotteryStateRunning).
 		Where("start_time < current_timestamp").
 		First(&lottery).
@@ -33,57 +31,15 @@ func (lr *LotteryRepository) GetActiveLottery(ctx context.Context) (model.Lotter
 func (lr *LotteryRepository) GetLottery(ctx context.Context, ID uint64) (model.Lottery, error) {
 	var lottery model.Lottery
 	err := lr.db.
-		Preload("Tours").
 		Where("id = ?", ID).
 		First(&lottery).
 		Error
 	return lottery, err
 }
 
-func (lr *LotteryRepository) StartLottery(ctx context.Context, lottery model.Lottery) (model.Lottery, error) {
-	//change lottery status
-	lottery.State = model.LotteryStateRunning
-	lottery.WinnersJSON = "[]"
-	if err := lr.db.Save(&lottery).Error; err != nil {
-		return lottery, err
-	}
-	// reset tours
-	if err := lr.db.
-		Model(&model.LotteryTour{}).
-		Where("lottery_id = ?", lottery.ID).
-		Update("state", model.LotteryStateWaiting).
-		Error; err != nil {
-		return lottery, errors.Wrap(err, "failed to reset tours states")
-	}
-
-	return lr.GetLottery(ctx, uint64(lottery.ID))
-}
-
-func (lr *LotteryRepository) SaveTourWinners(ctx context.Context, tour model.LotteryTour, winners []uint64) (model.LotteryTour, error) {
-	bytes, err := json.Marshal(winners)
-	if err != nil {
-		return model.LotteryTour{}, err
-	}
-	tour.WinnersJSON = string(bytes)
-	err = lr.db.Save(&tour).Error
-	return tour, err
-}
-
-func (lr *LotteryRepository) FinishTour(ctx context.Context, tour model.LotteryTour) (model.LotteryTour, error) {
-	tour.State = model.LotteryStateFinished
-	err := lr.db.Save(&tour).Error
-	return tour, err
-}
-
 func (lr *LotteryRepository) SaveLottery(ctx context.Context, lottery model.Lottery) (model.Lottery, error) {
 	err := lr.db.Save(&lottery).Error
 	return lottery, err
-}
-
-func (lr *LotteryRepository) GetNextAvailableTour(ctx context.Context, lotteryID uint) (model.LotteryTour, error) {
-	var tour model.LotteryTour
-	err := lr.db.Where("lottery_id = ? and state in ?", lotteryID, []string{model.LotteryStateWaiting, model.LotteryStateRunning}).Order("id asc").First(&tour).Error
-	return tour, err
 }
 
 func (lr *LotteryRepository) InitDailyLottery(ctx context.Context) error {
@@ -110,20 +66,6 @@ func (lr *LotteryRepository) InitDailyLottery(ctx context.Context) error {
 
 	lotteryStartTime := collectPeriodEnd.Add(time.Second * 2)
 
-	tours := []model.LotteryTour{
-		{
-			Name:        "most100",
-			MaxWinners:  100,
-			WinnersJSON: "[]",
-			State:       model.LotteryStateWaiting,
-		},
-		{
-			Name:        "top10",
-			MaxWinners:  10,
-			WinnersJSON: "[]",
-			State:       model.LotteryStateWaiting,
-		},
-	}
 	lottery := model.Lottery{
 		Name:               fmt.Sprintf("daily lottery %s", collectPeriodStart.Format("2 Jan 2006")),
 		Type:               model.LotteryTypeDaily,
@@ -131,8 +73,7 @@ func (lr *LotteryRepository) InitDailyLottery(ctx context.Context) error {
 		CollectPeriodStart: collectPeriodStart,
 		CollectPeriodEnd:   collectPeriodEnd,
 		State:              model.LotteryStateWaiting,
-		TotalWinners:       10,
-		Tours:              tours,
+		TotalWinners:       0,
 		WinnersJSON:        "[]",
 	}
 
@@ -142,10 +83,4 @@ func (lr *LotteryRepository) InitDailyLottery(ctx context.Context) error {
 		log.Info().Msgf("[lottery] generated new daily lottery (id=%d)", lottery.ID)
 		return nil
 	}
-}
-
-func (lr *LotteryRepository) GetLastTour(ctx context.Context, lottery model.Lottery) (model.LotteryTour, error) {
-	var tour model.LotteryTour
-	err := lr.db.Where("lottery_id = ?", lottery.ID).Order("id desc").First(&tour).Error
-	return tour, err
 }

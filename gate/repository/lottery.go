@@ -19,7 +19,6 @@ func NewLotteryRepository(db *gorm.DB) *LotteryRepository {
 func (lr *LotteryRepository) GetActiveLottery(ctx context.Context) (model.Lottery, error) {
 	var lottery model.Lottery
 	err := lr.db.
-		Preload("Tours").
 		Where("(state = ? or state = ?)", model.LotteryStateRunning, model.LotteryStateFinished).
 		Where("start_time < current_timestamp").
 		First(&lottery).
@@ -30,7 +29,6 @@ func (lr *LotteryRepository) GetActiveLottery(ctx context.Context) (model.Lotter
 func (lr *LotteryRepository) GetLastLotteries(ctx context.Context, lastN uint) ([]model.Lottery, error) {
 	var lotteries []model.Lottery
 	err := lr.db.
-		Preload("Tours").
 		Order("id desc").Limit(int(lastN)).Find(&lotteries).
 		Error
 	return lotteries, err

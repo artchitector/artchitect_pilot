@@ -1,7 +1,7 @@
 <template>
   <div>
     <section>
-      Every day <b>God</b> chooses 10 cards out of ~1870 created in a day. He use <b>lottery</b> to chose.
+      Every day <b>God</b> chooses 10-100 cards out of ~1870 created in a day. He use <b>lottery</b> to chose.
     </section>
     <section>
       <div class="notification is-primary" v-if="$fetchState.pending">
