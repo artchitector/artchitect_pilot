@@ -55,6 +55,7 @@ func NewArtchitect(
 }
 
 func (a *Artchitect) Run(ctx context.Context, tick int) error {
+	log.Info().Msgf("[artchitect] tick=%d", tick)
 	if tick%10 == 0 {
 		return a.maintenance(ctx)
 	}
