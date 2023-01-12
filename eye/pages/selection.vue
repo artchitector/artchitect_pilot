@@ -1,7 +1,7 @@
 <template>
   <div>
     <section>
-      Every day <b>God</b> chooses 10 cards out of ~1870 created in a day. They go to <b>selection</b>.
+      Every day <b>God</b> chooses 10-100 cards out of ~1870 created in a day. They go to <b>selection</b>.
     </section>
     <section>
       <h1 class="is-size-3 has-text-centered mb-5">selection</h1>
