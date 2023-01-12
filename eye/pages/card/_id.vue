@@ -17,6 +17,11 @@
 </template>
 <script>
 export default {
+  head() {
+    return {
+      title: `Artchitect - card #${this.$route.params.id}`
+    }
+  },
   data () {
     return {
       card: null

@@ -20,6 +20,9 @@
 <script>
 import Lottery from "@/components/lottery/lottery";
 export default {
+  head: {
+    title: 'Artchitect - lottery'
+  },
   components: {Lottery},
   data () {
     return {

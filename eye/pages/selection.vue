@@ -23,6 +23,9 @@
 </template>
 <script>
 export default {
+  head: {
+    title: 'Artchitect - selection'
+  },
   data () {
     return {
       selection: []

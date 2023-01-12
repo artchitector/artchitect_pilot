@@ -23,6 +23,11 @@
 <script>
 import ArtworkView from "@/components/last-cards/artwork-view";
 export default {
+  head() {
+    return {
+      title: `Artchitect - page ${this.$route.query.from}-${this.$route.query.to}`
+    }
+  },
   components: {ArtworkView},
   data () {
     return {
