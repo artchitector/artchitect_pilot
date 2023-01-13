@@ -14,6 +14,7 @@ require (
 
 require (
 	github.com/artchitector/artchitect/model v0.0.0-20230106173218-d6f998a32b38 // indirect
+	github.com/go-telegram/bot v0.4.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.13.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect

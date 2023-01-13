@@ -12,6 +12,9 @@ type Env struct {
 	DbDSN               string
 	OriginURL           string
 	ArtistURL           string
+	TelegramBotToken    string
+	GifterActive        bool
+	TenMinChat          string
 }
 
 func initEnv() *Env {
@@ -28,5 +31,8 @@ func initEnv() *Env {
 		DbDSN:               os.Getenv("DB_DSN"),
 		OriginURL:           os.Getenv("ORIGIN_URL"),
 		ArtistURL:           os.Getenv("ARTIST_URL"),
+		TelegramBotToken:    os.Getenv("TELEGRAM_BOT_TOKEN"),
+		GifterActive:        os.Getenv("GIFTER_ACTIVE") == "true" || os.Getenv("GIFTER_ACTIVE") == "TRUE",
+		TenMinChat:          os.Getenv("10MIN_CHAT"),
 	}
 }

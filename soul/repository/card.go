@@ -25,3 +25,15 @@ func (pr *CardRepository) GetCardsIDsByPeriod(ctx context.Context, start time.Ti
 	err := pr.db.Model(&model.Card{}).Select("id").Where("created_at between ? and ?", start, end).Find(&ids).Error
 	return ids, err
 }
+
+func (pr *CardRepository) GetTotalCards(ctx context.Context) (uint64, error) {
+	var count uint64
+	err := pr.db.Select("count(id)").Model(&model.Card{}).Find(&count).Error
+	return count, err
+}
+
+func (pr *CardRepository) GetCardWithOffset(offset uint64) (model.Card, error) {
+	var card model.Card
+	err := pr.db.Preload("Spell").Order("id asc").Limit(1).Offset(int(offset)).Find(&card).Error
+	return card, err
+}

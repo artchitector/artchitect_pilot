@@ -12,22 +12,16 @@ import (
 	"github.com/rs/zerolog/log"
 	"os"
 	"os/signal"
-	"syscall"
 )
 
 func main() {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "2006-01-02T15:04:05"})
 
 	res := resources.InitResources()
 	log.Info().Msg("service gate started")
-
-	ctx, cancel := context.WithCancel(context.Background())
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		<-done
-		cancel()
-	}()
 
 	cardsRepository := repository.NewCardRepository(res.GetDB())
 	decisionRepository := repository.NewDecisionRepository(res.GetDB())

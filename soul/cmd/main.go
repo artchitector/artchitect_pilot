@@ -4,6 +4,7 @@ import (
 	"context"
 	artchitectService "github.com/artchitector/artchitect/soul/core/artchitect"
 	artistService "github.com/artchitector/artchitect/soul/core/artist"
+	"github.com/artchitector/artchitect/soul/core/gifter"
 	"github.com/artchitector/artchitect/soul/core/lottery"
 	originService "github.com/artchitector/artchitect/soul/core/origin"
 	"github.com/artchitector/artchitect/soul/core/origin/driver"
@@ -20,13 +21,14 @@ import (
 )
 
 func main() {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "2006-01-02T15:04:05"})
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
 	res := resources.InitResources()
 	log.Info().Msg("service soul started")
-
-	ctx, cancel := context.WithCancel(context.Background())
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -55,6 +57,7 @@ func main() {
 		LotteryEnabled:       res.GetEnv().LotteryEnabled,
 	}
 	artchitect := artchitectService.NewArtchitect(artchitectConfig, state, speller, artist, lotteryRepository, runner)
+	gift := gifter.NewGifter(paintingRepo, origin, res.GetEnv().TelegramBotToken, res.GetEnv().TenMinChat)
 
 	// state saving (in DB) process
 	go func() {
@@ -62,6 +65,14 @@ func main() {
 			log.Fatal().Err(err).Send()
 		}
 	}()
+
+	if res.GetEnv().GifterActive {
+		go func() {
+			if err := gift.Run(ctx); err != nil {
+				log.Fatal().Err(err).Send()
+			}
+		}()
+	}
 
 	// main loop to make artworks
 	var tick int
