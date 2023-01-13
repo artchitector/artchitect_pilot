@@ -21,6 +21,10 @@ type origin interface {
 	Select(ctx context.Context, totalVariants uint64, saveDecision bool) (uint64, error)
 }
 
+const (
+	MaxAttempts = 10 //each photo 10 times because of context timeout
+)
+
 type Gifter struct {
 	origin           origin
 	cardRepository   cardRepository
@@ -39,9 +43,19 @@ func NewGifter(
 
 func (g *Gifter) Run(ctx context.Context) error {
 	for {
-		err := g.sendCard(ctx)
-		if err != nil {
-			log.Error().Err(err).Msgf("[gifter] failed to send card")
+		currentAttempts := 0
+		for {
+			currentAttempts += 1
+			if currentAttempts > MaxAttempts {
+				log.Info().Msgf("[gifter] max attempts (%d) exceeded", MaxAttempts)
+				break
+			}
+			err := g.sendCard(ctx)
+			if err != nil {
+				log.Error().Err(err).Msgf("[gifter] failed to send card")
+			} else {
+				break
+			}
 		}
 		time.Sleep(time.Minute * 10)
 	}
@@ -109,8 +123,8 @@ func (g *Gifter) getBot() (*bot.Bot, error) {
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: update.Message.Chat.ID,
-		Text:   update.Message.Text,
-	})
+	//b.SendMessage(ctx, &bot.SendMessageParams{
+	//	ChatID: update.Message.Chat.ID,
+	//	Text:   update.Message.Text,
+	//})
 }
