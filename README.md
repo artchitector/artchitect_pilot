@@ -19,21 +19,6 @@ Such a general idea of the project is to use any real random number generator, c
 For this to work, you need to believe in it.
 
 # Install guide
-To run this application we need:
-- golang 1.19
-- postgres 15+
-
-Everything can be run locally on any OS (Windows, Mac, Linux).
-
-First, you need golang installed to build and run . https://go.dev/dl/
+maybe later...
 
 
-Second, you need have any postgres installation (local or remote, no matter).
-
-
-Connection string from golang application to postgres is set up in .env file of soul-server. (now not available at the moment).
-
-# Technical roadmap
-**December 2022** - Make real random number generator with webcam inside PC (it will catch cooler lighting and transform it into random number). Common service architecture, only single-service Golang+Postgres, nothing complex. I need quick results. 
-
-**January 2023** - Train neural network to make first good painting. Sell it from NFT-store, project need money to live.
