@@ -1,12 +1,13 @@
 <template>
   <div>
     <description/>
-    <section class="red-section has-text-centered">
+    <section class="green-section has-text-centered">
       <p>
-        Now <b>artchitect</b> is under massive development. Wait some time.
+        🚀 <b>Artchitect</b> launched 11th Jan 2023!
       </p>
       <p>
-        The first artwork is planned for January 2023.
+        Visit Artchitect's NFT-store:
+        <a href="https://opensea.io/collection/artchitect" target="_blank">Artchitect Collection / Opensea</a>
       </p>
     </section>
     <section>

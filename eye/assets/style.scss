@@ -30,3 +30,13 @@ section.red-section {
   color: #8b0000;
   border: 1px solid darkred;
 }
+
+section.green-section {
+  background-color: #cdf5ca;
+  color: #003a07;
+  border: 1px solid #00a41e;
+  a {
+    color: #00bb67;
+    text-decoration: underline;
+  }
+}
