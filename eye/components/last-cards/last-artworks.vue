@@ -40,18 +40,12 @@ export default {
     return {
       cards: [],
       error: null,
-      updater: null,
       jsonVisible: false
     }
   },
   async fetch() {
     this.cards = await this.$axios.$get('/last_paintings/100')
-  },
-  mounted() {
-    this.updater = setInterval(() => {this.$fetch()}, 5000)
-  },
-  beforeDestroy() {
-    clearInterval(this.updater)
+    console.log('loaded', this.cards.length)
   },
   computed: {
     pages() {
