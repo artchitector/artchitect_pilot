@@ -60,10 +60,12 @@ func (g *Gifter) sendCard(ctx context.Context) error {
 
 	text := fmt.Sprintf(
 		"Card #%d. (https://artchitect.space/card/%d)\n\n"+
+			"Created: %s\n"+
 			"Seed: %d\n"+
 			"Tags: %s",
 		card.ID,
 		card.ID,
+		card.CreatedAt.Format("2006 Jan 2 15:04"),
 		card.Spell.Seed,
 		card.Spell.Tags,
 	)
