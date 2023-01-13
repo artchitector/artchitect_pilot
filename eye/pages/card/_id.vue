@@ -10,7 +10,7 @@
       <h1 class="is-size-2 has-text-centered">Card #{{ card.ID }}</h1>
       <p>created: {{ card.CreatedAt }}</p>
       <p>spell seed={{card.Spell.Seed}}, tags=<i>{{card.Spell.Tags}}</i></p>
-      <img :src="`/api/painting/${card.ID}`"/>
+      <img :src="`/api/image/f/${card.ID}`"/>
     </div>
   </section>
 

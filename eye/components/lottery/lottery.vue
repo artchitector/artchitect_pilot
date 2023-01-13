@@ -6,7 +6,7 @@
     <div v-if="lottery.Winners && lottery.Winners.length" class="has-text-centered box has-background-link-light">
       Winners ({{lottery.Winners.length}} of total {{lottery.TotalWinners}})<br/>
       <NuxtLink :to="`/card/${cardID}`" v-for="cardID in lottery.Winners" target="_blank">
-        <img class="mini-preview ml-1 mr-1" :src="`/api/painting/${cardID}`"/>
+        <img class="mini-preview ml-1 mr-1" :src="`/api/image/xs/${cardID}`"/>
       </NuxtLink>
     </div>
   </div>

@@ -15,7 +15,7 @@
       <div class="columns" v-else v-for="line in lines">
         <div class="column" v-for="id in line">
           <NuxtLink :to="`/card/${id}`" target="_blank">
-            <img :src="`/api/painting/${id}`"/>
+            <img :src="`/api/image/s/${id}`"/>
           </NuxtLink>
         </div>
       </div>

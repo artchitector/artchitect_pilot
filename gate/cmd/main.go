@@ -45,10 +45,6 @@ func main() {
 		log.With().Str("service", "state_handler").Logger(),
 		retriever,
 	)
-	paintingHandler := handler.NewPaintingHandler(
-		log.With().Str("service", "painting_handler").Logger(),
-		retriever,
-	)
 	lastPaintingsHandler := handler.NewLastPaintingsHandler(cardsRepository)
 	listHandler := handler.NewListHandler(cardsRepository)
 	lotteryHandler := handler.NewLotteryHandler(
@@ -71,12 +67,12 @@ func main() {
 			c.JSON(200, gin.H{"message": "pong"})
 		})
 		r.GET("/state", stateHandler.Handle)
-		r.GET("/painting/:id", paintingHandler.Handle)
 		r.GET("/last_paintings/:quantity", lastPaintingsHandler.Handle)
 		r.GET("/list/:from/:to", listHandler.Handle)
 		r.GET("/lottery/:lastN", lotteryHandler.HandleLast)
 		r.GET("/card/:id", cardHandler.Handle)
 		r.GET("/selection", selectionHander.Handle)
+		r.GET("/image/:size/:id", cardHandler.HandleImage)
 
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()

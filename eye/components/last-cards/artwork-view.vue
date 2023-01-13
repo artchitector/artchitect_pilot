@@ -1,7 +1,7 @@
 <template>
   <div class="image-container">
     <NuxtLink :to="`/card/${artwork.ID}`" target="_blank">
-      <img :src="'/api/painting/' + artwork.ID"/>
+      <img :src="'/api/image/m/' + artwork.ID"/>
       <p class="is-size-7 tags">{{ artwork.Spell.Tags }}</p>
       <p class="is-size-7 info">id={{ artwork.ID }}, <b>seed: {{ artwork.Spell.Seed }}</b></p>
     </NuxtLink>
