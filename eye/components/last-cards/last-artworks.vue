@@ -1,13 +1,6 @@
 <template>
   <div>
-    <div class="is-pulled-right">
-      <a href="#" v-if="!jsonVisible" @click.prevent="jsonVisible = !jsonVisible">show json</a>
-      <div v-else>
-        <span @click.prevent="jsonVisible = !jsonVisible">hide json</span>
-      </div>
-    </div>
-
-    <pre v-if="jsonVisible">{{cards}}</pre>
+    <a id="cards"></a>
     <h3 class="is-size-4 has-text-centered mb-4" v-if="count > 0">last {{count}} cards</h3>
     <h3 class="is-size-4"v-else>last cards</h3>
     <div class="notification is-primary" v-if="!cards.length && $fetchState.pending">
@@ -39,8 +32,7 @@ export default {
   data() {
     return {
       cards: [],
-      error: null,
-      jsonVisible: false
+      error: null
     }
   },
   async fetch() {

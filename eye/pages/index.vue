@@ -1,15 +1,12 @@
 <template>
   <div>
-    <description/>
     <section class="green-section has-text-centered">
       <p>
-        🚀 <b>Artchitect</b> launched 11th Jan 2023!
-      </p>
-      <p>
-        Visit Artchitect's NFT-store:
-        <a href="https://opensea.io/collection/artchitect" target="_blank">Artchitect Collection / Opensea</a>
+        🚀 <b>Artchitect</b> launched 15th Jan 2023!<br/>
+        <a class="button is-success mt-2" href="#cards">Go to cards</a>
       </p>
     </section>
+    <description/>
     <section>
       <last-artworks/>
     </section>
