@@ -50,8 +50,9 @@ func (a *Artist) GetPainting(ctx context.Context, spell model.Spell) (model.Card
 		return model.Card{}, errors.Wrap(err, "failed to encode image into jpeg data")
 	}
 	painting := model.Card{
-		Spell: spell,
-		Image: buf.Bytes(),
+		Spell:   spell,
+		Image:   buf.Bytes(),
+		Version: spell.Version,
 	}
 	painting, err = a.paintingRepository.SavePainting(ctx, painting)
 	log.Info().Msgf("Received and saved painting from artist: id=%d", painting.ID)

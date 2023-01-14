@@ -17,6 +17,7 @@ export default {
   props: ['lottery'],
   methods: {
     formatDate(date) {
+      // TODO need make global date helper and use it everywhere
       return moment(date).format("YYYY MMM Do HH:mm:ss")
     }
   }

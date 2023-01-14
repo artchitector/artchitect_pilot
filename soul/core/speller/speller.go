@@ -47,21 +47,26 @@ func (s *Speller) MakeSpell(ctx context.Context) (model.Spell, error) {
 }
 
 func (s *Speller) generateSpell(ctx context.Context) (model.Spell, error) {
+	version, err := s.selectVersion(ctx)
+	if err != nil {
+		return model.Spell{}, errors.Wrap(err, "[speller] failed select version")
+	}
 	selection, err := s.origin.Select(ctx, model.MaxSeed, true)
 	if err != nil {
 		return model.Spell{}, errors.Wrap(err, "[speller] failed to get selection")
 	}
-	tags, err := s.generateTags(ctx)
+	tags, err := s.generateTags(ctx, version)
 	if err != nil {
 		return model.Spell{}, errors.Wrap(err, "[speller] failed generate tags")
 	}
 	return model.Spell{
-		Tags: strings.Join(tags, ","),
-		Seed: selection,
+		Tags:    strings.Join(tags, ","),
+		Seed:    selection,
+		Version: version,
 	}, nil
 }
 
-func (s *Speller) generateTags(ctx context.Context) ([]string, error) {
+func (s *Speller) generateTags(ctx context.Context, version string) ([]string, error) {
 	dictionary, err := s.getDictionary(ctx)
 	if err != nil {
 		return []string{}, errors.Wrap(err, "failed to get Dictionary")
@@ -100,4 +105,11 @@ func (s *Speller) getDictionary(ctx context.Context) ([]string, error) {
 	}
 
 	return s.dictionary, nil
+}
+
+func (s *Speller) selectVersion(ctx context.Context) (string, error) {
+	return model.Version1, nil
+	//count := len(model.AvailableVersions)
+	//idx, err := s.origin.Select(ctx, uint64(count-1), false)
+	//return model.AvailableVersions[idx], errors.Wrap(err, "[speller] failed to select version from origin")
 }

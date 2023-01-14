@@ -10,6 +10,7 @@ type Card struct {
 	SpellID uint64
 	Spell   Spell
 	Image   sql.RawBytes `json:"-"`
+	Version string       // in what environment made card (tags set, version on StableDiffusion etc.)
 }
 
 func (c Card) TableName() string {
