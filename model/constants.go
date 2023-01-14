@@ -10,7 +10,7 @@ const (
 	Version11 = "v1.1" // more tags + InvokeAI + StableDiffusion v1.5
 )
 
-var AvailableVersions = []string{Version1}
+var AvailableVersions = []string{Version1, Version11}
 
 const (
 	OriginYesNo = "yes_no" // Origin (God) answer yes or no

@@ -26,11 +26,11 @@ Speller generates Spell (combination of painting caption, tags and seed). Card w
 type Speller struct {
 	spellRepository spellRepository
 	origin          origin
-	dictionary      []string
+	dictionaries    map[string][]string
 }
 
 func NewSpeller(spellRepository spellRepository, origin origin) *Speller {
-	return &Speller{spellRepository, origin, []string{}}
+	return &Speller{spellRepository, origin, make(map[string][]string)}
 }
 
 func (s *Speller) MakeSpell(ctx context.Context) (model.Spell, error) {
@@ -67,7 +67,7 @@ func (s *Speller) generateSpell(ctx context.Context) (model.Spell, error) {
 }
 
 func (s *Speller) generateTags(ctx context.Context, version string) ([]string, error) {
-	dictionary, err := s.getDictionary(ctx)
+	dictionary, err := s.getDictionary(ctx, version)
 	if err != nil {
 		return []string{}, errors.Wrap(err, "failed to get Dictionary")
 	}
@@ -89,27 +89,40 @@ func (s *Speller) generateTags(ctx context.Context, version string) ([]string, e
 	return tags, nil
 }
 
-func (s *Speller) getDictionary(ctx context.Context) ([]string, error) {
-	if len(s.dictionary) == 0 {
-		yamlFile, err := os.ReadFile("files/tags.yaml")
-		if err != nil {
-			return []string{}, errors.Wrap(err, "failed to load yaml file")
-		}
-		tags := []string{}
-		err = yaml.Unmarshal(yamlFile, &tags)
-		if err != nil {
-			return []string{}, errors.Wrap(err, "failed to parse yaml file")
-		}
-		log.Info().Msgf("[speller] loaded tags: %d. First ten: %s", len(tags), strings.Join(tags[0:10], ", "))
-		s.dictionary = tags
+func (s *Speller) getDictionary(ctx context.Context, version string) ([]string, error) {
+	dict, found := s.dictionaries[version]
+	if found {
+		return dict, nil
 	}
 
-	return s.dictionary, nil
+	var filename string
+	switch version {
+	case model.Version1:
+		filename = "files/tags_v1.yaml"
+	case model.Version11:
+		filename = "files/tags_v11.yaml"
+	default:
+		return []string{}, errors.Errorf("[speller] unknown version %s. failed to load file", version)
+	}
+
+	log.Info().Msgf("[speller] loading tags file %s", filename)
+	yamlFile, err := os.ReadFile(filename)
+	if err != nil {
+		return []string{}, errors.Wrap(err, "failed to load yaml file")
+	}
+	tags := []string{}
+	err = yaml.Unmarshal(yamlFile, &tags)
+	if err != nil {
+		return []string{}, errors.Wrap(err, "failed to parse yaml file")
+	}
+	log.Info().Msgf("[speller] version=%s, file=%s, loaded tags: %d. First ten: %s", version, filename, len(tags), strings.Join(tags[0:10], ", "))
+	s.dictionaries[version] = tags
+
+	return s.dictionaries[version], nil
 }
 
 func (s *Speller) selectVersion(ctx context.Context) (string, error) {
-	return model.Version1, nil
-	//count := len(model.AvailableVersions)
-	//idx, err := s.origin.Select(ctx, uint64(count-1), false)
-	//return model.AvailableVersions[idx], errors.Wrap(err, "[speller] failed to select version from origin")
+	count := len(model.AvailableVersions)
+	idx, err := s.origin.Select(ctx, uint64(count), false)
+	return model.AvailableVersions[idx], errors.Wrap(err, "[speller] failed to select version from origin")
 }

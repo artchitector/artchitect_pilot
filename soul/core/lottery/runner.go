@@ -97,7 +97,7 @@ func (lr *Runner) performLotteryStep(ctx context.Context, lottery model.Lottery)
 	}
 
 	totalCards := uint64(len(cards))
-	selection, err := lr.origin.Select(ctx, totalCards-1, false)
+	selection, err := lr.origin.Select(ctx, totalCards, false)
 	if err != nil {
 		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to select from origin with max=%d", totalCards)
 	}
