@@ -23,7 +23,7 @@ export default {
     position: absolute;
     right: 5px;
     bottom: 10px;
-    opacity: 70%;
+    opacity: 0.7;
   }
 }
 
