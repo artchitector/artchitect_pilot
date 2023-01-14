@@ -1,8 +1,8 @@
 <template>
   <div class="box">
     <h3 class="is-size-4">Lottery "{{ lottery.Name }}" - {{ lottery.State }}</h3>
-    <p>Start time: {{ lottery.StartTime }}</p>
-    <p>Collection period: {{ lottery.CollectPeriodStart }} - {{ lottery.CollectPeriodEnd }}</p>
+    <p>Start time: <i>{{ formatDate(lottery.StartTime) }}</i></p>
+    <p>Collection period: <i>{{ formatDate(lottery.CollectPeriodStart) }} - {{ formatDate(lottery.CollectPeriodEnd) }}</i></p>
     <div v-if="lottery.Winners && lottery.Winners.length" class="has-text-centered box has-background-link-light">
       Winners ({{lottery.Winners.length}} of total {{lottery.TotalWinners}})<br/>
       <NuxtLink :to="`/card/${cardID}`" v-for="cardID in lottery.Winners" target="_blank">
@@ -12,8 +12,14 @@
   </div>
 </template>
 <script>
+import moment from "moment";
 export default {
-  props: ['lottery']
+  props: ['lottery'],
+  methods: {
+    formatDate(date) {
+      return moment(date).format("YYYY MMM Do HH:mm:ss")
+    }
+  }
 }
 </script>
 <style>
