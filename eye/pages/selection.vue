@@ -5,7 +5,7 @@
     </section>
     <section>
       <h1 class="is-size-3 has-text-centered mb-5">selection</h1>
-      <div v-if="count" class="has-text-centered mb-6">total <b>{{count}}</b></div>
+      <div v-if="count" class="has-text-centered mb-6">total <b>{{ count }}</b></div>
       <div class="notification is-primary" v-if="$fetchState.pending">
         loading...
       </div>
@@ -44,9 +44,15 @@ export default {
       }
       return lines
     },
-    count() {
+    count () {
       return this.selection.length
     }
   }
 }
 </script>
+<style lang="scss">
+.image-container {
+  position: relative;
+
+}
+</style>

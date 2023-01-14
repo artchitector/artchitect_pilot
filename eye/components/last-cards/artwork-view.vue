@@ -2,6 +2,9 @@
   <div class="image-container">
     <NuxtLink :to="`/card/${artwork.ID}`" target="_blank">
       <img :src="'/api/image/m/' + artwork.ID"/>
+      <div class="version">
+        <span class="tag is-primary is-light">{{ artwork.Version }}</span>
+      </div>
       <p class="is-size-7 tags">{{ artwork.Spell.Tags }}</p>
       <p class="is-size-7 info">id={{ artwork.ID }}, <b>seed: {{ artwork.Spell.Seed }}</b></p>
     </NuxtLink>
@@ -12,10 +15,16 @@ export default {
   props: ['artwork']
 }
 </script>
-<style>
+<style lang="scss">
 .image-container {
   position: relative;
   min-height: 431px;
+  .version {
+    position: absolute;
+    right: 5px;
+    bottom: 10px;
+    opacity: 70%;
+  }
 }
 
 .image-container p {

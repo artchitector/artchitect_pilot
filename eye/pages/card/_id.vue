@@ -8,9 +8,9 @@
     </div>
     <div v-else-if="card">
       <h1 class="is-size-2 has-text-centered">Card #{{ card.ID }}</h1>
-      <p>version = {{ card.Version }}</p>
-      <p>created = {{ created }}</p>
-      <p>spell seed = {{ card.Spell.Seed }}</p>
+      <p><span class="tag is-primary is-light">version {{ card.Version }}</span></p>
+      <p>ww{{ created }}</p>
+      <p>seed = {{ card.Spell.Seed }}</p>
       <p>tags = <i>{{ card.Spell.Tags }}</i></p>
       <img :src="`/api/image/f/${card.ID}`"/>
     </div>
