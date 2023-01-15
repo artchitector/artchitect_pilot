@@ -21,3 +21,8 @@ type lotteryRepository interface {
 	GetLastLotteries(ctx context.Context, lastN uint) ([]model.Lottery, error)
 	GetSelection(ctx context.Context) ([]uint64, error)
 }
+
+type prayRepository interface {
+	MakePray(ctx context.Context) (model.PrayWithQuestion, error)
+	GetAnswer(ctx context.Context, prayId uint64) (uint64, error)
+}

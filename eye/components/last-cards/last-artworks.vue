@@ -1,6 +1,5 @@
 <template>
   <div>
-    <a id="cards"></a>
     <h3 class="is-size-4 has-text-centered mb-4" v-if="count > 0">last {{count}} cards</h3>
     <h3 class="is-size-4"v-else>last cards</h3>
     <div class="notification is-primary" v-if="!cards.length && $fetchState.pending">

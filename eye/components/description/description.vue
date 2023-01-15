@@ -57,7 +57,7 @@
     <div class="has-text-centered">
       <img src="/17751.jpg"/>
     </div>
-    <br/>
+    <a id="pray"></a>
   </section>
 </template>
 <script>

@@ -48,6 +48,9 @@ func main() {
 	cardHandler := handler.NewCardHandler(cardsRepository)
 	selectionHander := handler.NewSelectionHandler(lotteryRepository)
 
+	prayRepository := repository.NewPrayRepository(res.GetDB())
+	prayHandler := handler.NewPrayHandler(prayRepository)
+
 	go func() {
 		r := gin.Default()
 		r.Use(cors.New(cors.Config{
@@ -67,6 +70,7 @@ func main() {
 		r.GET("/card/:id", cardHandler.Handle)
 		r.GET("/selection", selectionHander.Handle)
 		r.GET("/image/:size/:id", cardHandler.HandleImage)
+		r.GET("/answer", prayHandler.Handle)
 
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()

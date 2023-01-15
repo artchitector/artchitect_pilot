@@ -6,6 +6,7 @@ import (
 	artistService "github.com/artchitector/artchitect/soul/core/artist"
 	"github.com/artchitector/artchitect/soul/core/gifter"
 	"github.com/artchitector/artchitect/soul/core/lottery"
+	merciful2 "github.com/artchitector/artchitect/soul/core/merciful"
 	originService "github.com/artchitector/artchitect/soul/core/origin"
 	"github.com/artchitector/artchitect/soul/core/origin/driver"
 	spellerService "github.com/artchitector/artchitect/soul/core/speller"
@@ -42,6 +43,7 @@ func main() {
 	stateRepository := repository.NewStateRepository(res.GetDB())
 	spellRepository := repository.NewSpellRepository(res.GetDB())
 	lotteryRepository := repository.NewLotteryRepository(res.GetDB())
+	prayRepository := repository.NewPrayRepository(res.GetDB())
 
 	//randProvider := driver.NewRandDriver()
 	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL, decisionRepo)
@@ -49,14 +51,15 @@ func main() {
 	speller := spellerService.NewSpeller(spellRepository, origin)
 	artist := artistService.NewArtist(res.GetEnv().ArtistURL, paintingRepo)
 	runner := lottery.NewRunner(lotteryRepository, paintingRepo, origin)
-
 	state := stateService.NewState(stateRepository)
+	merciful := merciful2.NewMerciful(prayRepository, artist, state, speller)
 
 	artchitectConfig := artchitectService.Config{
 		CardsCreationEnabled: res.GetEnv().CardCreationEnabled,
 		LotteryEnabled:       res.GetEnv().LotteryEnabled,
+		MercifulEnabled:      res.GetEnv().MercifulEnabled,
 	}
-	artchitect := artchitectService.NewArtchitect(artchitectConfig, state, speller, artist, lotteryRepository, runner)
+	artchitect := artchitectService.NewArtchitect(artchitectConfig, state, speller, artist, lotteryRepository, runner, merciful)
 	gift := gifter.NewGifter(paintingRepo, origin, res.GetEnv().TelegramBotToken, res.GetEnv().TenMinChat)
 
 	// state saving (in DB) process

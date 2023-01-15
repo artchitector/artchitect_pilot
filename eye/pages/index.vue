@@ -3,7 +3,7 @@
     <section class="green-section has-text-centered">
       <p>
         🚀 <b>Artchitect</b> launched 15th Jan 2023!<br/>
-        <a class="button is-success mt-2" href="#cards">Go to cards</a><br/>
+        <a class="button is-success mt-2" href="#pray">Go to pray</a><br/>
       </p>
     </section>
     <description/>

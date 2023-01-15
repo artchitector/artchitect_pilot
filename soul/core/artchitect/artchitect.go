@@ -20,6 +20,10 @@ type speller interface {
 	MakeSpell(ctx context.Context) (model.Spell, error)
 }
 
+type merciful interface {
+	AnswerPray(ctx context.Context) (bool, error)
+}
+
 type lotteryRepository interface {
 	GetActiveLottery(ctx context.Context) (model.Lottery, error)
 	InitDailyLottery(ctx context.Context) error
@@ -32,6 +36,7 @@ type lotteryRunner interface {
 type Config struct {
 	CardsCreationEnabled bool
 	LotteryEnabled       bool
+	MercifulEnabled      bool
 }
 
 type Artchitect struct {
@@ -41,6 +46,7 @@ type Artchitect struct {
 	artist            artist
 	lotteryRepository lotteryRepository
 	lotteryRunner     lotteryRunner
+	merciful          merciful
 }
 
 func NewArtchitect(
@@ -50,8 +56,9 @@ func NewArtchitect(
 	artist artist,
 	lotteryRepository lotteryRepository,
 	lotteryRunner lotteryRunner,
+	merciful merciful,
 ) *Artchitect {
-	return &Artchitect{config, state, speller, artist, lotteryRepository, lotteryRunner}
+	return &Artchitect{config, state, speller, artist, lotteryRepository, lotteryRunner, merciful}
 }
 
 func (a *Artchitect) Run(ctx context.Context, tick int) error {
@@ -65,6 +72,15 @@ func (a *Artchitect) Run(ctx context.Context, tick int) error {
 			return errors.Wrap(err, "failed to get active lottery")
 		} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return a.runLottery(ctx, activeLottery)
+		}
+	}
+	if a.config.MercifulEnabled {
+		answered, err := a.merciful.AnswerPray(ctx)
+		if err != nil {
+			return errors.Wrap(err, "[artchitect] failed pray answer")
+		} else if answered {
+			log.Info().Msgf("[artchitect] answered a pray")
+			return nil
 		}
 	}
 	if a.config.CardsCreationEnabled {

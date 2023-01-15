@@ -9,6 +9,7 @@ import (
 type Env struct {
 	LotteryEnabled      bool
 	CardCreationEnabled bool
+	MercifulEnabled     bool
 	DbDSN               string
 	OriginURL           string
 	ArtistURL           string
@@ -32,7 +33,8 @@ func initEnv() *Env {
 		OriginURL:           os.Getenv("ORIGIN_URL"),
 		ArtistURL:           os.Getenv("ARTIST_URL"),
 		TelegramBotToken:    os.Getenv("TELEGRAM_BOT_TOKEN"),
-		GifterActive:        os.Getenv("GIFTER_ACTIVE") == "true" || os.Getenv("GIFTER_ACTIVE") == "TRUE",
+		GifterActive:        os.Getenv("GIFTER_ACTIVE") == "true",
 		TenMinChat:          os.Getenv("10MIN_CHAT"),
+		MercifulEnabled:     os.Getenv("MERCIFUL_ENABLED") == "true",
 	}
 }
