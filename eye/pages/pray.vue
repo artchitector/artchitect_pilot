@@ -1,0 +1,18 @@
+<template>
+  <div>
+    <h1 class="is-size-3">Место для молитвы / Pray place</h1>
+    <section>
+      <prayer/>
+    </section>
+  </div>
+</template>
+<script>
+import Prayer from "@/components/prayer";
+
+export default {
+  components: {Prayer},
+  head: {
+    title: 'Artchitect - pray'
+  },
+}
+</script>
