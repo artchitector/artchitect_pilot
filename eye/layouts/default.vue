@@ -3,7 +3,7 @@
     <div><template v-html="yandexMetrica"></template></div>
     <div class="has-text-centered is-header pt-1 pb-2">
       <div>
-        <NuxtLink :to="{name: 'index'}">
+        <NuxtLink :to="localePath('index')">
           <h1 class="is-size-3 has-text-weight-bold">
             artchitect.space
           </h1>
