@@ -3,8 +3,11 @@
       <textarea class="textarea" v-model="pray" :disabled="locked"
                 :placeholder="$t('textarea_placeholder')"></textarea>
     <div class="has-text-centered mt-2">
-      <input type="checkbox" v-model="wish" :disabled="locked"> {{$t('wish')}}}<br/>
-      <button class="button" @click="clear()" :disabled="locked">{{$t('burn')}}</button>
+      <input type="checkbox" v-model="wish" :disabled="locked"> {{$t('wish')}}<br/>
+      <button class="button" @click="clear()" :disabled="locked">{{$t('amen')}}</button>
+    </div>
+    <div class="notification is-primary is-light has-text-centered mt-2" v-if="loading || card_id">
+      Пока ваша картина создаётся, вы можете <a href="#" @click.prevent="isDonateVisible = true">пожертвовать на храм</a>
     </div>
     <div class="notification is-info is-light has-text-centered" v-if="loading">
       {{$t('good_time_for_pray')}}<br/>
@@ -20,6 +23,10 @@
       <a :href="`/card/${card_id}`" target="_blank">
         <img :src="`/api/image/m/${card_id}`"/>
       </a>
+    </div>
+    <div class="has-text-centered mt-3">
+      <donate :isVisible="isDonateVisible" @close="isDonateVisible = false"/>
+      <a href="#" @click.prevent="isDonateVisible = true">пожертвовать на храм</a>
     </div>
   </div>
 
@@ -38,7 +45,8 @@ export default {
       pray_id: null,
       card_id: null,
       int: null,
-      loader: "."
+      loader: ".",
+      isDonateVisible: false
     }
   },
   methods: {

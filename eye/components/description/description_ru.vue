@@ -85,15 +85,30 @@
     <p>
       Так, божественные лучики света в тёмной комнате становятся каждой картиной на <a href="https://artchitect.space">artchitect.space</a>.
     </p>
+    <donate :isVisible="donateVisible" @close="donateVisible = false"/>
+    <p class="has-text-centered">
+      <a href="#" @click.prevent="donateVisible=true">пожертвовать на работу храма / donate</a>
+    </p>
     <p class="has-text-centered">
       🧡 ❤️ 🧡
     </p>
     <div class="has-text-centered">
-      <img src="/17751.jpg"/>
+      <img :src="`/welcome/${welcomeImageId}.jpg`" v-if="welcomeImageId > 0"/>
     </div>
     <a id="pray"></a>
   </section>
 </template>
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      welcomeImageId: 0,
+      maxWelcomeImageId: 9,
+      donateVisible: false
+    }
+  },
+  mounted () {
+    this.welcomeImageId = Math.floor(Math.random() * (this.maxWelcomeImageId - 1 + 1) + 1)
+  }
+}
 </script>

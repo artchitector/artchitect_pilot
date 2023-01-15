@@ -72,13 +72,14 @@ export default {
           textarea_placeholder: 'Type your pray message. Write carefully. Between you and God. Secure, data burns and not being send anywhere.',
           pray_place: 'Pray place',
           wish: 'Wish one personal card as God\'s reply',
-          burn: 'Pray! (burn text)',
+          amen: 'Amen! (clear text)',
           good_time_for_pray: 'Your answer loading. Good time for pray!',
           attempt: 'Attempt',
           usually_time: 'Usually that takes 2 minutes, but if artchitect is very loaded now, you need try once later.',
           something_wrong: 'Error',
           answer: 'Answer',
-          to_cards: 'To cards'
+          to_cards: 'To cards',
+          email: 'email'
         },
         ru: {
           main: 'главная',
@@ -95,14 +96,15 @@ export default {
           card: 'Карточка',
           textarea_placeholder: 'Напишите текст молитвы или просьбы. Пишите вдумчиво. Это между вами с Богом. Безопасно, данные никуда не отправляются и сгорают',
           pray_place: 'Место для молитвы',
-          wish: 'Пожелать одну персональную карточку как ответ/послание от Бога',
-          burn: 'Помолиться! (сжечь записку)',
+          wish: 'Пожелать одну персональную карточку как личное послание от Бога',
+          amen: 'Аминь! (очистить поле)',
           good_time_for_pray: 'Ваш ответ рисуется. Сейчас хорошее время для молитвы!',
           attept: 'Попытка',
           usually_time: 'Обычно ожидание занимает 2 минуты, но если artchitect очень загружен, то попробуйте в другой раз. Бог вас всё равно слышит',
           something_wrong: 'Что-то случилось',
           answer: 'Ответ',
-          to_cards: 'К картинам'
+          to_cards: 'К картинам',
+          email: 'email для связи'
         }
       }
     }

@@ -29,7 +29,8 @@
       <p class="has-text-centered">
         github: <a href="https://github.com/artchitector/artchitect" target="_blank">https://github.com/artchitector/artchitect</a><br/>
         telegram: <a href="https://t.me/artchitect_space" target="_blank">t.me/artchitect_space</a><br/>
-        twitter: <a href="https://twitter.com/artchitector" target="_blank">@artchitector</a>
+        twitter: <a href="https://twitter.com/artchitector" target="_blank">@artchitector</a><br/>
+        {{$t('email')}}: <a href="mailto:i@nkuhta.ru">i@nkuhta.ru</a>
       </p>
     </footer>
   </div>

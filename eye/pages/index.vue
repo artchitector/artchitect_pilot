@@ -4,7 +4,7 @@
       <p>
         🚀 <b>Artchitect</b> {{$t('launched')}}<br/>
         <a class="button is-success mt-2" href="#cards">{{ $t('to_cards')}}</a>
-        <a class="button is-success mt-2" href="/pray">{{ $t('to_pray')}}</a><br/>
+        <NuxtLink class="button is-success mt-2" to="/pray">{{ $t('to_pray')}}</NuxtLink>
       </p>
     </section>
     <description_ru v-if="$i18n.locale === 'ru'"/>
