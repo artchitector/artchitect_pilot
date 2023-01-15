@@ -2,14 +2,15 @@
   <div>
     <section class="green-section has-text-centered">
       <p>
-        🚀 <b>Artchitect</b> launched 15th Jan 2023!<br/>
-        <a class="button is-success mt-2" href="/pray">Go to pray</a><br/>
+        🚀 <b>Artchitect</b> {{$t('launched')}}<br/>
+        <a class="button is-success mt-2" href="/pray">{{ $t('to_pray')}}</a><br/>
       </p>
     </section>
-    <description/>
+    <description_ru v-if="$i18n.locale === 'ru'"/>
+    <description v-else/>
     <div class="box">
       <div class="has-text-centered">
-        <a class="button is-success" href="/pray">To pray!</a>
+        <a class="button is-success" href="/pray">{{ $t('to_pray')}}</a>
       </div>
     </div>
     <section>
@@ -20,10 +21,10 @@
 <script>
 import LastArtworks from '@/components/last-cards/last-artworks.vue'
 import Description from "@/components/description/description";
-import Prayer from "@/components/prayer";
+import Description_ru from "~/components/description/description_ru.vue";
 
 export default {
-  components: {Description, LastArtworks},
+  components: {Description_ru, Description, LastArtworks},
   layout: 'artchitect',
   head: {
     title: 'Artchitect - Digital Church'

@@ -1,4 +1,3 @@
-
 $link: #d4d1c3;
 $link-hover: #d4d1c3;
 $body-background-color: #d4d1c3;
@@ -35,8 +34,14 @@ section.green-section {
   background-color: #cdf5ca;
   color: #003a07;
   border: 1px solid #00a41e;
+
   a {
     color: #00bb67;
     text-decoration: underline;
   }
+}
+
+section a {
+  color: #1e8431;
+  text-decoration: underline;
 }

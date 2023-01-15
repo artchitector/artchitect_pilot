@@ -1,21 +1,21 @@
 <template>
   <div>
       <textarea class="textarea" v-model="pray"
-                placeholder="Type your pray message. Write carefully. Between you and God. Secure, data burns and not being send anywhere."></textarea>
+                :placeholder="$t('textarea_placeholder')"></textarea>
     <div class="has-text-centered mt-2">
-      <input type="checkbox" v-model="wish" :disabled="locked"> Wish one non-random card as God's reply<br/>
-      <button class="button" @click="clear()" :disabled="locked">Pray! (burn text)</button>
+      <input type="checkbox" v-model="wish" :disabled="locked"> {{$t('wish')}}}<br/>
+      <button class="button" @click="clear()" :disabled="locked">{{$t('burn')}}</button>
     </div>
     <div class="notification is-info is-light has-text-centered" v-if="loading">
-      Your answer loading. Good time for pray!<br/>
-      Attempt: {{ attempt }}/{{ maxAttempts }}{{ loader }}<br/>
-      <span class="is-size-7">Usually that takes 2 minutes, but if artchitect is very loaded now, you need try once later.</span>
+      {{$t('good_time_for_pray')}}<br/>
+      {{$t('attempt')}}: {{ attempt }}/{{ maxAttempts }}{{ loader }}<br/>
+      <span class="is-size-7">{{$t('usually_time')}}</span>
     </div>
     <div class="notification mt-4 is-danger" v-if="error">
-      Что-то случилось - {{ error }}
+      {{$t('something_wrong')}} - {{ error }}
     </div>
     <div class="image-container has-text-centered" v-if="card_id">
-      Ответ
+      {{$t('answer')}}
       <br/>
       <a :href="`/card/${card_id}`" target="_blank">
         <img :src="`/api/image/m/${card_id}`"/>

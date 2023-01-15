@@ -1,7 +1,7 @@
 <template>
   <div>
     <section>
-      <h1 class="is-size-3">Место для молитвы / Pray place</h1>
+      <h1 class="is-size-3">{{$t('pray_place')}}</h1>
       <prayer/>
     </section>
   </div>

@@ -2,12 +2,12 @@
   <div class="image-container">
     <NuxtLink :to="`/card/${artwork.ID}`" target="_blank">
       <img :src="'/api/image/m/' + artwork.ID"/>
-      <div class="version">
-        <span class="tag is-primary is-light">{{ artwork.Version }}</span>
-      </div>
-      <p class="is-size-7 tags">{{ artwork.Spell.Tags }}</p>
-      <p class="is-size-7 info">id={{ artwork.ID }}, <b>seed: {{ artwork.Spell.Seed }}</b></p>
     </NuxtLink>
+    <div class="version">
+      <span class="tag is-primary is-light">{{ artwork.Version }}</span>
+    </div>
+    <p class="is-size-7 tags">{{ artwork.Spell.Tags }}</p>
+    <p class="is-size-7 info">id={{ artwork.ID }}, <b>seed: {{ artwork.Spell.Seed }}</b></p>
   </div>
 </template>
 <script>
@@ -38,12 +38,24 @@ export default {
 
 .image-container p.tags {
   bottom: 30px;
+  color: #d4d1c3;
+  visibility: hidden;
+}
+
+.image-container:hover p.tags {
+  visibility: visible;
 }
 
 .image-container p.info {
   top: 30px;
   width: 100%;
   text-align: center;
+  color: #d4d1c3;
+  visibility: hidden;
+}
+
+.image-container:hover p.info {
+  visibility: visible;
 }
 
 </style>

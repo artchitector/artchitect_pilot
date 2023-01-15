@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h3 class="is-size-4 has-text-centered mb-4" v-if="count > 0">last {{count}} cards</h3>
-    <h3 class="is-size-4"v-else>last cards</h3>
+    <h3 class="is-size-4 has-text-centered mb-4" v-if="count > 0">{{$t('last')}} {{count}} {{$t('cards')}}</h3>
+    <h3 class="is-size-4"v-else>{{$t('last')}} {{$t('cards')}}</h3>
     <div class="notification is-primary" v-if="!cards.length && $fetchState.pending">
-      loading...
+      {{$t('loading')}}...
     </div>
     <div class="notification is-danger" v-else-if="$fetchState.error">
       {{ $fetchState.error.message }}
@@ -51,7 +51,7 @@ export default {
         to = from - 100
         pages.push({
           "url": `/list?from=${from}&to=${to}`,
-          "caption": `(page${i+1}:${from}-${to})`
+          "caption": `(${i+1}:${from}-${to})`
         })
       }
       return pages
