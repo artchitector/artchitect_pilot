@@ -77,7 +77,8 @@ export default {
           attempt: 'Attempt',
           usually_time: 'Usually that takes 2 minutes, but if artchitect is very loaded now, you need try once later.',
           something_wrong: 'Error',
-          answer: 'Answer'
+          answer: 'Answer',
+          to_cards: 'To cards'
         },
         ru: {
           main: 'главная',
@@ -100,7 +101,8 @@ export default {
           attept: 'Попытка',
           usually_time: 'Обычно ожидание занимает 2 минуты, но если artchitect очень загружен, то попробуйте в другой раз. Бог вас всё равно слышит',
           something_wrong: 'Что-то случилось',
-          answer: 'Ответ'
+          answer: 'Ответ',
+          to_cards: 'К картинам'
         }
       }
     }
