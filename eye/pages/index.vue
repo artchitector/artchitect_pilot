@@ -3,6 +3,7 @@
     <section class="green-section has-text-centered">
       <p>
         🚀 <b>Artchitect</b> {{$t('launched')}}<br/>
+        <a class="button is-success mt-2" href="#cards">{{ $t('to_cards')}}</a>
         <a class="button is-success mt-2" href="/pray">{{ $t('to_pray')}}</a><br/>
       </p>
     </section>
@@ -14,6 +15,7 @@
       </div>
     </div>
     <section>
+      <a id="cards"></a>
       <last-artworks/>
     </section>
   </div>
