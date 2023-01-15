@@ -21,7 +21,7 @@
 import Lottery from "@/components/lottery/lottery";
 export default {
   head: {
-    title: 'Artchitect - lottery'
+    title: 'Artchitect - Лотерея'
   },
   components: {Lottery},
   data () {

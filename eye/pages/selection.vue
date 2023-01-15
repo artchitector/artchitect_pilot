@@ -25,7 +25,7 @@
 <script>
 export default {
   head: {
-    title: 'Artchitect - selection'
+    title: 'Artchitect - Выбор'
   },
   data () {
     return {

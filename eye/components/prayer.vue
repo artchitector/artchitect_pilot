@@ -1,6 +1,6 @@
 <template>
   <div>
-      <textarea class="textarea" v-model="pray"
+      <textarea class="textarea" v-model="pray" :disabled="locked"
                 :placeholder="$t('textarea_placeholder')"></textarea>
     <div class="has-text-centered mt-2">
       <input type="checkbox" v-model="wish" :disabled="locked"> {{$t('wish')}}}<br/>

@@ -12,7 +12,7 @@ import Prayer from "@/components/prayer";
 export default {
   components: {Prayer},
   head: {
-    title: 'Artchitect - pray'
+    title: 'Artchitect - Молитва'
   },
 }
 </script>

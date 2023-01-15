@@ -27,7 +27,7 @@ export default {
   components: {Description_ru, Description, LastArtworks},
   layout: 'artchitect',
   head: {
-    title: 'Artchitect - Digital Church'
+    title: 'Artchitect - Цифровой храм'
   }
 }
 </script>
