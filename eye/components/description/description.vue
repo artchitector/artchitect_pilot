@@ -7,8 +7,8 @@
     <h1><img src="/icon64.png"/> Artchitect</h1>
     <p>
       <b>Artchitect</b> is the name of God, the Architect and Creator of the Universe.<br/>
-      <a href="https://artchitect.space"><b>Artchitect</b>.space</a> is a <b>virtual temple of God</b> on the Internet,
-      using artificial intelligence created by God and Humanity.
+      <a href="https://artchitect.space"><b>Artchitect</b>.space</a> is a <b>digital temple of God</b> in the Internet,
+      based on artificial intelligence, created by God and Humanity.
     </p>
     <p>A feature of the temple is the creation of a picture (card) from God to Humanity, once every 48 seconds. You can
       find a collection of all the paintings of the art architect. "Lotteries" are held every day, where 10-100 works

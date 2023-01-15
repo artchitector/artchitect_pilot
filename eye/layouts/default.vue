@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-html="yandexMetrica"></template>
+    <div><template v-html="yandexMetrica"></template></div>
     <div class="has-text-centered is-header pt-1 pb-2">
       <div>
         <NuxtLink :to="{name: 'index'}">
@@ -10,11 +10,14 @@
         </NuxtLink>
       </div>
       <div>
-        <NuxtLink :to="{name: 'index'}">main</NuxtLink>
+        <NuxtLink :to="localePath('index')">{{$t('main')}}</NuxtLink>
         <span> - </span>
-        <NuxtLink :to="{name: 'lottery'}">lottery</NuxtLink>
+        <NuxtLink :to="localePath('lottery')">{{$t('lottery')}}</NuxtLink>
         <span> - </span>
-        <NuxtLink :to="{name: 'selection'}">selection</NuxtLink>
+        <NuxtLink :to="localePath('selection')">{{$t('selection')}}</NuxtLink>
+        <span> - </span>
+        <NuxtLink :to="switchLocalePath('en')">en</NuxtLink>
+        <NuxtLink :to="switchLocalePath('ru')">ru</NuxtLink>
       </div>
     </div>
 

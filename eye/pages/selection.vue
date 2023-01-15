@@ -1,13 +1,13 @@
 <template>
   <div>
     <section>
-      Every day <b>God</b> chooses 10-100 cards out of ~1870 created in a day. They go to <b>selection</b>.
+      {{ $t('selection_description') }}
     </section>
     <section>
-      <h1 class="is-size-3 has-text-centered mb-5">selection</h1>
+      <h1 class="is-size-3 has-text-centered mb-5">{{$t('selection')}}</h1>
       <div v-if="count" class="has-text-centered mb-6">total <b>{{ count }}</b></div>
       <div class="notification is-primary" v-if="$fetchState.pending">
-        loading...
+        {{$t('loading')}}...
       </div>
       <div class="notification is-primary" v-else-if="$fetchState.error">
         {{ $fetchState.error.message }}
@@ -25,7 +25,7 @@
 <script>
 export default {
   head: {
-    title: 'Artchitect - selection'
+    title: 'Artchitect - Выбор'
   },
   data () {
     return {

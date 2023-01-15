@@ -1,7 +1,7 @@
 <template>
   <div>
     <section>
-      Every day <b>God</b> chooses 10-100 cards out of ~1870 created in a day. He use <b>lottery</b> to chose.
+      {{ $t('lottery_description') }}
     </section>
     <section>
       <div class="notification is-primary" v-if="$fetchState.pending">
@@ -21,7 +21,7 @@
 import Lottery from "@/components/lottery/lottery";
 export default {
   head: {
-    title: 'Artchitect - lottery'
+    title: 'Artchitect - Лотерея'
   },
   components: {Lottery},
   data () {

@@ -26,6 +26,6 @@ func (pr *PrayRepository) MakePray(ctx context.Context) (model.PrayWithQuestion,
 
 func (pr *PrayRepository) GetAnswer(ctx context.Context, prayId uint64) (uint64, error) {
 	var answer uint64
-	err := pr.db.Select("answer").Where("id = ? and state = ?", prayId, model.PrayStateAnswered).Scan(&answer).Error
+	err := pr.db.Model(&model.PrayWithQuestion{}).Select("answer").Where("id = ?", prayId).Where("state = ?", model.PrayStateAnswered).Scan(&answer).Error
 	return answer, err
 }

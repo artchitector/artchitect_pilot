@@ -71,6 +71,7 @@ func main() {
 		r.GET("/selection", selectionHander.Handle)
 		r.GET("/image/:size/:id", cardHandler.HandleImage)
 		r.GET("/answer", prayHandler.Handle)
+		r.GET("/answer/:id", prayHandler.HandleAnswer)
 
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()

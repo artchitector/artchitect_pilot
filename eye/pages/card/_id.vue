@@ -7,9 +7,9 @@
       {{ $fetchState.error.message }}
     </div>
     <div v-else-if="card">
-      <h1 class="is-size-2 has-text-centered">Card #{{ card.ID }}</h1>
+      <h1 class="is-size-2 has-text-centered">{{$t('card')}} #{{ card.ID }}</h1>
       <p><span class="tag is-primary is-light">version {{ card.Version }}</span></p>
-      <p>ww{{ created }}</p>
+      <p>{{ created }}</p>
       <p>seed = {{ card.Spell.Seed }}</p>
       <p>tags = <i>{{ card.Spell.Tags }}</i></p>
       <img :src="`/api/image/f/${card.ID}`"/>
@@ -22,7 +22,7 @@ import moment from "moment"
 export default {
   head () {
     return {
-      title: `Artchitect - card #${this.$route.params.id}`
+      title: `Artchitect - Карточка #${this.$route.params.id}`
     }
   },
   data () {

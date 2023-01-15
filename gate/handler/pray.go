@@ -6,8 +6,11 @@ import (
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"net/http"
-	"time"
 )
+
+type PrayRequest struct {
+	ID uint `uri:"id" binding:"required,numeric"`
+}
 
 type PrayHandler struct {
 	prayRepository prayRepository
@@ -26,11 +29,19 @@ func (ph *PrayHandler) Handle(c *gin.Context) {
 		return
 	}
 	log.Info().Msgf("[pray] saved pray %d", pray.ID)
-	time.Sleep(time.Second * 5)
-	answer, err := ph.prayRepository.GetAnswer(c, uint64(pray.ID))
+	c.JSON(http.StatusOK, pray.ID)
+}
+
+func (ph *PrayHandler) HandleAnswer(c *gin.Context) {
+	var request PrayRequest
+	if err := c.ShouldBindUri(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	answer, err := ph.prayRepository.GetAnswer(c, uint64(request.ID))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusOK, "0")
-		log.Info().Msgf("[pray] failed to wait pray %d. 0 sent", pray.ID)
+		log.Info().Msgf("[pray] failed to wait pray %d. 0 sent", request.ID)
 		return
 	}
 	if err != nil {
@@ -39,5 +50,5 @@ func (ph *PrayHandler) Handle(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, answer)
-	log.Info().Msgf("[pray] answered pray %d", pray.ID)
+	log.Info().Msgf("[pray] answered pray %d", answer)
 }
