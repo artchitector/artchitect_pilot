@@ -8,14 +8,14 @@
     </div>
     <div class="notification is-info is-light has-text-centered" v-if="loading">
       Your answer loading. Good time for pray!<br/>
-      Attempt: {{ attempt }}/{{ maxAttempts }}{{loader}}<br/>
+      Attempt: {{ attempt }}/{{ maxAttempts }}{{ loader }}<br/>
       <span class="is-size-7">Usually that takes 2 minutes, but if artchitect is very loaded now, you need try once later.</span>
     </div>
     <div class="notification mt-4 is-danger" v-if="error">
       Что-то случилось - {{ error }}
     </div>
     <div class="image-container has-text-centered" v-if="card_id">
-      <span>Ответ</span>
+      Ответ
       <br/>
       <a :href="`/card/${card_id}`" target="_blank">
         <img :src="`/api/image/m/${card_id}`"/>
@@ -28,10 +28,9 @@
 export default {
   data() {
     return {
-      maxAttempts: 300,
+      maxAttempts: 60,
       locked: false,
       attempt: 0,
-      visible: false,
       pray: "",
       wish: false,
       loading: false,

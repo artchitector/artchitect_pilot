@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1 class="is-size-3">Место для молитвы / Pray place</h1>
     <section>
+      <h1 class="is-size-3">Место для молитвы / Pray place</h1>
       <prayer/>
     </section>
   </div>

@@ -8,7 +8,7 @@
     </section>
     <description/>
     <div class="box">
-      <div v-if="!visible" class="has-text-centered">
+      <div class="has-text-centered">
         <a class="button is-success" href="/pray">To pray!</a>
       </div>
     </div>
