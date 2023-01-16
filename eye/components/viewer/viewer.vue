@@ -8,7 +8,7 @@
       <a href="#" @click.prevent="next()">></a>
     </div>
     <div class="header">
-      <h1 class="is-size-1" v-if="card">
+      <h1 class="is-size-4" v-if="card">
         <NuxtLink :to="`/card/${card.ID}`">
           {{ $t('card') }} #{{ card.ID }}
         </NuxtLink>
