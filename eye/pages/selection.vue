@@ -4,26 +4,30 @@
       {{ $t('selection_description') }}
     </section>
     <section>
-      <h1 class="is-size-3 has-text-centered mb-5">{{$t('selection')}}</h1>
+      <h1 class="is-size-3 has-text-centered mb-5">{{ $t('selection') }}</h1>
       <div v-if="count" class="has-text-centered mb-6">total <b>{{ count }}</b></div>
       <div class="notification is-primary" v-if="$fetchState.pending">
-        {{$t('loading')}}...
+        {{ $t('loading') }}...
       </div>
       <div class="notification is-primary" v-else-if="$fetchState.error">
         {{ $fetchState.error.message }}
       </div>
       <div class="columns" v-else v-for="line in lines">
-        <div class="column" v-for="id in line">
-          <NuxtLink :to="`/card/${id}`" target="_blank">
+        <div class="column has-text-centered" v-for="id in line">
+          <a href="#" @click.prevent="onSelect(id)">
             <img :src="`/api/image/s/${id}`"/>
-          </NuxtLink>
+          </a>
         </div>
       </div>
     </section>
+    <viewer ref="viewer"/>
   </div>
 </template>
 <script>
+import Viewer from "@/components/viewer/viewer";
+
 export default {
+  components: {Viewer},
   head: {
     title: 'Artchitect - Выбор'
   },
@@ -46,6 +50,11 @@ export default {
     },
     count () {
       return this.selection.length
+    }
+  },
+  methods: {
+    onSelect (id) {
+      this.$refs.viewer.show(this.selection, id);
     }
   }
 }

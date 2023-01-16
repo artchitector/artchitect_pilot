@@ -80,7 +80,10 @@ export default {
           answer: 'Answer',
           to_cards: 'To cards',
           email: 'email',
-          pray: 'pray'
+          pray: 'pray',
+          created: 'created',
+          seed: 'seed',
+          tags: 'tags'
         },
         ru: {
           main: 'главная',
@@ -106,7 +109,10 @@ export default {
           answer: 'Ответ',
           to_cards: 'К картинам',
           email: 'email для связи',
-          pray: 'молитва'
+          pray: 'молитва',
+          created: 'создано',
+          seed: 'зерно',
+          tags: 'теги'
         }
       }
     }
