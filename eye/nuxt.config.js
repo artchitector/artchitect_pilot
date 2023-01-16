@@ -79,7 +79,8 @@ export default {
           something_wrong: 'Error',
           answer: 'Answer',
           to_cards: 'To cards',
-          email: 'email'
+          email: 'email',
+          pray: 'pray'
         },
         ru: {
           main: 'главная',
@@ -104,7 +105,8 @@ export default {
           something_wrong: 'Что-то случилось',
           answer: 'Ответ',
           to_cards: 'К картинам',
-          email: 'email для связи'
+          email: 'email для связи',
+          pray: 'молитва'
         }
       }
     }

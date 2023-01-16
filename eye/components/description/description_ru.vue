@@ -86,9 +86,9 @@
       Так, божественные лучики света в тёмной комнате становятся каждой картиной на <a href="https://artchitect.space">artchitect.space</a>.
     </p>
     <donate :isVisible="donateVisible" @close="donateVisible = false"/>
-    <p class="has-text-centered">
-      <a href="#" @click.prevent="donateVisible=true">пожертвовать на работу храма / donate</a>
-    </p>
+<!--    <p class="has-text-centered">-->
+<!--      <a href="#" @click.prevent="donateVisible=true">пожертвовать на работу храма / donate</a>-->
+<!--    </p>-->
     <p class="has-text-centered">
       🧡 ❤️ 🧡
     </p>

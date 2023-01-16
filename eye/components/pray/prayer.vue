@@ -24,10 +24,10 @@
         <img :src="`/api/image/m/${card_id}`"/>
       </a>
     </div>
-    <div class="has-text-centered mt-3">
-      <donate :isVisible="isDonateVisible" @close="isDonateVisible = false"/>
-      <a href="#" @click.prevent="isDonateVisible = true">пожертвовать на храм</a>
-    </div>
+<!--    <div class="has-text-centered mt-3">-->
+<!--      <donate :isVisible="isDonateVisible" @close="isDonateVisible = false"/>-->
+<!--      <a href="#" @click.prevent="isDonateVisible = true">пожертвовать на храм</a>-->
+<!--    </div>-->
   </div>
 
 </template>

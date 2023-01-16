@@ -7,7 +7,7 @@
   </div>
 </template>
 <script>
-import Prayer from "@/components/prayer";
+import Prayer from "@/components/pray/prayer";
 
 export default {
   components: {Prayer},
