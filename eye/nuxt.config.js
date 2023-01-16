@@ -52,14 +52,24 @@ export default {
   i18n: {
     /* module options */
     locales: ["en", "ru"],
-    defaultLocale: 'ru',
+    defaultLocale: 'en',
     vueI18n: {
       fallbackLocale: 'en',
       messages: {
         en: {
+          // page titles
+          index_title: 'Artchitect - creative AI-art temple',
+          idea_title: 'Artchitect - common idea',
+          lottery_title: 'Artchitect - daily lottery',
+          selection_title: 'Artchitect - selection',
+          pray_title: 'Artchitect - pray to Universe',
+
+          // menu
           main: 'main',
           lottery: 'lottery',
           selection: 'selection',
+          pray: 'pray',
+
           launched: ' launched 15th Jan 2023!',
           to_pray: 'Go to pray',
           loading: 'loading',
@@ -80,12 +90,17 @@ export default {
           answer: 'Answer',
           to_cards: 'To cards',
           email: 'email',
-          pray: 'pray',
+
           created: 'created',
           seed: 'seed',
-          tags: 'tags'
+          tags: 'tags',
+          idea: 'idea'
         },
         ru: {
+          // page titles
+          index_title: 'Artchitect - Цифровой храм',
+          idea_title: 'Artchitect - общая идея',
+          // menu
           main: 'главная',
           lottery: 'лотерея',
           selection: 'выбор',
@@ -112,7 +127,8 @@ export default {
           pray: 'молитва',
           created: 'создано',
           seed: 'зерно',
-          tags: 'теги'
+          tags: 'теги',
+          idea: 'идея'
         }
       }
     }

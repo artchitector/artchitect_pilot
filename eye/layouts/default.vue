@@ -12,6 +12,8 @@
       <div>
         <NuxtLink :to="localePath('index')">{{$t('main')}}</NuxtLink>
         <span> - </span>
+        <NuxtLink :to="localePath('idea')">{{$t('idea')}}</NuxtLink>
+        <span> - </span>
         <NuxtLink :to="localePath('lottery')">{{$t('lottery')}}</NuxtLink>
         <span> - </span>
         <NuxtLink :to="localePath('selection')">{{$t('selection')}}</NuxtLink>

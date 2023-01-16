@@ -11,8 +11,10 @@ import Prayer from "@/components/pray/prayer";
 
 export default {
   components: {Prayer},
-  head: {
-    title: 'Artchitect - Молитва'
+  head() {
+    return {
+      title: this.$t('pray_title')
+    }
   },
 }
 </script>

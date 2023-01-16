@@ -13,15 +13,17 @@
       <div class="notification is-danger" v-if="$fetchState.error">
         {{ $fetchState.error.message }}
       </div>
-      <lottery v-for="lottery in lotteries" :lottery="lottery"/>
+      <lottery v-for="lottery in lotteries" v-bind:key="lottery.ID" :lottery="lottery"/>
     </section>
   </div>
 </template>
 <script>
 import Lottery from "@/components/lottery/lottery";
 export default {
-  head: {
-    title: 'Artchitect - Лотерея'
+  head() {
+    return {
+      title: this.$t('lottery_title')
+    }
   },
   components: {Lottery},
   data () {

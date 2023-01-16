@@ -28,8 +28,10 @@ import Viewer from "@/components/viewer/viewer";
 
 export default {
   components: {Viewer},
-  head: {
-    title: 'Artchitect - Выбор'
+  head() {
+    return {
+      title: this.$t('selection_title')
+    }
   },
   data () {
     return {
