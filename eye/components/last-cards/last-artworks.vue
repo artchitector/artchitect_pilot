@@ -11,11 +11,6 @@
     </div>
 
     <div v-else>
-      <div class="has-text-centered mb-4">
-          <nuxt-link v-for="page in pages" :to="page.url">
-            {{page.caption}}
-          </nuxt-link>
-      </div>
       <div class="columns" v-for="line in lines">
         <div class="column" v-for="artwork in line">
           <artwork-view :artwork="artwork" @select="select(artwork.ID)"/>
@@ -40,23 +35,6 @@ export default {
     console.log('loaded', this.cards.length)
   },
   computed: {
-    pages() {
-      if (!this.cards.length) {
-        return []
-      }
-      const lastId = this.cards[0].ID
-      const pages = []
-      let from, to
-      for (let i = 0; i < 5; i++) {
-        from = lastId - (i * 100) - 1
-        to = from - 100
-        pages.push({
-          "url": `/list?from=${from}&to=${to}`,
-          "caption": `(${i+1}:${from}-${to})`
-        })
-      }
-      return pages
-    },
     count() {
       return this.cards.length
     },

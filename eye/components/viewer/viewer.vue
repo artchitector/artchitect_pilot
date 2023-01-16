@@ -1,6 +1,9 @@
 <template>
   <div v-if="isVisible" class="modal-container">
     <div class="background" @click="close()"></div>
+    <div class="control-close">
+      <a href="#" @click.prevent="close()">x</a>
+    </div>
     <div class="control-prev" v-if="hasPrev">
       <a href="#" @click.prevent="prev()"><</a>
     </div>
@@ -37,7 +40,7 @@
       <template v-if="card">
         <p>{{ $t('created') }}: {{ formatDate(card.CreatedAt) }}</p>
         <p>{{ $t('seed') }}: {{ card.Spell.Seed }}</p>
-        <p class="is-size-7">{{ $t('tags') }}: {{ card.Spell.Tags }}</p>
+        <p class="is-size-7 tags-p">{{ $t('tags') }}: {{ card.Spell.Tags }}</p>
       </template>
     </div>
   </div>
@@ -170,6 +173,14 @@ export default {
     z-index: 3;
     font-weight: bolder;
   }
+  .control-close {
+    position: fixed;
+    right: calc(10vw);
+    top: calc(10vw);
+    font-size: 50px;
+    z-index: 3;
+    font-weight: bolder;
+  }
 
   .background {
     bottom: 0;
@@ -203,6 +214,11 @@ export default {
     display: block;
     max-width: calc(60vw);
     background-color: rgba(0, 0, 0, 0.5);
+    .tags-p {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-height: 3em;
+    }
   }
 }
 </style>

@@ -40,7 +40,6 @@ func main() {
 		retriever,
 	)
 	lastPaintingsHandler := handler.NewLastPaintingsHandler(cardsRepository)
-	listHandler := handler.NewListHandler(cardsRepository)
 	lotteryHandler := handler.NewLotteryHandler(
 		log.With().Str("service", "lottery_handler").Logger(),
 		lotteryRepository,
@@ -65,7 +64,6 @@ func main() {
 		})
 		r.GET("/state", stateHandler.Handle)
 		r.GET("/last_paintings/:quantity", lastPaintingsHandler.Handle)
-		r.GET("/list/:from/:to", listHandler.Handle)
 		r.GET("/lottery/:lastN", lotteryHandler.HandleLast)
 		r.GET("/card/:id", cardHandler.Handle)
 		r.GET("/selection", selectionHander.Handle)

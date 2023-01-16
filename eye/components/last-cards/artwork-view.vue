@@ -1,6 +1,6 @@
 <template>
   <div class="image-container">
-    <a href="#" @click.prevent="select()">_blank">
+    <a href="#" @click.prevent="select()">
       <img :src="'/api/image/m/' + artwork.ID"/>
     </a>
     <div class="version">
