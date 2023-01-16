@@ -149,6 +149,11 @@ export default {
   color: #d4d1c3;
   gap: 10px;
 
+  a {
+    color: #d4d1c3;
+    text-decoration: none;
+  }
+
   .control-prev {
     position: fixed;
     left: calc(10vw);

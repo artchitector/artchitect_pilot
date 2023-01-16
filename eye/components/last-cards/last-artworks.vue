@@ -1,5 +1,6 @@
 <template>
   <div>
+    <viewer ref="viewer"/>
     <h3 class="is-size-4 has-text-centered mb-4" v-if="count > 0">{{$t('last')}} {{count}} {{$t('cards')}}</h3>
     <h3 class="is-size-4"v-else>{{$t('last')}} {{$t('cards')}}</h3>
     <div class="notification is-primary" v-if="!cards.length && $fetchState.pending">
@@ -17,7 +18,7 @@
       </div>
       <div class="columns" v-for="line in lines">
         <div class="column" v-for="artwork in line">
-          <artwork-view :artwork="artwork"/>
+          <artwork-view :artwork="artwork" @select="select(artwork.ID)"/>
         </div>
       </div>
     </div>
@@ -76,6 +77,15 @@ export default {
         }
       }
       return lines
+    }
+  },
+  methods: {
+    select(id) {
+      const ids = []
+      this.cards.forEach((card) => {
+        ids.push(card.ID)
+      })
+      this.$refs.viewer.show(ids, id);
     }
   }
 }

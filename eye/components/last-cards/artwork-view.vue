@@ -1,8 +1,8 @@
 <template>
   <div class="image-container">
-    <NuxtLink :to="`/card/${artwork.ID}`" target="_blank">
+    <a href="#" @click.prevent="select()">_blank">
       <img :src="'/api/image/m/' + artwork.ID"/>
-    </NuxtLink>
+    </a>
     <div class="version">
       <span class="tag is-primary is-light">{{ artwork.Version }}</span>
     </div>
@@ -12,7 +12,12 @@
 </template>
 <script>
 export default {
-  props: ['artwork']
+  props: ['artwork'],
+  methods: {
+    select() {
+      this.$emit('select')
+    }
+  }
 }
 </script>
 <style lang="scss">

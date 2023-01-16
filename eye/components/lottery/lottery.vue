@@ -5,10 +5,14 @@
     <p>Collection period: <i>{{ formatDate(lottery.CollectPeriodStart) }} - {{ formatDate(lottery.CollectPeriodEnd) }}</i></p>
     <div v-if="lottery.Winners && lottery.Winners.length" class="has-text-centered box has-background-link-light">
       Winners ({{lottery.Winners.length}} of total {{lottery.TotalWinners}})<br/>
-      <NuxtLink :to="`/card/${cardID}`" v-for="cardID in lottery.Winners" target="_blank">
+<!--      <NuxtLink :to="`/card/${cardID}`" v-for="cardID in lottery.Winners" target="_blank">-->
+<!--        <img class="mini-preview ml-1 mr-1" :src="`/api/image/xs/${cardID}`"/>-->
+<!--      </NuxtLink>-->
+      <a href="#" @click.prevent="select(cardID)" v-for="cardID in lottery.Winners">
         <img class="mini-preview ml-1 mr-1" :src="`/api/image/xs/${cardID}`"/>
-      </NuxtLink>
+      </a>
     </div>
+    <viewer ref="viewer"/>
   </div>
 </template>
 <script>
@@ -19,6 +23,9 @@ export default {
     formatDate(date) {
       // TODO need make global date helper and use it everywhere
       return moment(date).format("YYYY MMM Do HH:mm:ss")
+    },
+    select(id) {
+      this.$refs.viewer.show(this.lottery.Winners, id);
     }
   }
 }
