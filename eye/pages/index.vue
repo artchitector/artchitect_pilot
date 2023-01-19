@@ -9,13 +9,11 @@
 </template>
 <script>
 import LastArtworks from '@/components/last-cards/last-artworks.vue'
-import Description from "@/components/description/description";
-import Description_ru from "~/components/description/description_ru.vue";
 import Short from "@/components/description/short.vue";
 import Launch from "@/components/description/launch.vue";
 
 export default {
-  components: {Launch, Short, Description_ru, Description, LastArtworks},
+  components: {Launch, Short, LastArtworks},
   layout: 'artchitect',
   head() {
     return {

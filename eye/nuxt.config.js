@@ -53,6 +53,8 @@ export default {
     /* module options */
     locales: ["en", "ru"],
     defaultLocale: 'en',
+    strategy: 'no_prefix',
+    vueI18nLoader: true,
     vueI18n: {
       fallbackLocale: 'en',
       messages: {
