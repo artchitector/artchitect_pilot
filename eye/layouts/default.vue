@@ -19,9 +19,9 @@
         <NuxtLink :to="localePath('selection')">{{$t('selection')}}</NuxtLink>
         <span> - </span>
         <NuxtLink :to="localePath('pray')">{{$t('pray')}}</NuxtLink>
-        <span> - </span>
-        <NuxtLink :to="switchLocalePath('en')">en</NuxtLink>
-        <NuxtLink :to="switchLocalePath('ru')">ru</NuxtLink>
+<!--        <span> - </span>-->
+<!--        <NuxtLink :to="switchLocalePath('en')">en</NuxtLink>-->
+<!--        <NuxtLink :to="switchLocalePath('ru')">ru</NuxtLink>-->
       </div>
     </div>
 

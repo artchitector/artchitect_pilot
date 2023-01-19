@@ -4,7 +4,7 @@
     <philosophy/>
     <technics/>
     <launch/>
-    <pray/>
+    <prayer/>
     <next/>
   </section>
 </template>
@@ -13,10 +13,10 @@ import Top from "@/components/idea/top.vue";
 import Philosophy from "@/components/idea/philosophy.vue";
 import Technics from "@/components/idea/technics.vue";
 import Launch from "@/components/idea/launch.vue";
-import Pray from "@/components/idea/pray.vue";
+import Prayer from "@/components/idea/prayer.vue";
 import Next from "@/components/idea/next.vue";
 
 export default {
-  components: {Next, Pray, Launch, Technics, Philosophy, Top}
+  components: {Next, Prayer, Launch, Technics, Philosophy, Top}
 }
 </script>
