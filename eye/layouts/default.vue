@@ -31,6 +31,7 @@
 
     <footer class="footer">
       <p class="has-text-centered">
+        instagram: <a href="https://instagram.com/artchitect.space?igshid=YmMyMTA2M2Y=" target="_blank">@artchitect.space</a><br/>
         github: <a href="https://github.com/artchitector/artchitect" target="_blank">https://github.com/artchitector/artchitect</a><br/>
         telegram: <a href="https://t.me/artchitect_space" target="_blank">t.me/artchitect_space</a><br/>
         twitter: <a href="https://twitter.com/artchitector" target="_blank">@artchitector</a><br/>

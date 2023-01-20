@@ -1,6 +1,7 @@
 <template>
   <div>
     <short/>
+    <promotion/>
     <section>
       <a id="cards"></a>
       <last-artworks/>
