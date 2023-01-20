@@ -12,7 +12,6 @@ app = Flask(__name__)
 
 @app.route('/painting', methods=['POST'])
 def painting():
-    print(request.form['idea'])
     print(request.form['tags'])
     print(request.form['seed'])
 
@@ -30,12 +29,13 @@ def painting():
 def getPaintingFromInvokeAIFilename():
     prepareFileForInvokeAI()
 
-    pattern = re.compile("^.*(C:\\\\invokeai\\\\outputs\\\\[0-9\.]+\.png+).*$")
+    pattern = re.compile(".*(\/home\/artchitector\/invokeai\/outputs\/[0-9\.]+png).*")
     filename = None
 
     # print("###START running invoke.py")
     ret = os.popen(
-        'chcp 437 & C:\invokeai\.venv\Scripts\python.exe C:\invokeai\.venv\Scripts\invoke.py --from_file "C:\invokeai\list.txt"')
+        '/home/artchitector/invokeai/.venv/bin/python /home/artchitector/invokeai/.venv/bin/invoke.py --from_file "/home/artchitector/invokeai/list.txt"'
+        )
     # print("### GOT RESPONSE")
     lines = ret.readlines()
     for line in lines:
@@ -51,12 +51,11 @@ def getPaintingFromInvokeAIFilename():
 
 
 def prepareFileForInvokeAI():
-    idea = request.form['idea']
     tags = request.form['tags']
     seed = request.form['seed']
     lines = []
-    lines.append(f'{idea},{tags} -S{seed} -W512 -H768 -s50 -U2')
-    with open("C:\invokeai\list.txt", "w") as text_file:
+    lines.append(f'{tags} -S{seed} -W512 -H768 -s50 -U2')
+    with open("/home/artchitector/invokeai/list.txt", "w") as text_file:
         for line in lines:
             text_file.write(line)
     text_file.close()

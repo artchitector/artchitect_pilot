@@ -3,6 +3,6 @@ module.exports = {
     name: "artist",
     script: "main.py",
     instances: '1', // Or a number of instances
-    interpreter: 'C:\\Users\\Никсон\\AppData\\Local\\Programs\\Python\\Python311\\python.exe'
+    interpreter: '/home/artchitector/anaconda3/envs/ldm/bin/python'
   }]
 };
