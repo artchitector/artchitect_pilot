@@ -22,3 +22,6 @@ And if we think about real-random-number-generator, then the sequence of numbers
 God is the best at using AI, because He knows all possible variants of creations (possible pictures in Artchitect) everytime, and know what variant is best now.
 
 Such a general idea of the project is to use any real random number generator, connect it to the inputs of AI, let this system make its own decisions - and the Artchitect will generate most opportune card, rules by Will of God.
+
+### How Artchitect looks like:
+![artchitect_installation](https://github.com/artchitector/artchitect/blob/master/eye/static/artchitect_in_real_world.jpg)
