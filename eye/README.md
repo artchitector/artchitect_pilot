@@ -1,5 +1,7 @@
 # eye
 
+```NODE_OPTIONS=--openssl-legacy-provider```
+
 ## Build Setup
 
 ```bash
