@@ -1,8 +1,8 @@
 # Artchitect
 
-**Artchitect** is experimental "open-API" for requests from God.
+**Artchitect** is experimental "open-API" for requests from Heaven.
 
-**Artchitect** is creative AI-art digital temple, self-sufficient and self-managed computer system.
+**Artchitect** is creative AI-art digital temple, driven by God.
 
 Artchitect use "random" quantum data to self-control and make decisions, so finally Artchitect is managed by "random" physical phenomenons, or managed by "nothing" (by God or Universe).
 If God have a plan for everything and everyone, then He have a plan for Artchitect too, so artworks are not truly random.

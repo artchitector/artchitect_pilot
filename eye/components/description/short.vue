@@ -1,8 +1,8 @@
 <template>
   <section class="content">
-    <h1><img src="/icon64.png"/> Artchitect</h1>
+    <h1><img src="/icon64.png" alt="artchitect"/> Artchitect</h1>
     <p class="is-size-5">
-      <b>Artchitect</b> is creative AI-art digital temple, self-sufficient and self-managed computer system.
+      <b>Artchitect</b> is creative AI-art digital temple, driven by God.
     </p>
     <p>
       Artchitect use "random" quantum data to self-control and make decisions, so finally Artchitect is managed by
