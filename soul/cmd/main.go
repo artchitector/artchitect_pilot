@@ -79,10 +79,11 @@ func main() {
 
 	// main loop to make artworks
 	var tick int
+mainFor:
 	for {
 		select {
 		case <-ctx.Done():
-			break
+			break mainFor
 		case <-time.Tick(time.Second * 1):
 			tick += 1
 			err := artchitect.Run(ctx, tick)

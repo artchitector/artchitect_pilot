@@ -17,7 +17,9 @@ func NewStateRepository(db *gorm.DB) *StateRepository {
 
 func (dr *StateRepository) SaveState(ctx context.Context, state model.State) (model.State, error) {
 	var lastState model.State
-	if err := dr.db.Last(&lastState).Error; err != nil {
+	if err := dr.db.Last(&lastState).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		lastState = model.State{State: model.StateNotWorking}
+	} else if err != nil {
 		return model.State{}, errors.Wrap(err, "failed to get last state")
 	}
 	if lastState.State == state.State {
