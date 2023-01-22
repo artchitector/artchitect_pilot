@@ -58,7 +58,6 @@ func (l *Listener) handle(ctx context.Context, msg *redis.Message) error {
 		return nil
 	case model.ChannelNewCard:
 		return l.handleNewCard(ctx, msg)
-
 	}
 	log.Info().Msgf("%+v", msg)
 	return nil
