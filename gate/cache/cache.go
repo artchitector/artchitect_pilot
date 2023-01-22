@@ -130,6 +130,13 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 	go func() {
 		// save each card size in Redis
 		for _, size := range []string{model.SizeF, model.SizeM, model.SizeS, model.SizeXS} {
+			exist, err := c.ExistsImage(ctx, uint64(card.ID), size)
+			if err != nil {
+				log.Error().Err(err).Msgf("[cache] not found existing image (id=%d, size=%s", card.ID, size)
+			} else if exist {
+				log.Info().Msgf("[cache] skip image resizing in cache (id=%d, size=%s", card.ID, size)
+				continue
+			}
 			resized, err := resizer.Resize(card.Image, size)
 			if err != nil {
 				log.Error().Err(err).Msgf("[cache] failed to resize image into size (id=%d, size=%s)", card.ID, size)
@@ -144,6 +151,12 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 	}()
 
 	return nil
+}
+
+func (c *Cache) ExistsImage(ctx context.Context, ID uint64, size string) (bool, error) {
+	key := fmt.Sprintf(KeyCardImage, ID, size)
+	i, err := c.rdb.Exists(ctx, key).Result()
+	return i > 0, err
 }
 
 func (c *Cache) GetImage(ctx context.Context, ID uint64, size string) ([]byte, error) {

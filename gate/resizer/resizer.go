@@ -44,6 +44,7 @@ func Resize(rawImg []byte, size string) ([]byte, error) {
 	}
 	log.Info().Msgf(
 		"[resizer] resized, size=%s, time: %s",
+		size,
 		time.Now().Sub(start),
 	)
 
