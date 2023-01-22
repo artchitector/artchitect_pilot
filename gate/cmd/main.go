@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	cache2 "github.com/artchitector/artchitect/gate/cache"
 	"github.com/artchitector/artchitect/gate/handler"
 	"github.com/artchitector/artchitect/gate/listener"
 	"github.com/artchitector/artchitect/gate/repository"
@@ -24,7 +25,12 @@ func main() {
 	res := resources.InitResources()
 	log.Info().Msg("service gate started")
 
-	cardsRepository := repository.NewCardRepository(res.GetDB())
+	cache := cache2.NewCache(res.GetRedis())
+	if err := cache.Flushall(ctx); err != nil {
+		log.Error().Err(err).Msgf("[main] failed redis flushall")
+	}
+
+	cardsRepository := repository.NewCardRepository(res.GetDB(), cache)
 	decisionRepository := repository.NewDecisionRepository(res.GetDB())
 	stateRepository := repository.NewStateRepository(res.GetDB())
 	spellRepository := repository.NewSpellRepository(res.GetDB())
@@ -36,21 +42,37 @@ func main() {
 		stateRepository,
 		spellRepository,
 	)
+
+	// refresher enhot cache
+	refresher := repository.NewRefresher(cardsRepository)
+	go func() {
+		if err := refresher.Refresh(ctx); err != nil {
+			log.Error().Err(err).Msgf("[main] failed refreshing")
+			cancel() // stop application and it will be reloaded
+		}
+	}()
+	go func() {
+		if err := refresher.StartRefreshing(ctx); err != nil {
+			log.Error().Err(err).Msgf("[main] failed refreshing")
+			cancel() // stop application and it will be reloaded
+		}
+	}()
+
 	stateHandler := handler.NewStateHandler(
 		log.With().Str("service", "state_handler").Logger(),
 		retriever,
 	)
-	lastPaintingsHandler := handler.NewLastPaintingsHandler(cardsRepository)
+	lastPaintingsHandler := handler.NewLastPaintingsHandler(cardsRepository, cache)
 	lotteryHandler := handler.NewLotteryHandler(
 		log.With().Str("service", "lottery_handler").Logger(),
 		lotteryRepository,
 	)
-	cardHandler := handler.NewCardHandler(cardsRepository)
+	cardHandler := handler.NewCardHandler(cardsRepository, cache)
 	selectionHander := handler.NewSelectionHandler(lotteryRepository)
 
 	prayRepository := repository.NewPrayRepository(res.GetDB())
 	prayHandler := handler.NewPrayHandler(prayRepository)
-	lis := listener.NewListener(res.GetRedis())
+	lis := listener.NewListener(res.GetRedis(), cache, cardsRepository)
 
 	go func() {
 		err := lis.Run(ctx)

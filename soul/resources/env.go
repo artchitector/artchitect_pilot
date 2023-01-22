@@ -36,7 +36,7 @@ func initEnv() *Env {
 		ArtistURL:           os.Getenv("ARTIST_URL"),
 		TelegramBotToken:    os.Getenv("TELEGRAM_BOT_TOKEN"),
 		GifterActive:        os.Getenv("GIFTER_ACTIVE") == "true",
-		TenMinChat:          os.Getenv("10MIN_CHAT"),
+		TenMinChat:          os.Getenv("TEN_MIN_CHAT"),
 		MercifulEnabled:     os.Getenv("MERCIFUL_ENABLED") == "true",
 		RedisHost:           os.Getenv("REDIS_HOST"),
 		UseFakeArtist:       os.Getenv("USE_FAKE_ARTIST") == "true",

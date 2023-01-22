@@ -26,3 +26,9 @@ type prayRepository interface {
 	MakePray(ctx context.Context) (model.PrayWithQuestion, error)
 	GetAnswer(ctx context.Context, prayId uint64) (uint64, error)
 }
+
+type cache interface {
+	GetImage(ctx context.Context, ID uint64, size string) ([]byte, error)
+	GetCard(ctx context.Context, ID uint64) (model.Card, error)
+	GetLastCards(ctx context.Context, count uint64) ([]model.Card, error)
+}

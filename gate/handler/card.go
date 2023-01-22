@@ -1,19 +1,10 @@
 package handler
 
 import (
-	"bytes"
+	"github.com/artchitector/artchitect/gate/resizer"
 	"github.com/gin-gonic/gin"
-	"github.com/nfnt/resize"
-	"github.com/pkg/errors"
-	"image/jpeg"
+	"github.com/rs/zerolog/log"
 	"net/http"
-)
-
-const (
-	SizeF  = "f"
-	SizeM  = "m"
-	SizeS  = "s"
-	SizeXS = "xs"
 )
 
 type CardRequest struct {
@@ -27,10 +18,11 @@ type ImageRequest struct {
 
 type CardHandler struct {
 	cardsRepository cardsRepository
+	cache           cache
 }
 
-func NewCardHandler(cardsRepository cardsRepository) *CardHandler {
-	return &CardHandler{cardsRepository: cardsRepository}
+func NewCardHandler(cardsRepository cardsRepository, cache cache) *CardHandler {
+	return &CardHandler{cardsRepository, cache}
 }
 
 func (lh *CardHandler) Handle(c *gin.Context) {
@@ -39,6 +31,11 @@ func (lh *CardHandler) Handle(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	card, err := lh.cache.GetCard(c, uint64(request.ID))
+	if err != nil {
+		log.Error().Err(err).Msgf("[card_handler:Handle] failed to get card(id=%d) from cache", card.ID)
+	}
+
 	card, found, err := lh.cardsRepository.GetCard(c, request.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -58,6 +55,15 @@ func (ch *CardHandler) HandleImage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	cached, err := ch.cache.GetImage(c, uint64(request.ID), request.Size)
+	if err != nil {
+		log.Error().Err(err).Msgf("[card_controller:HandleImage] failed to get cached image")
+	} else {
+		c.Data(http.StatusOK, "image/jpeg", cached)
+		return
+	}
+
 	card, found, err := ch.cardsRepository.GetCard(c, request.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -67,45 +73,10 @@ func (ch *CardHandler) HandleImage(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
-	img, err := ch.reduceImage(card.Image, request.Size)
+	img, err := resizer.Resize(card.Image, request.Size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.Data(http.StatusOK, "image/jpeg", img)
-}
-
-func (ch *CardHandler) reduceImage(rawImg []byte, size string) ([]byte, error) {
-	r := bytes.NewReader(rawImg)
-	img, err := jpeg.Decode(r)
-	if err != nil {
-		return []byte{}, errors.Wrap(err, "[card_handler] failed to decode jpeg")
-	}
-
-	var height, width uint
-	switch size {
-	case SizeF:
-		// nothing to do, image already full
-		return rawImg, nil
-	case SizeM:
-		width = uint(img.Bounds().Size().X / 2)
-		height = uint(img.Bounds().Size().Y / 2)
-	case SizeS:
-		width = uint(img.Bounds().Size().X / 4)
-		height = uint(img.Bounds().Size().Y / 4)
-	case SizeXS:
-		width = uint(img.Bounds().Size().X / 8)
-		height = uint(img.Bounds().Size().Y / 8)
-	default:
-		// TODO сделать из этого ответ bad-requst, если такое пришло
-		return []byte{}, errors.Errorf("[card_hadler] wrong size %s", size)
-	}
-
-	img = resize.Resize(width, height, img, resize.Lanczos3)
-	buf := new(bytes.Buffer)
-	if err := jpeg.Encode(buf, img, nil); err != nil {
-		return []byte{}, errors.Wrapf(err, "[card_handler] failed to encode jpeg")
-	}
-
-	return buf.Bytes(), nil
 }

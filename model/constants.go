@@ -23,6 +23,12 @@ const (
 
 	StrategyHash  = "hash"
 	StrategyScale = "scale"
+
+	SizeXF = "xf" // very large x4 resolution, will be in future
+	SizeF  = "f"
+	SizeM  = "m"
+	SizeS  = "s"
+	SizeXS = "xs"
 )
 
 const (
