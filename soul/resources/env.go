@@ -18,6 +18,7 @@ type Env struct {
 	TenMinChat          string
 	RedisHost           string
 	UseFakeArtist       bool
+	RedisPassword       string
 }
 
 func initEnv() *Env {
@@ -40,5 +41,6 @@ func initEnv() *Env {
 		MercifulEnabled:     os.Getenv("MERCIFUL_ENABLED") == "true",
 		RedisHost:           os.Getenv("REDIS_HOST"),
 		UseFakeArtist:       os.Getenv("USE_FAKE_ARTIST") == "true",
+		RedisPassword:       os.Getenv("REDIS_PASSWORD"),
 	}
 }

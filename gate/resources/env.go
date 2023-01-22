@@ -7,9 +7,10 @@ import (
 )
 
 type Env struct {
-	DbDSN     string
-	HttpPort  string
-	RedisHost string
+	DbDSN         string
+	HttpPort      string
+	RedisHost     string
+	RedisPassword string
 }
 
 func initEnv() *Env {
@@ -19,8 +20,9 @@ func initEnv() *Env {
 	}
 
 	return &Env{
-		DbDSN:     os.Getenv("DB_DSN"),
-		HttpPort:  os.Getenv("HTTP_PORT"),
-		RedisHost: os.Getenv("REDIS_HOST"),
+		DbDSN:         os.Getenv("DB_DSN"),
+		HttpPort:      os.Getenv("HTTP_PORT"),
+		RedisHost:     os.Getenv("REDIS_HOST"),
+		RedisPassword: os.Getenv("REDIS_PASSWORD"),
 	}
 }
