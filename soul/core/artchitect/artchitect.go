@@ -8,8 +8,13 @@ import (
 	"gorm.io/gorm"
 )
 
-type artist interface {
-	GetPainting(ctx context.Context, spell model.Spell) (model.Card, error)
+type notifier interface {
+	NotifyTick(ctx context.Context, tick int) error
+	NotifyNewCard(ctx context.Context, card model.Card) error
+}
+
+type ArtistContract interface {
+	GetCard(ctx context.Context, spell model.Spell) (model.Card, error)
 }
 
 type state interface {
@@ -43,26 +48,40 @@ type Artchitect struct {
 	config            Config
 	state             state
 	speller           speller
-	artist            artist
+	artist            ArtistContract
 	lotteryRepository lotteryRepository
 	lotteryRunner     lotteryRunner
 	merciful          merciful
+	notifier          notifier
 }
 
 func NewArtchitect(
 	config Config,
 	state state,
 	speller speller,
-	artist artist,
+	artist ArtistContract,
 	lotteryRepository lotteryRepository,
 	lotteryRunner lotteryRunner,
 	merciful merciful,
+	notifier notifier,
 ) *Artchitect {
-	return &Artchitect{config, state, speller, artist, lotteryRepository, lotteryRunner, merciful}
+	return &Artchitect{
+		config,
+		state,
+		speller,
+		artist,
+		lotteryRepository,
+		lotteryRunner,
+		merciful,
+		notifier,
+	}
 }
 
 func (a *Artchitect) Run(ctx context.Context, tick int) error {
 	log.Info().Msgf("[artchitect] tick=%d", tick)
+	if err := a.notifier.NotifyTick(ctx, tick); err != nil {
+		log.Error().Err(err).Send()
+	}
 	if tick%10 == 0 {
 		return a.maintenance(ctx)
 	}
@@ -99,11 +118,14 @@ func (a *Artchitect) runCardCreation(ctx context.Context) error {
 	}
 	log.Info().Msgf("[artchitect] got spell: %+v", spell)
 	a.state.SetState(ctx, model.StateMakingArtifact)
-	painting, err := a.artist.GetPainting(ctx, spell)
+	card, err := a.artist.GetCard(ctx, spell)
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("[artchitect] got card: id=%d, spell_id=%d", painting.ID, spell.ID)
+	log.Info().Msgf("[artchitect] got card: id=%d, spell_id=%d", card.ID, spell.ID)
+	if err := a.notifier.NotifyNewCard(ctx, card); err != nil {
+		log.Error().Err(err).Msgf("[artchitect] failed to notify new card")
+	}
 	a.state.SetState(ctx, model.StateMakingRest)
 
 	return nil

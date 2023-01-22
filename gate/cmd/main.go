@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/artchitector/artchitect/gate/handler"
+	"github.com/artchitector/artchitect/gate/listener"
 	"github.com/artchitector/artchitect/gate/repository"
 	"github.com/artchitector/artchitect/gate/resources"
 	"github.com/artchitector/artchitect/gate/state"
@@ -49,6 +50,15 @@ func main() {
 
 	prayRepository := repository.NewPrayRepository(res.GetDB())
 	prayHandler := handler.NewPrayHandler(prayRepository)
+	lis := listener.NewListener(res.GetRedis())
+
+	go func() {
+		err := lis.Run(ctx)
+		if err != nil {
+			log.Error().Err(err).Send()
+			cancel()
+		}
+	}()
 
 	go func() {
 		r := gin.Default()

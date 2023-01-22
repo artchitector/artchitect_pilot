@@ -1,10 +1,14 @@
 package resources
 
-import "gorm.io/gorm"
+import (
+	"github.com/go-redis/redis/v8"
+	"gorm.io/gorm"
+)
 
 type Resources struct {
-	env *Env
-	db  *gorm.DB
+	env   *Env
+	db    *gorm.DB
+	redis *redis.Client
 }
 
 func (r *Resources) GetDB() *gorm.DB {
@@ -15,9 +19,14 @@ func (r *Resources) GetEnv() *Env {
 	return r.env
 }
 
+func (r *Resources) GetRedis() *redis.Client {
+	return r.redis
+}
+
 func InitResources() *Resources {
 	env := initEnv()
 	db := initDB(env)
+	red := initRedis(env.RedisHost)
 
-	return &Resources{env, db}
+	return &Resources{env, db, red}
 }

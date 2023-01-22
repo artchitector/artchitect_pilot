@@ -11,6 +11,7 @@ import (
 	"github.com/artchitector/artchitect/soul/core/origin/driver"
 	spellerService "github.com/artchitector/artchitect/soul/core/speller"
 	stateService "github.com/artchitector/artchitect/soul/core/state"
+	notifier2 "github.com/artchitector/artchitect/soul/notifier"
 	"github.com/artchitector/artchitect/soul/repository"
 	"github.com/artchitector/artchitect/soul/resources"
 	"github.com/rs/zerolog"
@@ -38,7 +39,7 @@ func main() {
 		cancel()
 	}()
 
-	paintingRepo := repository.NewCardRepository(res.GetDB())
+	cardsRepo := repository.NewCardRepository(res.GetDB())
 	decisionRepo := repository.NewDecisionRepository(res.GetDB())
 	stateRepository := repository.NewStateRepository(res.GetDB())
 	spellRepository := repository.NewSpellRepository(res.GetDB())
@@ -49,18 +50,34 @@ func main() {
 	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL, decisionRepo)
 	origin := originService.NewOrigin(webcamDriver)
 	speller := spellerService.NewSpeller(spellRepository, origin)
-	artist := artistService.NewArtist(res.GetEnv().ArtistURL, paintingRepo)
-	runner := lottery.NewRunner(lotteryRepository, paintingRepo, origin)
+	var artist artchitectService.ArtistContract
+	if res.GetEnv().UseFakeArtist {
+		artist = artistService.NewFakeArtist(cardsRepo)
+	} else {
+		artist = artistService.NewArtist(res.GetEnv().ArtistURL, cardsRepo)
+	}
+	runner := lottery.NewRunner(lotteryRepository, cardsRepo, origin)
 	state := stateService.NewState(stateRepository)
 	merciful := merciful2.NewMerciful(prayRepository, artist, state, speller)
+
+	notifier := notifier2.NewNotifier(res.GetRedis())
 
 	artchitectConfig := artchitectService.Config{
 		CardsCreationEnabled: res.GetEnv().CardCreationEnabled,
 		LotteryEnabled:       res.GetEnv().LotteryEnabled,
 		MercifulEnabled:      res.GetEnv().MercifulEnabled,
 	}
-	artchitect := artchitectService.NewArtchitect(artchitectConfig, state, speller, artist, lotteryRepository, runner, merciful)
-	gift := gifter.NewGifter(paintingRepo, origin, res.GetEnv().TelegramBotToken, res.GetEnv().TenMinChat)
+	artchitect := artchitectService.NewArtchitect(
+		artchitectConfig,
+		state,
+		speller,
+		artist,
+		lotteryRepository,
+		runner,
+		merciful,
+		notifier,
+	)
+	gift := gifter.NewGifter(cardsRepo, origin, res.GetEnv().TelegramBotToken, res.GetEnv().TenMinChat)
 
 	// state saving (in DB) process
 	go func() {

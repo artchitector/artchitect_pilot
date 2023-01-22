@@ -13,20 +13,20 @@ import (
 	"time"
 )
 
-type paintingRepository interface {
+type cardRepository interface {
 	SavePainting(ctx context.Context, painting model.Card) (model.Card, error)
 }
 
 type Artist struct {
 	artistURL          string
-	paintingRepository paintingRepository
+	paintingRepository cardRepository
 }
 
-func NewArtist(artistURL string, paintingRepository paintingRepository) *Artist {
+func NewArtist(artistURL string, paintingRepository cardRepository) *Artist {
 	return &Artist{artistURL, paintingRepository}
 }
 
-func (a *Artist) GetPainting(ctx context.Context, spell model.Spell) (model.Card, error) {
+func (a *Artist) GetCard(ctx context.Context, spell model.Spell) (model.Card, error) {
 	client := http.Client{
 		Timeout: time.Second * 90,
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 type artist interface {
-	GetPainting(ctx context.Context, spell model.Spell) (model.Card, error)
+	GetCard(ctx context.Context, spell model.Spell) (model.Card, error)
 }
 
 type state interface {
@@ -65,7 +65,7 @@ func (m *Merciful) getAnswer(ctx context.Context) (uint64, error) {
 	}
 	log.Info().Msgf("[merciful] got spell: %+v", spell)
 	m.state.SetState(ctx, model.StateMakingArtifact)
-	card, err := m.artist.GetPainting(ctx, spell)
+	card, err := m.artist.GetCard(ctx, spell)
 	if err != nil {
 		return 0, err
 	}

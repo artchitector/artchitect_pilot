@@ -16,6 +16,8 @@ type Env struct {
 	TelegramBotToken    string
 	GifterActive        bool
 	TenMinChat          string
+	RedisHost           string
+	UseFakeArtist       bool
 }
 
 func initEnv() *Env {
@@ -36,5 +38,7 @@ func initEnv() *Env {
 		GifterActive:        os.Getenv("GIFTER_ACTIVE") == "true",
 		TenMinChat:          os.Getenv("10MIN_CHAT"),
 		MercifulEnabled:     os.Getenv("MERCIFUL_ENABLED") == "true",
+		RedisHost:           os.Getenv("REDIS_HOST"),
+		UseFakeArtist:       os.Getenv("USE_FAKE_ARTIST") == "true",
 	}
 }

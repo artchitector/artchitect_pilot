@@ -15,6 +15,10 @@ func (r *Resources) GetDB() *gorm.DB {
 	return r.db
 }
 
+func (r *Resources) GetRedis() *redis.Client {
+	return r.redis
+}
+
 func (r *Resources) GetEnv() *Env {
 	return r.env
 }
