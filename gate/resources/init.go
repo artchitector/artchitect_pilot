@@ -26,7 +26,7 @@ func (r *Resources) GetEnv() *Env {
 func InitResources() *Resources {
 	env := initEnv()
 	db := initDB(env)
-	red := initRedis(env.RedisHost)
+	red := initRedis(env)
 
 	return &Resources{env, db, red}
 }
