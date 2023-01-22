@@ -9,11 +9,12 @@ import (
 
 // Refresher refresh cache
 type Refresher struct {
-	cardRepository *CardRepository
+	cardRepository    *CardRepository
+	lotteryRepository *LotteryRepository
 }
 
-func NewRefresher(cardRepository *CardRepository) *Refresher {
-	return &Refresher{cardRepository}
+func NewRefresher(cardRepository *CardRepository, lotteryRepository *LotteryRepository) *Refresher {
+	return &Refresher{cardRepository, lotteryRepository}
 }
 
 func (r *Refresher) StartRefreshing(ctx context.Context) error {
@@ -31,9 +32,22 @@ func (r *Refresher) StartRefreshing(ctx context.Context) error {
 
 func (r *Refresher) Refresh(ctx context.Context) error {
 	log.Info().Msgf("[refresher] start refresh")
+	// last cards
 	if _, err := r.cardRepository.GetLastCards(ctx, 100); err != nil {
 		return errors.Wrapf(err, "[refresher] failed to refresh last cards")
 	}
 	log.Info().Msgf("[refresher] complete refresh! God bless!")
+
+	// selection
+	ids, err := r.lotteryRepository.GetSelection(ctx)
+	if err != nil {
+		return errors.Wrapf(err, "[refresher] failed to get selection")
+	}
+	for _, id := range ids {
+		if _, _, err := r.cardRepository.GetCard(ctx, uint(id)); err != nil {
+			return errors.Wrapf(err, "[refresher] failed to get card id=%d", id)
+		}
+	}
+
 	return nil
 }
