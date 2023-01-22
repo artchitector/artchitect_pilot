@@ -127,9 +127,12 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 		return errors.Wrapf(err, "[cache] failed to set card into redis id=%d", card.ID)
 	}
 
+	ch := make(chan struct{}, 5)
+
 	go func() {
 		// save each card size in Redis
 		for _, size := range []string{model.SizeF, model.SizeM, model.SizeS, model.SizeXS} {
+			ch <- struct{}{}
 			exist, err := c.ExistsImage(ctx, uint64(card.ID), size)
 			if err != nil {
 				log.Error().Err(err).Msgf("[cache] not found existing image (id=%d, size=%s", card.ID, size)
@@ -137,6 +140,7 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 				log.Info().Msgf("[cache] skip image resizing in cache (id=%d, size=%s", card.ID, size)
 				continue
 			}
+			log.Info().Msgf("[cache] start resizing process(%d)", card.ID)
 			resized, err := resizer.Resize(card.Image, size)
 			if err != nil {
 				log.Error().Err(err).Msgf("[cache] failed to resize image into size (id=%d, size=%s)", card.ID, size)
@@ -148,6 +152,7 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 				continue
 			}
 		}
+		<-ch
 	}()
 
 	return nil
