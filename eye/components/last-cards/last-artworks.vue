@@ -33,16 +33,15 @@ export default {
   },
   async fetch() {
     this.cards = await this.$axios.$get('/last_paintings/100')
-    console.log('loaded', this.cards.length)
-    console.log(process.server)
+    console.log('loaded cards ', this.cards.length)
   },
   mounted() {
     const self = this
     if (process.server === true) {
       return
     }
-    console.log("Starting connection to WebSocket Server")
-    this.connection = new WebSocket("ws://localhost/api/ws")
+    console.log("Starting connection to WebSocket Server on ", process.env.WS_URL)
+    this.connection = new WebSocket(process.env.WS_URL)
 
     this.connection.onerror = function (error) {
       console.log(error)
