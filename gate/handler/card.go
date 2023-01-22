@@ -34,6 +34,9 @@ func (lh *CardHandler) Handle(c *gin.Context) {
 	card, err := lh.cache.GetCard(c, uint64(request.ID))
 	if err != nil {
 		log.Error().Err(err).Msgf("[card_handler:Handle] failed to get card(id=%d) from cache", card.ID)
+	} else {
+		c.JSON(http.StatusOK, card)
+		return
 	}
 
 	card, found, err := lh.cardsRepository.GetCard(c, request.ID)

@@ -30,8 +30,10 @@ func (r *Refresher) StartRefreshing(ctx context.Context) error {
 }
 
 func (r *Refresher) Refresh(ctx context.Context) error {
+	log.Info().Msgf("[refresher] start refresh")
 	if _, err := r.cardRepository.GetLastCards(ctx, 100); err != nil {
 		return errors.Wrapf(err, "[refresher] failed to refresh last cards")
 	}
+	log.Info().Msgf("[refresher] complete refresh! God bless!")
 	return nil
 }
