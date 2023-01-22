@@ -5,10 +5,13 @@ import (
 	"github.com/artchitector/artchitect/model"
 	"github.com/nfnt/resize"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"image/jpeg"
+	"time"
 )
 
 func Resize(rawImg []byte, size string) ([]byte, error) {
+	start := time.Now()
 	r := bytes.NewReader(rawImg)
 	img, err := jpeg.Decode(r)
 	if err != nil {
@@ -39,6 +42,10 @@ func Resize(rawImg []byte, size string) ([]byte, error) {
 	if err := jpeg.Encode(buf, img, nil); err != nil {
 		return []byte{}, errors.Wrapf(err, "[resizer] failed to encode jpeg")
 	}
+	log.Info().Msgf(
+		"[resizer] resized, size=%s, time: %s",
+		time.Now().Sub(start),
+	)
 
 	return buf.Bytes(), nil
 }
