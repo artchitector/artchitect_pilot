@@ -7,6 +7,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"time"
 )
 
 type cache interface {
@@ -40,6 +41,7 @@ func (l *Listener) Run(ctx context.Context) error {
 			msg, err := subscriber.ReceiveMessage(ctx)
 			if err != nil {
 				log.Error().Err(err).Msgf("[listener] failed to receive message")
+				time.Sleep(time.Second)
 				continue
 			}
 			if err := l.handle(ctx, msg); err != nil {

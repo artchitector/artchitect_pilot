@@ -14,6 +14,7 @@ import (
 )
 
 const (
+	MaxResizeWorkers = 4
 	// KeyLastCards stores last cards IDs - last_cards = [1000, 999, 998, 997...]
 	KeyLastCards = "last_cards"
 	// KeyCard stores json data of specified card - card:1000 = {ID: 1000, ...}
@@ -24,12 +25,13 @@ const (
 var ErrorNotFound = errors.Errorf("[cache] not found cached data")
 
 type Cache struct {
-	mutex sync.Mutex
-	rdb   *redis.Client
+	mutex   sync.Mutex
+	rdb     *redis.Client
+	workers chan struct{}
 }
 
 func NewCache(rdb *redis.Client) *Cache {
-	return &Cache{sync.Mutex{}, rdb}
+	return &Cache{sync.Mutex{}, rdb, make(chan struct{}, MaxResizeWorkers)}
 }
 
 func (c *Cache) Flushall(ctx context.Context) error {
@@ -127,12 +129,10 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 		return errors.Wrapf(err, "[cache] failed to set card into redis id=%d", card.ID)
 	}
 
-	ch := make(chan struct{}, 5)
-
 	go func() {
 		// save each card size in Redis
 		for _, size := range []string{model.SizeF, model.SizeM, model.SizeS, model.SizeXS} {
-			ch <- struct{}{}
+			c.workers <- struct{}{}
 			exist, err := c.ExistsImage(ctx, uint64(card.ID), size)
 			if err != nil {
 				log.Error().Err(err).Msgf("[cache] not found existing image (id=%d, size=%s", card.ID, size)
@@ -140,7 +140,7 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 				log.Info().Msgf("[cache] skip image resizing in cache (id=%d, size=%s", card.ID, size)
 				continue
 			}
-			log.Info().Msgf("[cache] start resizing process(%d)", card.ID)
+			log.Info().Msgf("[cache] start resizing process(%d, %s)", card.ID, size)
 			resized, err := resizer.Resize(card.Image, size)
 			if err != nil {
 				log.Error().Err(err).Msgf("[cache] failed to resize image into size (id=%d, size=%s)", card.ID, size)
@@ -151,8 +151,9 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 				log.Error().Err(err).Msgf("[cache] failed to save size into cache (id=%d, size=%s)", card.ID, size)
 				continue
 			}
+			log.Info().Msgf("[cache] image resized(%d, %s)", card.ID, size)
+			<-c.workers
 		}
-		<-ch
 	}()
 
 	return nil
