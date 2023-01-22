@@ -23,21 +23,30 @@ func (r *Refresher) StartRefreshing(ctx context.Context) error {
 		case <-ctx.Done():
 			return nil
 		case <-time.NewTicker(time.Minute).C:
-			if err := r.Refresh(ctx); err != nil {
+			if err := r.RefreshLast(ctx); err != nil {
 				log.Error().Err(err).Msgf("[refresher] failed to refresh last cards")
 			}
+		case <-time.NewTicker(time.Minute * 10).C:
+			if err := r.RefreshLast(ctx); err != nil {
+				log.Error().Err(err).Msgf("[refresher] failed to refresh selection")
+			}
 		}
+
 	}
 }
 
-func (r *Refresher) Refresh(ctx context.Context) error {
+func (r *Refresher) RefreshLast(ctx context.Context) error {
 	log.Info().Msgf("[refresher] start refresh")
 	// last cards
 	if _, err := r.cardRepository.GetLastCards(ctx, 100); err != nil {
 		return errors.Wrapf(err, "[refresher] failed to refresh last cards")
 	}
 	log.Info().Msgf("[refresher] complete refresh! God bless!")
+	return nil
+}
 
+func (r *Refresher) RefreshSelection(ctx context.Context) error {
+	log.Info().Msgf("[refresher] god bless refresh selection - started")
 	// selection
 	ids, err := r.lotteryRepository.GetSelection(ctx)
 	if err != nil {
@@ -48,6 +57,6 @@ func (r *Refresher) Refresh(ctx context.Context) error {
 			return errors.Wrapf(err, "[refresher] failed to get card id=%d", id)
 		}
 	}
-
+	log.Info().Msgf("[refresher] god bless refresh selection - finished")
 	return nil
 }

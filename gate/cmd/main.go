@@ -46,7 +46,7 @@ func main() {
 	// refresher enhot cache
 	refresher := repository.NewRefresher(cardsRepository, lotteryRepository)
 	go func() {
-		if err := refresher.Refresh(ctx); err != nil {
+		if err := refresher.RefreshLast(ctx); err != nil {
 			log.Error().Err(err).Msgf("[main] failed refreshing")
 			cancel() // stop application and it will be reloaded
 		}
