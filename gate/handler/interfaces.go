@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"github.com/artchitector/artchitect/gate/localmodel"
 	"github.com/artchitector/artchitect/model"
 )
 
@@ -31,4 +32,8 @@ type cache interface {
 	GetImage(ctx context.Context, ID uint64, size string) ([]byte, error)
 	GetCard(ctx context.Context, ID uint64) (model.Card, error)
 	GetLastCards(ctx context.Context, count uint64) ([]model.Card, error)
+}
+
+type listener interface {
+	EventChannel() (chan localmodel.Event, chan struct{})
 }

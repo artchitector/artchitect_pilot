@@ -73,6 +73,7 @@ func main() {
 	prayRepository := repository.NewPrayRepository(res.GetDB())
 	prayHandler := handler.NewPrayHandler(prayRepository)
 	lis := listener.NewListener(res.GetRedis(), cache, cardsRepository)
+	websocketHandler := handler.NewWebsocketHandler(lis)
 
 	go func() {
 		err := lis.Run(ctx)
@@ -102,7 +103,9 @@ func main() {
 		r.GET("/image/:size/:id", cardHandler.HandleImage)
 		r.GET("/answer", prayHandler.Handle)
 		r.GET("/answer/:id", prayHandler.HandleAnswer)
-
+		r.GET("/ws", func(c *gin.Context) {
+			websocketHandler.Handle(c.Writer, c.Request)
+		})
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()
 		}

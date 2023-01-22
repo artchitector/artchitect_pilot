@@ -27,12 +27,43 @@ export default {
   data() {
     return {
       cards: [],
-      error: null
+      error: null,
+      connection: null
     }
   },
   async fetch() {
     this.cards = await this.$axios.$get('/last_paintings/100')
     console.log('loaded', this.cards.length)
+    console.log(process.server)
+  },
+  mounted() {
+    const self = this
+    if (process.server === true) {
+      return
+    }
+    console.log("Starting connection to WebSocket Server")
+    this.connection = new WebSocket("ws://localhost/api/ws")
+
+    this.connection.onerror = function (error) {
+      console.log(error)
+    }
+
+    this.connection.onmessage = function(event) {
+      event = JSON.parse(event.data);
+      if (event.Name === 'new_card') { // other event for another components
+        let card = JSON.parse(event.Payload)
+        console.log("added card: ", card.ID, card);
+        self.cards.unshift(card)
+        console.log("removed card: ", self.cards.pop().ID);
+      }
+    }
+
+    this.connection.onopen = function(event) {
+      console.log("Successfully connected to the echo websocket server...")
+    }
+  },
+  beforeDestroy() {
+    this.connection.close()
   },
   computed: {
     count() {
