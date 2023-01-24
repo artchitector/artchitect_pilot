@@ -250,7 +250,7 @@ func encodeToImage(wc *webcam.Webcam, back chan struct{}, fi chan []byte, li cha
 
 func httpServer(addr string, li chan *bytes.Buffer) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("connect from", r.RemoteAddr, r.URL)
+		//log.Println("connect from", r.RemoteAddr, r.URL)
 		if r.URL.Path != "/" {
 			http.NotFound(w, r)
 			return
@@ -271,7 +271,7 @@ func httpServer(addr string, li chan *bytes.Buffer) {
 	})
 
 	http.HandleFunc("/stream", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("connect from", r.RemoteAddr, r.URL)
+		//log.Println("connect from", r.RemoteAddr, r.URL)
 		if r.URL.Path != "/stream" {
 			http.NotFound(w, r)
 			return
