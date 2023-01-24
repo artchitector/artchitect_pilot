@@ -22,7 +22,7 @@ import moment from "moment"
 export default {
   head () {
     return {
-      title: `Artchitect - Карточка #${this.$route.params.id}`
+      title: `Artchitect - card #${this.$route.params.id}`
     }
   },
   data () {

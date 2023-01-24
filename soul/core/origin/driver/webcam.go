@@ -55,6 +55,7 @@ func (w *WebcamDriver) GetValue(ctx context.Context, strategy string, saveDecisi
 			}
 		}()
 	}
+	log.Info().Msgf("[webcam] got number %f", result)
 	return result, err
 }
 

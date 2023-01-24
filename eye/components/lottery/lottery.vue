@@ -8,7 +8,7 @@
 <!--      <NuxtLink :to="`/card/${cardID}`" v-for="cardID in lottery.Winners" target="_blank">-->
 <!--        <img class="mini-preview ml-1 mr-1" :src="`/api/image/xs/${cardID}`"/>-->
 <!--      </NuxtLink>-->
-      <a href="#" @click.prevent="select(cardID)" v-for="cardID in lottery.Winners">
+      <a :href="`/card/${cardID}`" @click.prevent="select(cardID)" v-for="cardID in lottery.Winners">
         <img class="mini-preview ml-1 mr-1" :src="`/api/image/xs/${cardID}`"/>
       </a>
     </div>

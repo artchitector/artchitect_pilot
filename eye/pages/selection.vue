@@ -14,7 +14,7 @@
       </div>
       <div class="columns" v-else v-for="line in lines">
         <div class="column has-text-centered" v-for="id in line">
-          <a href="#" @click.prevent="onSelect(id)">
+          <a :href="`/card/${id}`" @click.prevent="onSelect(id)">
             <img :src="`/api/image/s/${id}`"/>
           </a>
         </div>

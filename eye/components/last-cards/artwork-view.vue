@@ -1,6 +1,6 @@
 <template>
   <div class="image-container">
-    <a href="#" @click.prevent="select()">
+    <a :href="`/card/${artwork.ID}`" @click.prevent="select()">
       <img :src="'/api/image/m/' + artwork.ID"/>
     </a>
     <div class="version">
