@@ -1,8 +1,8 @@
 module.exports = {
   apps : [{
     name: "origin",
-    script: "main.py",
-    instances: '1', // Or a number of instances
-    interpreter: '/home/artchitector/anaconda3/envs/artchitect/bin/python'
+    script: "./bin/origin",
+    instances: '1',
+    args: "-l localhost:8081 -s 640x480"
   }]
 };
