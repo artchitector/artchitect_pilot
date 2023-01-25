@@ -26,9 +26,10 @@ func main() {
 	log.Info().Msg("service gate started")
 
 	cache := cache2.NewCache(res.GetRedis())
-	if err := cache.Flushall(ctx); err != nil {
-		log.Error().Err(err).Msgf("[main] failed redis flushall")
-	}
+	// don't make flushall, because resized images already there. Other data will be replaced
+	//if err := cache.Flushall(ctx); err != nil {
+	//	log.Error().Err(err).Msgf("[main] failed redis flushall")
+	//}
 
 	cardsRepository := repository.NewCardRepository(res.GetDB(), cache)
 	decisionRepository := repository.NewDecisionRepository(res.GetDB())
@@ -47,13 +48,17 @@ func main() {
 	refresher := repository.NewRefresher(cardsRepository, lotteryRepository)
 	go func() {
 		if err := refresher.RefreshLast(ctx); err != nil {
-			log.Error().Err(err).Msgf("[main] failed refreshing")
+			log.Error().Err(err).Msgf("[main] failed refreshing last")
+			cancel() // stop application and it will be reloaded
+		}
+		if err := refresher.RefreshSelection(ctx); err != nil {
+			log.Error().Err(err).Msgf("[main] failed refreshing selection")
 			cancel() // stop application and it will be reloaded
 		}
 	}()
 	go func() {
 		if err := refresher.StartRefreshing(ctx); err != nil {
-			log.Error().Err(err).Msgf("[main] failed refreshing")
+			log.Error().Err(err).Msgf("[main] failed start refreshing")
 			cancel() // stop application and it will be reloaded
 		}
 	}()

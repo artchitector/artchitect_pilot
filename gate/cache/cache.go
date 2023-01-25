@@ -148,7 +148,7 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 				continue
 			}
 			key := fmt.Sprintf(KeyCardImage, card.ID, size)
-			if err := c.rdb.Set(ctx, key, resized, time.Hour).Err(); err != nil {
+			if err := c.rdb.Set(ctx, key, resized, time.Hour*24).Err(); err != nil {
 				log.Error().Err(err).Msgf("[cache] failed to save size into cache (id=%d, size=%s)", card.ID, size)
 				continue
 			}

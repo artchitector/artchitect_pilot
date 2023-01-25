@@ -27,7 +27,7 @@ func (r *Refresher) StartRefreshing(ctx context.Context) error {
 				log.Error().Err(err).Msgf("[refresher] failed to refresh last cards")
 			}
 		case <-time.NewTicker(time.Minute * 10).C:
-			if err := r.RefreshLast(ctx); err != nil {
+			if err := r.RefreshSelection(ctx); err != nil {
 				log.Error().Err(err).Msgf("[refresher] failed to refresh selection")
 			}
 		}
