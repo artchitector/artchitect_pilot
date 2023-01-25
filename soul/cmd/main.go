@@ -46,21 +46,21 @@ func main() {
 	lotteryRepository := repository.NewLotteryRepository(res.GetDB())
 	prayRepository := repository.NewPrayRepository(res.GetDB())
 
+	notifier := notifier2.NewNotifier(res.GetRedis())
+
 	//randProvider := driver.NewRandDriver()
 	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL, decisionRepo)
 	origin := originService.NewOrigin(webcamDriver)
-	speller := spellerService.NewSpeller(spellRepository, origin)
+	speller := spellerService.NewSpeller(spellRepository, origin, notifier)
 	var artist artchitectService.ArtistContract
 	if res.GetEnv().UseFakeArtist {
-		artist = artistService.NewFakeArtist(cardsRepo)
+		artist = artistService.NewFakeArtist(cardsRepo, notifier)
 	} else {
-		artist = artistService.NewArtist(res.GetEnv().ArtistURL, cardsRepo)
+		artist = artistService.NewArtist(res.GetEnv().ArtistURL, cardsRepo, notifier)
 	}
 	runner := lottery.NewRunner(lotteryRepository, cardsRepo, origin)
 	state := stateService.NewState(stateRepository)
-	merciful := merciful2.NewMerciful(prayRepository, artist, state, speller)
-
-	notifier := notifier2.NewNotifier(res.GetRedis())
+	merciful := merciful2.NewMerciful(prayRepository, artist, state, speller, notifier)
 
 	artchitectConfig := artchitectService.Config{
 		CardsCreationEnabled: res.GetEnv().CardCreationEnabled,

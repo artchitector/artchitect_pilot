@@ -5,6 +5,17 @@ import (
 	"time"
 )
 
+type ArtistState struct {
+	Version              string
+	Seed                 uint64
+	TagsCount            uint64
+	Tags                 []string
+	LastCardPaintTime    uint64 // seconds
+	CurrentCardPaintTime uint64 // seconds
+	CardID               uint64
+}
+
+// TODO Удалить всё что ниже и вычистить, стейт не хранится нигде
 // State - Current system state
 type State struct {
 	gorm.Model

@@ -9,7 +9,7 @@ import (
 )
 
 type artist interface {
-	GetCard(ctx context.Context, spell model.Spell) (model.Card, error)
+	GetCard(ctx context.Context, spell model.Spell, artistState *model.ArtistState) (model.Card, error)
 }
 
 type state interface {
@@ -17,12 +17,17 @@ type state interface {
 }
 
 type speller interface {
-	MakeSpell(ctx context.Context) (model.Spell, error)
+	MakeSpell(ctx context.Context, artistState *model.ArtistState) (model.Spell, error)
 }
 
 type prayRepository interface {
 	GetNextPray(ctx context.Context) (model.PrayWithQuestion, error)
 	AnswerPray(ctx context.Context, pray model.PrayWithQuestion, answer uint64) error
+}
+
+type notifier interface {
+	NotifyNewCard(ctx context.Context, card model.Card) error
+	NotifyArtistState(ctx context.Context, state model.ArtistState) error
 }
 
 // Merciful asnwer prays
@@ -31,10 +36,11 @@ type Merciful struct {
 	artist         artist
 	state          state
 	speller        speller
+	notifier       notifier
 }
 
-func NewMerciful(prayRepository prayRepository, artist artist, state state, speller speller) *Merciful {
-	return &Merciful{prayRepository: prayRepository, artist: artist, state: state, speller: speller}
+func NewMerciful(prayRepository prayRepository, artist artist, state state, speller speller, notifier notifier) *Merciful {
+	return &Merciful{prayRepository, artist, state, speller, notifier}
 }
 
 func (m *Merciful) AnswerPray(ctx context.Context) (bool, error) {
@@ -57,20 +63,24 @@ func (m *Merciful) AnswerPray(ctx context.Context) (bool, error) {
 }
 
 func (m *Merciful) getAnswer(ctx context.Context) (uint64, error) {
-	m.state.SetState(ctx, model.StateMakingSpell)
 	log.Info().Msgf("[merciful] start card creation]")
-	spell, err := m.speller.MakeSpell(ctx)
+	state := model.ArtistState{}
+	if err := m.notifier.NotifyArtistState(ctx, state); err != nil {
+		log.Error().Err(err).Msgf("[merciful] failed notify artist state")
+	}
+	spell, err := m.speller.MakeSpell(ctx, &state)
 	if err != nil {
 		return 0, err
 	}
 	log.Info().Msgf("[merciful] got spell: %+v", spell)
-	m.state.SetState(ctx, model.StateMakingArtifact)
-	card, err := m.artist.GetCard(ctx, spell)
+	card, err := m.artist.GetCard(ctx, spell, &state)
 	if err != nil {
 		return 0, err
 	}
 	log.Info().Msgf("[merciful] got card: id=%d, spell_id=%d", card.ID, spell.ID)
-	m.state.SetState(ctx, model.StateMakingRest)
+	if err := m.notifier.NotifyNewCard(ctx, card); err != nil {
+		log.Error().Err(err).Msgf("[merciful] failed to notify new card")
+	}
 
 	return uint64(card.ID), nil
 }

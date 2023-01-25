@@ -11,10 +11,11 @@ import (
 type notifier interface {
 	NotifyTick(ctx context.Context, tick int) error
 	NotifyNewCard(ctx context.Context, card model.Card) error
+	NotifyArtistState(ctx context.Context, state model.ArtistState) error
 }
 
 type ArtistContract interface {
-	GetCard(ctx context.Context, spell model.Spell) (model.Card, error)
+	GetCard(ctx context.Context, spell model.Spell, artistState *model.ArtistState) (model.Card, error)
 }
 
 type state interface {
@@ -22,7 +23,7 @@ type state interface {
 }
 
 type speller interface {
-	MakeSpell(ctx context.Context) (model.Spell, error)
+	MakeSpell(ctx context.Context, artistState *model.ArtistState) (model.Spell, error)
 }
 
 type merciful interface {
@@ -110,15 +111,19 @@ func (a *Artchitect) Run(ctx context.Context, tick int) error {
 }
 
 func (a *Artchitect) runCardCreation(ctx context.Context) error {
-	a.state.SetState(ctx, model.StateMakingSpell)
+	//a.state.SetState(ctx, model.StateMakingSpell)
 	log.Info().Msgf("[artchitect] start card creation]")
-	spell, err := a.speller.MakeSpell(ctx)
+	state := model.ArtistState{}
+	if err := a.notifier.NotifyArtistState(ctx, state); err != nil {
+		log.Error().Err(err).Msgf("[artchitect] failed notify artist state")
+	}
+	spell, err := a.speller.MakeSpell(ctx, &state)
 	if err != nil {
 		return err
 	}
 	log.Info().Msgf("[artchitect] got spell: %+v", spell)
-	a.state.SetState(ctx, model.StateMakingArtifact)
-	card, err := a.artist.GetCard(ctx, spell)
+	//a.state.SetState(ctx, model.StateMakingArtifact)
+	card, err := a.artist.GetCard(ctx, spell, &state)
 	if err != nil {
 		return err
 	}
@@ -126,7 +131,7 @@ func (a *Artchitect) runCardCreation(ctx context.Context) error {
 	if err := a.notifier.NotifyNewCard(ctx, card); err != nil {
 		log.Error().Err(err).Msgf("[artchitect] failed to notify new card")
 	}
-	a.state.SetState(ctx, model.StateMakingRest)
+	//a.state.SetState(ctx, model.StateMakingRest)
 
 	return nil
 }

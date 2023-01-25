@@ -37,3 +37,9 @@ func (pr *CardRepository) GetCardWithOffset(offset uint64) (model.Card, error) {
 	err := pr.db.Preload("Spell").Order("id asc").Limit(1).Offset(int(offset)).Find(&card).Error
 	return card, err
 }
+
+func (pr *CardRepository) GetLastCardPaintTime(ctx context.Context) (uint64, error) {
+	var paintTime uint64
+	err := pr.db.Select("paint_time").Model(&model.Card{}).Order("id desc").Limit(1).Scan(&paintTime).Error
+	return paintTime, err
+}

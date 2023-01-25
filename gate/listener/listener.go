@@ -36,7 +36,7 @@ func NewListener(red *redis.Client, cache cache, cardRepository cardRepository) 
 }
 
 func (l *Listener) Run(ctx context.Context) error {
-	subscriber := l.red.Subscribe(ctx, model.ChannelTick, model.ChannelNewCard)
+	subscriber := l.red.Subscribe(ctx, model.ChannelTick, model.ChannelNewCard, model.ChannelArtist)
 	for {
 		select {
 		case <-ctx.Done():
@@ -59,12 +59,16 @@ func (l *Listener) handle(ctx context.Context, msg *redis.Message) error {
 	log.Info().Msgf("[listener] got %s event:  %s", msg.Channel, msg.Payload)
 	switch msg.Channel {
 	case model.ChannelTick:
+	case model.ChannelArtist:
 
 	case model.ChannelNewCard:
 		err := l.handleNewCard(ctx, msg)
 		if err != nil {
 			return errors.Wrap(err, "[listener] failed to handle new card")
 		}
+	default:
+		log.Error().Msgf("[listener] unknown event %s", msg.Channel)
+		return nil
 	}
 	log.Info().Msgf("%+v", msg)
 

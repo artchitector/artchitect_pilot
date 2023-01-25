@@ -2,6 +2,7 @@
   <div>
     <short/>
     <promotion/>
+    <heart/>
     <section>
       <a id="cards"></a>
       <last-artworks/>

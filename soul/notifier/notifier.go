@@ -27,5 +27,14 @@ func (n *Notifier) NotifyNewCard(ctx context.Context, card model.Card) error {
 		return errors.Wrap(err, "[notifier] failed to marshal card")
 	}
 	err = n.red.Publish(ctx, model.ChannelNewCard, cardStr).Err()
-	return errors.Wrap(err, "[notifier] failed to notify tick")
+	return errors.Wrap(err, "[notifier] failed to notify card")
+}
+
+func (n *Notifier) NotifyArtistState(ctx context.Context, state model.ArtistState) error {
+	jsn, err := json.Marshal(state)
+	if err != nil {
+		return errors.Wrap(err, "[notifier] failed to marshal artist state")
+	}
+	err = n.red.Publish(ctx, model.ChannelArtist, jsn).Err()
+	return errors.Wrap(err, "[notifier] failed to notify artist")
 }
