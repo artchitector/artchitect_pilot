@@ -4,6 +4,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
 	"os"
+	"strconv"
 )
 
 type Env struct {
@@ -21,6 +22,9 @@ type Env struct {
 	OriginURL     string
 	ArtistURL     string
 
+	// settings
+	CardTotalTime uint
+
 	// telegram constants
 	TelegramBotToken string
 	TenMinChat       string
@@ -30,6 +34,12 @@ func initEnv() *Env {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal().Err(err).Send()
+	}
+
+	cardTotalTimeStr := os.Getenv("CARD_TOTAL_TIME")
+	cardTotalTime, err := strconv.Atoi(cardTotalTimeStr)
+	if err != nil {
+		log.Fatal().Err(err)
 	}
 
 	return &Env{
@@ -44,6 +54,8 @@ func initEnv() *Env {
 		RedisPassword: os.Getenv("REDIS_PASSWORD"),
 		OriginURL:     os.Getenv("ORIGIN_URL"),
 		ArtistURL:     os.Getenv("ARTIST_URL"),
+
+		CardTotalTime: uint(cardTotalTime),
 
 		TelegramBotToken: os.Getenv("TELEGRAM_BOT_TOKEN"),
 		TenMinChat:       os.Getenv("TEN_MIN_CHAT"),

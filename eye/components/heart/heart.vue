@@ -10,12 +10,21 @@
     </p>
     <p>Tags: {{ artist.tags.join(', ') }}</p>
     <p>
-      Progress:
+      Paint progress:
       <span v-if="artist.currentCardPaintTime === null">
         -
       </span>
       <span v-else>
         {{ artist.currentCardPaintTime }}/{{ artist.lastCardPaintTime }}
+      </span>
+    </p>
+    <p>
+      Enjoy progress:
+      <span v-if="artist.currentEnjoyTime === null">
+        -
+      </span>
+      <span v-else>
+        {{ artist.currentEnjoyTime }}/{{ artist.totalEnjoyTime }}
       </span>
     </p>
   </section>
@@ -31,7 +40,9 @@ export default {
         totalTags: 0,
         tags: [],
         currentCardPaintTime: null,
-        lastCardPaintTime: null
+        lastCardPaintTime: null,
+        totalEnjoyTime: null,
+        currentEnjoyTime: null,
       }
     }
   },
@@ -55,6 +66,12 @@ export default {
       if (!!state.CurrentCardPaintTime) {
         this.artist.currentCardPaintTime = state.CurrentCardPaintTime
       }
+      if (!!state.CurrentEnjoyTime) {
+        this.artist.currentEnjoyTime = state.CurrentEnjoyTime
+      }
+      if (!!state.EnjoyTime) {
+        this.artist.totalEnjoyTime = state.EnjoyTime
+      }
     },
     reset() {
       this.artist.version = null
@@ -63,6 +80,8 @@ export default {
       this.artist.totalTags = 0
       this.artist.currentCardPaintTime = null
       this.artist.lastCardPaintTime = null
+      this.artist.currentEnjoyTime = null
+      this.artist.totalEnjoyTime = null
     }
   },
   mounted() {

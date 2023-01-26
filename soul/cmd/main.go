@@ -62,7 +62,7 @@ func main() {
 		engine = engine2.NewArtistEngine(res.GetEnv().ArtistURL)
 	}
 	artist := artistService.NewArtist(engine, cardsRepo, notifier)
-	creator := creator2.NewCreator(artist, speller, notifier)
+	creator := creator2.NewCreator(artist, speller, notifier, res.GetEnv().CardTotalTime)
 
 	// lottery runner
 	runner := lottery.NewRunner(lotteryRepo, cardsRepo, origin)

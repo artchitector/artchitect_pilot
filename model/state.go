@@ -8,4 +8,6 @@ type CreationState struct {
 	LastCardPaintTime    uint // seconds
 	CurrentCardPaintTime uint // seconds
 	CardID               uint
+	EnjoyTime            uint
+	CurrentEnjoyTime     uint
 }

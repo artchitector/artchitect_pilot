@@ -18,7 +18,7 @@ func NewFakeEngine() *FakeEngine {
 }
 
 func (e *FakeEngine) GetImage(ctx context.Context, spell model.Spell) ([]byte, error) {
-	fakeNumber := rand.Intn(5)
+	fakeNumber := rand.Intn(5) + 1
 	if b, err := os.ReadFile(fmt.Sprintf("files/fakes/%d.jpeg", fakeNumber)); err != nil {
 		return []byte{}, errors.Wrap(err, "[fake artist] failed to get file")
 	} else {
