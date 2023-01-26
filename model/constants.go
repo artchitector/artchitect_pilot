@@ -8,9 +8,10 @@ const (
 	Version01 = "v0.1" // initial tags (when I just started)
 	Version1  = "v1"   // initial set of tags + InvokeAI + StableDiffusion v1.5
 	Version11 = "v1.1" // more tags + InvokeAI + StableDiffusion v1.5
+	Version12 = "v1.2" // once more tags + InvokeAI + StableDiffusion v1.5
 )
 
-var AvailableVersions = []string{Version1, Version11}
+var AvailableVersions = []string{Version1, Version11, Version12}
 
 const (
 	MaxSeed = uint(4294967295)

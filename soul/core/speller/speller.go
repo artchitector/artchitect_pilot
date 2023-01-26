@@ -114,6 +114,8 @@ func (s *Speller) getDictionary(ctx context.Context, version string) ([]string, 
 		filename = "files/tags_v1.yaml"
 	case model.Version11:
 		filename = "files/tags_v11.yaml"
+	case model.Version12:
+		filename = "files/tags_v12.yaml"
 	default:
 		return []string{}, errors.Errorf("[speller] unknown version %s. failed to load file", version)
 	}
