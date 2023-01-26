@@ -5,7 +5,7 @@
     <hr class="divider"/>
     <div class="is-flex is-flex-direction-row">
       <div class="image-container">
-        <img v-if="!artist.cardId" src="http://localhost/in-progress.jpeg"/>
+        <img v-if="!artist.cardId" src="/in-progress.jpeg"/>
         <a v-else :href="`/card/${artist.cardId}`" target="_blank" @click.prevent="viewer()">
           <img :src="`/api/image/s/${artist.cardId}`"/>
         </a>
