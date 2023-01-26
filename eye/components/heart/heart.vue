@@ -3,7 +3,16 @@
     <viewer ref="viewer"/>
     <h3 class="has-text-centered is-size-4">Artchitect's heart</h3>
     <hr class="divider"/>
-    <div class="is-flex is-flex-direction-row">
+    <div class="notification is-danger" v-if="status.error">
+      connection failed
+    </div>
+    <div v-else-if="!status.connected" class="has-text-centered">
+      connecting {{this.status.attempts}}/{{this.status.maxAttempts}}
+    </div>
+    <div v-else-if="status.artchitectShutdown" class="notification is-warning">
+      Artchitect is offline now
+    </div>
+    <div v-else class="is-flex is-flex-direction-row">
       <div class="image-container">
         <img v-if="!artist.cardId" src="/in-progress.jpeg"/>
         <a v-else :href="`/card/${artist.cardId}`" target="_blank" @click.prevent="viewer()">
@@ -42,10 +51,19 @@
   </section>
 </template>
 <script>
+import connection from './connection'
 export default {
   data() {
     return {
       connection: null,
+      status: {
+        connected: false,
+        error: null,
+        attempts: 1,
+        maxAttempts: 100,
+        lastMessageTime: null,
+        artchitectShutdown: false,
+      },
       artist: {
         version: null,
         seed: null,
@@ -106,33 +124,53 @@ export default {
     }
   },
   mounted() {
-    const self = this
-    if (process.server === true) {
-      return
-    }
-    console.log("❤️: Starting connection to WebSocket Server on ", process.env.WS_URL)
-    this.connection = new WebSocket(process.env.WS_URL)
+    this.connection = connection
 
-    this.connection.onerror = function (error) {
-      console.log(error)
-    }
-
-    this.connection.onmessage = function (event) {
-      event = JSON.parse(event.data);
-      if (event.Name === 'creation') { // card is in work now
-        let creationState = JSON.parse(event.Payload)
-        console.log("❤️:", creationState)
-        if (!creationState.Version) {
-          self.reset()
-        } else {
-          self.updateState(creationState)
-        }
+    setInterval(() => {
+      if (this.status.artchitectShutdown) {
+        return
       }
-    }
+      if (this.status.lastMessageTime === null) {
+        this.status.artchitectShutdown = true
+        return
+      }
+      if (new Date().getTime() - this.status.lastMessageTime.getTime() > 5000) {
+        this.status.artchitectShutdown = true
+        return
+      }
+    }, 5000)
 
-    this.connection.onopen = function (event) {
-      console.log("Successfully connected to the echo websocket server...")
-    }
+    this.connection.onmessage((state) => {
+      console.log('onmessage', state)
+      this.status.lastMessageTime = new Date()
+      this.status.artchitectShutdown = false
+      if (!state.Version) {
+        this.reset()
+      } else {
+        this.updateState(state)
+      }
+    })
+    this.connection.onerror((err) => {
+      console.log('onerror', err)
+    })
+    this.connection.onconnect(() => {
+      console.log('onconnect')
+      this.status.attempts = 1
+      this.status.connected = true
+    })
+    this.connection.onclose(() => {
+      this.status.connected = false
+      setTimeout(() => {
+        this.status.attempts += 1
+        if (this.status.attempts < this.status.maxAttempts) {
+          this.connection.connect(process.env.WS_URL)
+        } else {
+          this.status.error = "connection failed"
+        }
+      }, 1000)
+    })
+    this.connection.connect(process.env.WS_URL)
+
   },
   beforeDestroy() {
     this.connection.close()
@@ -144,6 +182,7 @@ export default {
   min-width: 170px;
   width: 170px;
   padding-right: 10px;
+
   a {
     display: block;
   }

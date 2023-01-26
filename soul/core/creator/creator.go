@@ -82,7 +82,7 @@ func (c *Creator) enjoy(ctx context.Context, state *model.CreationState, cardSta
 		return nil // card is too slow
 	}
 	secondsLeft := cardEnd.Sub(enjoyStart).Seconds()
-	log.Info().Msgf("[creator] enjoy for %d seconds", secondsLeft)
+	log.Info().Msgf("[creator] enjoy for %f seconds", secondsLeft)
 
 	state.EnjoyTime = uint(secondsLeft)
 	state.LastCardPaintTime = state.CurrentCardPaintTime
