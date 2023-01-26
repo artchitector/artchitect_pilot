@@ -70,7 +70,6 @@ func (l *Listener) handle(ctx context.Context, msg *redis.Message) error {
 		log.Error().Msgf("[listener] unknown event %s", msg.Channel)
 		return nil
 	}
-	log.Info().Msgf("%+v", msg)
 
 	err := l.broadcast(ctx, msg)
 	if err != nil {
@@ -105,22 +104,18 @@ func (l *Listener) EventChannel() (chan localmodel.Event, chan struct{}) {
 
 	done := make(chan struct{})
 	l.eventChannels = append(l.eventChannels, ch)
-	idx := len(l.eventChannels) - 1
-	go func() {
+	go func(ch chan localmodel.Event) {
 		<-done
-		log.Info().Msgf("before: %+v", l.eventChannels)
-		// пиздец костыли
-		if len(l.eventChannels) == 1 {
-			l.eventChannels = []chan localmodel.Event{}
-		} else if idx == len(l.eventChannels)-1 {
-			l.eventChannels = l.eventChannels[:idx]
-		} else if idx == 0 {
-			l.eventChannels = l.eventChannels[idx+1:]
-		} else {
-			l.eventChannels = append(l.eventChannels[:idx], l.eventChannels[idx+1:]...)
+		l.mutex.Lock()
+		defer l.mutex.Unlock()
+		var err error
+		log.Info().Msgf("[listener] before chan remove: %+v", l.eventChannels)
+		l.eventChannels, err = removeFromSliceByChan(l.eventChannels, ch)
+		if err != nil {
+			log.Error().Err(err).Msgf("[listener] failed to remove element by slice")
 		}
-		log.Info().Msgf("after: %+v", l.eventChannels)
-	}()
+		log.Info().Msgf("[listener] after chan remove: %+v", l.eventChannels)
+	}(ch)
 
 	return ch, done
 }
@@ -134,10 +129,24 @@ func (l *Listener) broadcast(ctx context.Context, msg *redis.Message) error {
 	defer l.mutex.Unlock()
 	for idx, ch := range l.eventChannels {
 		go func(idx int, ch chan localmodel.Event) {
-			log.Info().Msgf("[listener] before push event to channel %d", idx)
 			ch <- event
-			log.Info().Msgf("[listener] after push event to channel %d", idx)
 		}(idx, ch)
 	}
 	return nil
+}
+
+func removeFromSliceByChan(slice []chan localmodel.Event, ch chan localmodel.Event) ([]chan localmodel.Event, error) {
+	for idx, s := range slice {
+		if s == ch {
+			return removeFromSliceByIndex(slice, uint(idx))
+		}
+	}
+	return nil, errors.Errorf("[listener] failed to find channel in channel list")
+}
+
+func removeFromSliceByIndex(slice []chan localmodel.Event, idx uint) ([]chan localmodel.Event, error) {
+	if idx < 0 || idx >= uint(len(slice)) {
+		return nil, errors.Errorf("[listener] index %d out of slice range (len=%d)", idx, len(slice))
+	}
+	return append(slice[:idx], slice[idx+1:]...), nil
 }
