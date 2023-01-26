@@ -124,7 +124,7 @@ export default {
     }
   },
   mounted() {
-    this.connection = connection
+    this.connection = new connection()
 
     setInterval(() => {
       if (this.status.artchitectShutdown) {
@@ -174,6 +174,7 @@ export default {
   },
   beforeDestroy() {
     this.connection.close()
+    this.connection = null
   },
 }
 </script>

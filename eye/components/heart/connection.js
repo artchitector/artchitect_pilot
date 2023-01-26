@@ -1,10 +1,12 @@
-export default {
-  callbacks: {
-    onconnect: [],
-    onmessage: [],
-    onclose: [],
-    onerror: [],
-  },
+class Connection {
+  constructor() {
+    this.callbacks = {
+      onconnect: [],
+      onmessage: [],
+      onclose: [],
+      onerror: [],
+    }
+  }
   connect(url) {
     const self = this
     if (process.server === true) {
@@ -44,22 +46,23 @@ export default {
       console.log(`Successfully connected to the echo websocket server ${url}`)
       self.emit('onconnect', null)
     }
-  },
+  }
   close() {
-
-  },
+    console.log('close')
+    this.connection.close()
+  }
   onconnect(cb) {
     this.callbacks.onconnect.push(cb)
-  },
+  }
   onmessage(cb) {
     this.callbacks.onmessage.push(cb)
-  },
+  }
   onclose(cb) {
     this.callbacks.onclose.push(cb)
-  },
+  }
   onerror(cb) {
     this.callbacks.onerror.push(cb)
-  },
+  }
   emit(type, event) {
     let callbacks = this.callbacks[type]
     if (callbacks.length === 0) {
@@ -70,3 +73,4 @@ export default {
     })
   }
 }
+export default Connection
