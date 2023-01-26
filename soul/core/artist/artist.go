@@ -60,8 +60,10 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 	log.Info().Msgf("[artist] start image painting with spell(id=%d)", spell.ID)
 	data, err := a.engine.GetImage(ctx, spell)
 	cancel()
+	if err != nil {
+		return model.Card{}, errors.Wrap(err, "[artist] failed to get image-data for card")
+	}
 	paintTime := time.Now().Sub(paintStart)
-
 	painting := model.Card{
 		Spell:     spell,
 		Image:     data,
