@@ -1,32 +1,44 @@
 <template>
-  <section>
-    <p class="has-text-centered">Artchitect's heart</p>
-    <p>Version: {{ artist.version }}</p>
-    <p>Seed: {{ artist.seed }}</p>
-    <p>
-      Tags count:
-      <span v-if="artist.totalTags === 0">-</span>
-      <span v-else>{{ artist.tags.length }}/{{ artist.totalTags }}</span>
-    </p>
-    <p>Tags: {{ artist.tags.join(', ') }}</p>
-    <p>
-      Paint progress:
-      <span v-if="artist.currentCardPaintTime === null">
+  <section class="heart">
+    <viewer ref="viewer"/>
+    <h3 class="has-text-centered is-size-4">Artchitect's heart</h3>
+    <hr class="divider"/>
+    <div class="is-flex is-flex-direction-row">
+      <div class="image-container">
+        <img v-if="!artist.cardId" src="http://localhost/in-progress.jpeg"/>
+        <a v-else :href="`/card/${artist.cardId}`" target="_blank" @click.prevent="viewer()">
+          <img :src="`/api/image/s/${artist.cardId}`"/>
+        </a>
+      </div>
+      <div class="info-container">
+        <p>Version: {{ artist.version }}</p>
+        <p>Seed: {{ artist.seed }}</p>
+        <p>
+          Tags count:
+          <span v-if="artist.totalTags === 0">-</span>
+          <span v-else>{{ artist.tags.length }}/{{ artist.totalTags }}</span>
+        </p>
+        <p class="is-size-7">Tags: {{ artist.tags.join(', ') }}</p>
+        <p>
+          Paint progress:
+          <span v-if="artist.currentCardPaintTime === null">
         -
       </span>
-      <span v-else>
+          <span v-else>
         {{ artist.currentCardPaintTime }}/{{ artist.lastCardPaintTime }}
       </span>
-    </p>
-    <p>
-      Enjoy progress:
-      <span v-if="artist.currentEnjoyTime === null">
-        -
-      </span>
-      <span v-else>
-        {{ artist.currentEnjoyTime }}/{{ artist.totalEnjoyTime }}
-      </span>
-    </p>
+        </p>
+        <p>
+          Enjoy progress:
+          <span v-if="artist.currentEnjoyTime === null">
+          -
+          </span>
+          <span v-else>
+            {{ artist.currentEnjoyTime }}/{{ artist.totalEnjoyTime }}
+          </span>
+        </p>
+      </div>
+    </div>
   </section>
 </template>
 <script>
@@ -43,6 +55,7 @@ export default {
         lastCardPaintTime: null,
         totalEnjoyTime: null,
         currentEnjoyTime: null,
+        cardId: null,
       }
     }
   },
@@ -72,6 +85,9 @@ export default {
       if (!!state.EnjoyTime) {
         this.artist.totalEnjoyTime = state.EnjoyTime
       }
+      if (!!state.CardID) {
+        this.artist.cardId = state.CardID
+      }
     },
     reset() {
       this.artist.version = null
@@ -82,6 +98,11 @@ export default {
       this.artist.lastCardPaintTime = null
       this.artist.currentEnjoyTime = null
       this.artist.totalEnjoyTime = null
+      this.artist.cardId = null
+    },
+    viewer() {
+      const ids = [this.artist.cardId]
+      this.$refs.viewer.show(ids, this.artist.cardId);
     }
   },
   mounted() {
@@ -118,3 +139,21 @@ export default {
   },
 }
 </script>
+<style lang="scss">
+.heart div.image-container {
+  min-width: 170px;
+  width: 170px;
+  padding-right: 10px;
+  a {
+    display: block;
+  }
+}
+
+.heart hr.divider {
+  margin: 0 0 0.5rem 0;
+}
+
+.heart div.info-container {
+
+}
+</style>
