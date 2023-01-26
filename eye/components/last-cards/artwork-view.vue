@@ -23,12 +23,14 @@ export default {
 <style lang="scss">
 .image-container {
   position: relative;
-  min-height: 431px;
   .version {
     position: absolute;
     right: 5px;
     bottom: 10px;
     opacity: 0.7;
+  }
+  a {
+    display: block;
   }
 }
 
