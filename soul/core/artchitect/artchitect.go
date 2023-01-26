@@ -10,20 +10,10 @@ import (
 
 type notifier interface {
 	NotifyTick(ctx context.Context, tick int) error
-	NotifyNewCard(ctx context.Context, card model.Card) error
-	NotifyArtistState(ctx context.Context, state model.ArtistState) error
 }
 
-type ArtistContract interface {
-	GetCard(ctx context.Context, spell model.Spell, artistState *model.ArtistState) (model.Card, error)
-}
-
-type state interface {
-	SetState(ctx context.Context, state string)
-}
-
-type speller interface {
-	MakeSpell(ctx context.Context, artistState *model.ArtistState) (model.Spell, error)
+type creator interface {
+	Create(ctx context.Context) (model.Card, error)
 }
 
 type merciful interface {
@@ -47,9 +37,7 @@ type Config struct {
 
 type Artchitect struct {
 	config            Config
-	state             state
-	speller           speller
-	artist            ArtistContract
+	creator           creator
 	lotteryRepository lotteryRepository
 	lotteryRunner     lotteryRunner
 	merciful          merciful
@@ -58,9 +46,7 @@ type Artchitect struct {
 
 func NewArtchitect(
 	config Config,
-	state state,
-	speller speller,
-	artist ArtistContract,
+	creator creator,
 	lotteryRepository lotteryRepository,
 	lotteryRunner lotteryRunner,
 	merciful merciful,
@@ -68,9 +54,7 @@ func NewArtchitect(
 ) *Artchitect {
 	return &Artchitect{
 		config,
-		state,
-		speller,
-		artist,
+		creator,
 		lotteryRepository,
 		lotteryRunner,
 		merciful,
@@ -111,29 +95,13 @@ func (a *Artchitect) Run(ctx context.Context, tick int) error {
 }
 
 func (a *Artchitect) runCardCreation(ctx context.Context) error {
-	//a.state.SetState(ctx, model.StateMakingSpell)
 	log.Info().Msgf("[artchitect] start card creation]")
-	state := model.ArtistState{}
-	if err := a.notifier.NotifyArtistState(ctx, state); err != nil {
-		log.Error().Err(err).Msgf("[artchitect] failed notify artist state")
+	if card, err := a.creator.Create(ctx); err != nil {
+		return errors.Wrap(err, "[artchitect] failed to create card")
+	} else {
+		log.Info().Msgf("[artchitect] card created id=%d", card.ID)
+		return nil
 	}
-	spell, err := a.speller.MakeSpell(ctx, &state)
-	if err != nil {
-		return err
-	}
-	log.Info().Msgf("[artchitect] got spell: %+v", spell)
-	//a.state.SetState(ctx, model.StateMakingArtifact)
-	card, err := a.artist.GetCard(ctx, spell, &state)
-	if err != nil {
-		return err
-	}
-	log.Info().Msgf("[artchitect] got card: id=%d, spell_id=%d", card.ID, spell.ID)
-	if err := a.notifier.NotifyNewCard(ctx, card); err != nil {
-		log.Error().Err(err).Msgf("[artchitect] failed to notify new card")
-	}
-	//a.state.SetState(ctx, model.StateMakingRest)
-
-	return nil
 }
 
 func (a *Artchitect) runLottery(ctx context.Context, lottery model.Lottery) error {

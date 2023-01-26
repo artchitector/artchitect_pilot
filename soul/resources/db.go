@@ -34,8 +34,6 @@ func initDB(env *Env) *gorm.DB {
 
 	if err := db.AutoMigrate(
 		&model.Card{},
-		&model.Decision{},
-		&model.State{},
 		&model.Spell{},
 		&model.Lottery{},
 		&model.PrayWithQuestion{},

@@ -31,7 +31,7 @@ func (lh *CardHandler) Handle(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	card, err := lh.cache.GetCard(c, uint64(request.ID))
+	card, err := lh.cache.GetCard(c, uint(request.ID))
 	if err != nil {
 		log.Error().Err(err).Msgf("[card_handler:Handle] failed to get card(id=%d) from cache", card.ID)
 	} else {
@@ -59,7 +59,7 @@ func (ch *CardHandler) HandleImage(c *gin.Context) {
 		return
 	}
 
-	cached, err := ch.cache.GetImage(c, uint64(request.ID), request.Size)
+	cached, err := ch.cache.GetImage(c, uint(request.ID), request.Size)
 	if err != nil {
 		log.Error().Err(err).Msgf("[card_controller:HandleImage] failed to get cached image")
 	} else {

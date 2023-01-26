@@ -35,10 +35,11 @@ func NewCache(rdb *redis.Client) *Cache {
 }
 
 func (c *Cache) Flushall(ctx context.Context) error {
+	log.Fatal().Msgf("flushall disabled")
 	return c.rdb.FlushAll(ctx).Err()
 }
 
-func (c *Cache) GetLastCards(ctx context.Context, count uint64) ([]model.Card, error) {
+func (c *Cache) GetLastCards(ctx context.Context, count uint) ([]model.Card, error) {
 	// if last card was 5-minutes old, then need to clear cache
 	start := int64(0)
 	stop := int64(count - 1)
@@ -47,7 +48,7 @@ func (c *Cache) GetLastCards(ctx context.Context, count uint64) ([]model.Card, e
 		return []model.Card{}, errors.Wrapf(err, "[cache] failed to get LRange %d-%d", start, stop)
 	}
 
-	ids := make([]uint64, 0, count)
+	ids := make([]uint, 0, count)
 	if err := result.ScanSlice(&ids); err != nil {
 		return []model.Card{}, errors.Wrapf(err, "[cache] failed to scan slice")
 	}
@@ -68,7 +69,7 @@ func (c *Cache) GetLastCards(ctx context.Context, count uint64) ([]model.Card, e
 	return cards, nil
 }
 
-func (c *Cache) GetCard(ctx context.Context, ID uint64) (model.Card, error) {
+func (c *Cache) GetCard(ctx context.Context, ID uint) (model.Card, error) {
 	result := c.rdb.Get(ctx, fmt.Sprintf(KeyCard, ID))
 	if err := result.Err(); err == redis.Nil {
 		return model.Card{}, ErrorNotFound
@@ -90,13 +91,13 @@ func (c *Cache) RefreshLastCards(ctx context.Context, cards []model.Card) error 
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	ids := make([]uint64, 0, len(cards))
+	ids := make([]uint, 0, len(cards))
 	for _, card := range cards {
 		// each card is saved into cache
 		if err := c.SaveCard(ctx, card); err != nil {
 			return errors.Wrapf(err, "[cache] failed to save card(id=%d)", card.ID)
 		}
-		ids = append(ids, uint64(card.ID))
+		ids = append(ids, uint(card.ID))
 	}
 
 	// delete current card list
@@ -132,7 +133,7 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 	go func() {
 		// save each card size in Redis
 		for _, size := range []string{model.SizeF, model.SizeM, model.SizeS, model.SizeXS} {
-			exist, err := c.ExistsImage(ctx, uint64(card.ID), size)
+			exist, err := c.ExistsImage(ctx, uint(card.ID), size)
 			if err != nil {
 				log.Error().Err(err).Msgf("[cache] not found existing image (id=%d, size=%s", card.ID, size)
 			} else if exist {
@@ -160,13 +161,13 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 	return nil
 }
 
-func (c *Cache) ExistsImage(ctx context.Context, ID uint64, size string) (bool, error) {
+func (c *Cache) ExistsImage(ctx context.Context, ID uint, size string) (bool, error) {
 	key := fmt.Sprintf(KeyCardImage, ID, size)
 	i, err := c.rdb.Exists(ctx, key).Result()
 	return i > 0, err
 }
 
-func (c *Cache) GetImage(ctx context.Context, ID uint64, size string) ([]byte, error) {
+func (c *Cache) GetImage(ctx context.Context, ID uint, size string) ([]byte, error) {
 	var b []byte
 	key := fmt.Sprintf(KeyCardImage, ID, size)
 	result := c.rdb.Get(ctx, key)
@@ -176,7 +177,7 @@ func (c *Cache) GetImage(ctx context.Context, ID uint64, size string) ([]byte, e
 	return result.Bytes()
 }
 
-func (c *Cache) AddLastCardID(ctx context.Context, ID uint64) error {
+func (c *Cache) AddLastCardID(ctx context.Context, ID uint) error {
 	return errors.Wrapf(
 		c.rdb.LPush(ctx, KeyLastCards, ID).Err(),
 		"[cache] failed to append last card id=%d",

@@ -7,18 +7,23 @@ import (
 )
 
 type Env struct {
+	// enabled internal services
 	LotteryEnabled      bool
 	CardCreationEnabled bool
 	MercifulEnabled     bool
-	DbDSN               string
-	OriginURL           string
-	ArtistURL           string
-	TelegramBotToken    string
 	GifterActive        bool
-	TenMinChat          string
-	RedisHost           string
 	UseFakeArtist       bool
-	RedisPassword       string
+
+	// external resources
+	DbDSN         string
+	RedisHost     string
+	RedisPassword string
+	OriginURL     string
+	ArtistURL     string
+
+	// telegram constants
+	TelegramBotToken string
+	TenMinChat       string
 }
 
 func initEnv() *Env {
@@ -27,20 +32,20 @@ func initEnv() *Env {
 		log.Fatal().Err(err).Send()
 	}
 
-	lotteryEnabledFlag := os.Getenv("LOTTERY_ENABLED")
-	cardsEnabledFlag := os.Getenv("CARDS_CREATION_ENABLED")
 	return &Env{
-		LotteryEnabled:      lotteryEnabledFlag == "true" || lotteryEnabledFlag == "TRUE",
-		CardCreationEnabled: cardsEnabledFlag == "true" || cardsEnabledFlag == "TRUE",
-		DbDSN:               os.Getenv("DB_DSN"),
-		OriginURL:           os.Getenv("ORIGIN_URL"),
-		ArtistURL:           os.Getenv("ARTIST_URL"),
-		TelegramBotToken:    os.Getenv("TELEGRAM_BOT_TOKEN"),
-		GifterActive:        os.Getenv("GIFTER_ACTIVE") == "true",
-		TenMinChat:          os.Getenv("TEN_MIN_CHAT"),
+		LotteryEnabled:      os.Getenv("LOTTERY_ENABLED") == "true",
+		CardCreationEnabled: os.Getenv("CARDS_CREATION_ENABLED") == "true",
 		MercifulEnabled:     os.Getenv("MERCIFUL_ENABLED") == "true",
-		RedisHost:           os.Getenv("REDIS_HOST"),
+		GifterActive:        os.Getenv("GIFTER_ACTIVE") == "true",
 		UseFakeArtist:       os.Getenv("USE_FAKE_ARTIST") == "true",
-		RedisPassword:       os.Getenv("REDIS_PASSWORD"),
+
+		DbDSN:         os.Getenv("DB_DSN"),
+		RedisHost:     os.Getenv("REDIS_HOST"),
+		RedisPassword: os.Getenv("REDIS_PASSWORD"),
+		OriginURL:     os.Getenv("ORIGIN_URL"),
+		ArtistURL:     os.Getenv("ARTIST_URL"),
+
+		TelegramBotToken: os.Getenv("TELEGRAM_BOT_TOKEN"),
+		TenMinChat:       os.Getenv("TEN_MIN_CHAT"),
 	}
 }

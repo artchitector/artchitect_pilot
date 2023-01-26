@@ -30,14 +30,14 @@ func (lph *LastCardsHandler) Handle(c *gin.Context) {
 		c.JSON(http.StatusBadGateway, "quantity required less than 100")
 		return
 	}
-	cards, err := lph.cache.GetLastCards(c, uint64(quantity))
+	cards, err := lph.cache.GetLastCards(c, uint(quantity))
 	if err != nil {
 		log.Error().Err(err).Msgf("[last_cards_handler] failed to get last cards from cache")
 	} else {
 		c.JSON(http.StatusOK, cards)
 		return
 	}
-	cards, err = lph.cardsRepository.GetLastCards(c, uint64(quantity))
+	cards, err = lph.cardsRepository.GetLastCards(c, uint(quantity))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "internal error")
 		return

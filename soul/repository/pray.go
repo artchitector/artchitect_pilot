@@ -20,7 +20,7 @@ func (pr *PrayRepository) GetNextPray(ctx context.Context) (model.PrayWithQuesti
 	return pray, err
 }
 
-func (pr *PrayRepository) AnswerPray(ctx context.Context, pray model.PrayWithQuestion, answer uint64) error {
+func (pr *PrayRepository) AnswerPray(ctx context.Context, pray model.PrayWithQuestion, answer uint) error {
 	pray.Answer = answer
 	pray.State = model.PrayStateAnswered
 	err := pr.db.Save(&pray).Error

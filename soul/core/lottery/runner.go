@@ -14,11 +14,11 @@ type lotteryRepository interface {
 }
 
 type cardsRepository interface {
-	GetCardsIDsByPeriod(ctx context.Context, start time.Time, end time.Time) ([]uint64, error)
+	GetCardsIDsByPeriod(ctx context.Context, start time.Time, end time.Time) ([]uint, error)
 }
 
 type origin interface {
-	Select(ctx context.Context, totalVariants uint64, saveDecision bool) (uint64, error)
+	Select(ctx context.Context, totalVariants uint) (uint, error)
 }
 
 type Runner struct {
@@ -67,7 +67,7 @@ func (lr *Runner) startLottery(ctx context.Context, lottery model.Lottery) (mode
 	lottery.Started = time.Now()
 
 	// select from 10 to 100 winners
-	totalWinners, err := lr.origin.Select(ctx, 90, false)
+	totalWinners, err := lr.origin.Select(ctx, 90)
 	if err != nil {
 		return model.Lottery{}, errors.Wrapf(err, "[runner] failed to get total winners from origin (lottery=%d)", lottery.ID)
 	}
@@ -83,11 +83,11 @@ func (lr *Runner) startLottery(ctx context.Context, lottery model.Lottery) (mode
 }
 
 func (lr *Runner) performLotteryStep(ctx context.Context, lottery model.Lottery) (model.Lottery, bool, error) {
-	var winners []uint64
+	var winners []uint
 	if err := json.Unmarshal([]byte(lottery.WinnersJSON), &winners); err != nil {
 		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to unmarshal lottery winners")
 	}
-	if uint64(len(winners)) >= lottery.TotalWinners {
+	if uint(len(winners)) >= lottery.TotalWinners {
 		// need to finish lottery
 		return lottery, true, nil
 	}
@@ -96,8 +96,8 @@ func (lr *Runner) performLotteryStep(ctx context.Context, lottery model.Lottery)
 		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to GetCardsIDsByPeriod for lottery(id=%d)", lottery.ID)
 	}
 
-	totalCards := uint64(len(cards))
-	selection, err := lr.origin.Select(ctx, totalCards, false)
+	totalCards := uint(len(cards))
+	selection, err := lr.origin.Select(ctx, totalCards)
 	if err != nil {
 		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to select from origin with max=%d", totalCards)
 	}

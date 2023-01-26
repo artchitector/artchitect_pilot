@@ -34,7 +34,7 @@ func (pr *CardRepository) GetLastCard(ctx context.Context) (model.Card, bool, er
 	}
 }
 
-func (pr *CardRepository) GetLastCards(ctx context.Context, count uint64) ([]model.Card, error) {
+func (pr *CardRepository) GetLastCards(ctx context.Context, count uint) ([]model.Card, error) {
 	cards := make([]model.Card, 0, count)
 	err := pr.db.Preload("Spell").Limit(int(count)).Order("id desc").Limit(int(count)).Find(&cards).Error
 	if err != nil {

@@ -28,7 +28,7 @@ func (lr *LotteryRepository) GetActiveLottery(ctx context.Context) (model.Lotter
 	return lottery, err
 }
 
-func (lr *LotteryRepository) GetLottery(ctx context.Context, ID uint64) (model.Lottery, error) {
+func (lr *LotteryRepository) GetLottery(ctx context.Context, ID uint) (model.Lottery, error) {
 	var lottery model.Lottery
 	err := lr.db.
 		Where("id = ?", ID).

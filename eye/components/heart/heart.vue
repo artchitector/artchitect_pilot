@@ -6,7 +6,7 @@
     <p>
       Tags count:
       <span v-if="artist.totalTags === 0">-</span>
-      <span v-else>{{artist.tags.length}}/{{artist.totalTags}}</span>
+      <span v-else>{{ artist.tags.length }}/{{ artist.totalTags }}</span>
     </p>
     <p>Tags: {{ artist.tags.join(', ') }}</p>
     <p>
@@ -15,7 +15,7 @@
         -
       </span>
       <span v-else>
-        {{artist.currentCardPaintTime}}/{{artist.lastCardPaintTime}}
+        {{ artist.currentCardPaintTime }}/{{ artist.lastCardPaintTime }}
       </span>
     </p>
   </section>
@@ -79,13 +79,13 @@ export default {
 
     this.connection.onmessage = function (event) {
       event = JSON.parse(event.data);
-      if (event.Name === 'artist') { // card is in work now
-        let artistState = JSON.parse(event.Payload)
-        console.log("❤️:", artistState)
-        if (!artistState.Version) {
+      if (event.Name === 'creation') { // card is in work now
+        let creationState = JSON.parse(event.Payload)
+        console.log("❤️:", creationState)
+        if (!creationState.Version) {
           self.reset()
         } else {
-          self.updateState(artistState)
+          self.updateState(creationState)
         }
       }
     }

@@ -14,7 +14,7 @@ import (
 
 type cache interface {
 	SaveCard(ctx context.Context, card model.Card) error
-	AddLastCardID(ctx context.Context, ID uint64) error
+	AddLastCardID(ctx context.Context, ID uint) error
 }
 
 type cardRepository interface {
@@ -36,7 +36,7 @@ func NewListener(red *redis.Client, cache cache, cardRepository cardRepository) 
 }
 
 func (l *Listener) Run(ctx context.Context) error {
-	subscriber := l.red.Subscribe(ctx, model.ChannelTick, model.ChannelNewCard, model.ChannelArtist)
+	subscriber := l.red.Subscribe(ctx, model.ChannelTick, model.ChannelNewCard, model.ChannelCreation)
 	for {
 		select {
 		case <-ctx.Done():
@@ -59,7 +59,7 @@ func (l *Listener) handle(ctx context.Context, msg *redis.Message) error {
 	log.Info().Msgf("[listener] got %s event:  %s", msg.Channel, msg.Payload)
 	switch msg.Channel {
 	case model.ChannelTick:
-	case model.ChannelArtist:
+	case model.ChannelCreation:
 
 	case model.ChannelNewCard:
 		err := l.handleNewCard(ctx, msg)
@@ -92,7 +92,7 @@ func (l *Listener) handleNewCard(ctx context.Context, msg *redis.Message) error 
 		return errors.Errorf("[listener] not found card id=%d", card.ID)
 	}
 	// card automatically saved when loaded in repository
-	if err := l.cache.AddLastCardID(ctx, uint64(card.ID)); err != nil {
+	if err := l.cache.AddLastCardID(ctx, uint(card.ID)); err != nil {
 		return errors.Wrapf(err, "[listener] failed to append new last_card to cache with id=%d", card.ID)
 	}
 	return nil

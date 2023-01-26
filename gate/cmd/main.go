@@ -7,7 +7,6 @@ import (
 	"github.com/artchitector/artchitect/gate/listener"
 	"github.com/artchitector/artchitect/gate/repository"
 	"github.com/artchitector/artchitect/gate/resources"
-	"github.com/artchitector/artchitect/gate/state"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -25,27 +24,16 @@ func main() {
 	res := resources.InitResources()
 	log.Info().Msg("service gate started")
 
+	// cache
 	cache := cache2.NewCache(res.GetRedis())
-	// don't make flushall, because resized images already there. Other data will be replaced
-	//if err := cache.Flushall(ctx); err != nil {
-	//	log.Error().Err(err).Msgf("[main] failed redis flushall")
-	//}
 
-	cardsRepository := repository.NewCardRepository(res.GetDB(), cache)
-	decisionRepository := repository.NewDecisionRepository(res.GetDB())
-	stateRepository := repository.NewStateRepository(res.GetDB())
-	spellRepository := repository.NewSpellRepository(res.GetDB())
-	lotteryRepository := repository.NewLotteryRepository(res.GetDB())
-	retriever := state.NewRetriever(
-		log.With().Str("service", "retriever").Logger(),
-		cardsRepository,
-		decisionRepository,
-		stateRepository,
-		spellRepository,
-	)
+	// repos
+	cardsRepo := repository.NewCardRepository(res.GetDB(), cache)
+	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
+	prayRepo := repository.NewPrayRepository(res.GetDB())
 
-	// refresher enhot cache
-	refresher := repository.NewRefresher(cardsRepository, lotteryRepository)
+	// refresher (update cache)
+	refresher := repository.NewRefresher(cardsRepo, lotteryRepo)
 	go func() {
 		if err := refresher.RefreshLast(ctx); err != nil {
 			log.Error().Err(err).Msgf("[main] failed refreshing last")
@@ -63,21 +51,18 @@ func main() {
 		}
 	}()
 
-	stateHandler := handler.NewStateHandler(
-		log.With().Str("service", "state_handler").Logger(),
-		retriever,
-	)
-	lastPaintingsHandler := handler.NewLastPaintingsHandler(cardsRepository, cache)
+	// handlers
+	lastPaintingsHandler := handler.NewLastPaintingsHandler(cardsRepo, cache)
 	lotteryHandler := handler.NewLotteryHandler(
 		log.With().Str("service", "lottery_handler").Logger(),
-		lotteryRepository,
+		lotteryRepo,
 	)
-	cardHandler := handler.NewCardHandler(cardsRepository, cache)
-	selectionHander := handler.NewSelectionHandler(lotteryRepository)
+	cardHandler := handler.NewCardHandler(cardsRepo, cache)
+	selectionHander := handler.NewSelectionHandler(lotteryRepo)
+	prayHandler := handler.NewPrayHandler(prayRepo)
 
-	prayRepository := repository.NewPrayRepository(res.GetDB())
-	prayHandler := handler.NewPrayHandler(prayRepository)
-	lis := listener.NewListener(res.GetRedis(), cache, cardsRepository)
+	// listeners with websocket handler
+	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo)
 	websocketHandler := handler.NewWebsocketHandler(lis)
 
 	go func() {
@@ -100,7 +85,6 @@ func main() {
 		r.GET("/ping", func(c *gin.Context) {
 			c.JSON(200, gin.H{"message": "pong"})
 		})
-		r.GET("/state", stateHandler.Handle)
 		r.GET("/last_paintings/:quantity", lastPaintingsHandler.Handle)
 		r.GET("/lottery/:lastN", lotteryHandler.HandleLast)
 		r.GET("/card/:id", cardHandler.Handle)

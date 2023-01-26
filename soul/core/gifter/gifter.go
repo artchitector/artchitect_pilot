@@ -13,12 +13,12 @@ import (
 )
 
 type cardRepository interface {
-	GetTotalCards(ctx context.Context) (uint64, error)
-	GetCardWithOffset(offset uint64) (model.Card, error)
+	GetTotalCards(ctx context.Context) (uint, error)
+	GetCardWithOffset(offset uint) (model.Card, error)
 }
 
 type origin interface {
-	Select(ctx context.Context, totalVariants uint64, saveDecision bool) (uint64, error)
+	Select(ctx context.Context, totalVariants uint) (uint, error)
 }
 
 const (
@@ -104,11 +104,11 @@ func (g *Gifter) getCard(ctx context.Context) (model.Card, error) {
 	if err != nil {
 		return model.Card{}, errors.Wrap(err, "[gifter] failed get total cards")
 	}
-	selection, err := g.origin.Select(ctx, totalCards, false)
+	selection, err := g.origin.Select(ctx, totalCards)
 	if err != nil {
 		return model.Card{}, errors.Wrap(err, "[gifter] failed to select from origin")
 	}
-	card, err := g.cardRepository.GetCardWithOffset(selection - 1)
+	card, err := g.cardRepository.GetCardWithOffset(selection)
 	if err != nil {
 		return model.Card{}, errors.Wrapf(err, "[gifter] failed to GetCardWithOffset %d", selection-1)
 	}
@@ -123,8 +123,5 @@ func (g *Gifter) getBot() (*bot.Bot, error) {
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	//b.SendMessage(ctx, &bot.SendMessageParams{
-	//	ChatID: update.Message.Chat.ID,
-	//	Text:   update.Message.Text,
-	//})
+	log.Info().Msgf("[gifter] incoming message. ChatID: %d, Text: %s", update.Message.Chat.ID, update.Message.Text)
 }

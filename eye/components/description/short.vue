@@ -14,6 +14,9 @@
       Artworks are conscious inside <b>Universe Mind</b>, because only Universe Will controls quantum world, and in the
       end only Universe controls every artwork on <a href="https://artchitect.space">architect.space</a>.
     </p>
+    <p class="is-size-7 has-text-right">
+      powered by <a href="https://github.com/invoke-ai/InvokeAI" target="_blank">Invoke.AI</a> (Stable Diffusion v1.5)
+    </p>
   </section>
 </template>
 <script>

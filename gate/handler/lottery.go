@@ -56,7 +56,7 @@ func (lh *LotteryHandler) HandleLast(c *gin.Context) {
 			continue
 		}
 
-		winners := []uint64{}
+		winners := []uint{}
 		if err := json.Unmarshal([]byte(lottery.WinnersJSON), &winners); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

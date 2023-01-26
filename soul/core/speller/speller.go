@@ -13,7 +13,7 @@ import (
 const MaxTags = 28
 
 type notifier interface {
-	NotifyArtistState(ctx context.Context, state model.ArtistState) error
+	NotifyCreationState(ctx context.Context, state model.CreationState) error
 }
 
 type spellRepository interface {
@@ -21,7 +21,7 @@ type spellRepository interface {
 }
 
 type origin interface {
-	Select(ctx context.Context, totalVariants uint64, saveDecision bool) (uint64, error)
+	Select(ctx context.Context, totalVariants uint) (uint, error)
 }
 
 /*
@@ -38,7 +38,7 @@ func NewSpeller(spellRepository spellRepository, origin origin, notifier notifie
 	return &Speller{spellRepository, origin, notifier, make(map[string][]string)}
 }
 
-func (s *Speller) MakeSpell(ctx context.Context, artistState *model.ArtistState) (model.Spell, error) {
+func (s *Speller) MakeSpell(ctx context.Context, artistState *model.CreationState) (model.Spell, error) {
 	spell, err := s.generateSpell(ctx, artistState)
 	if err != nil {
 		return model.Spell{}, errors.Wrap(err, "[speller] failed to generate spell")
@@ -51,14 +51,14 @@ func (s *Speller) MakeSpell(ctx context.Context, artistState *model.ArtistState)
 	return spell, nil
 }
 
-func (s *Speller) generateSpell(ctx context.Context, state *model.ArtistState) (model.Spell, error) {
+func (s *Speller) generateSpell(ctx context.Context, state *model.CreationState) (model.Spell, error) {
 	version, err := s.selectVersion(ctx)
 	if err != nil {
 		return model.Spell{}, errors.Wrap(err, "[speller] failed select version")
 	}
 	state.Version = version
 	s.notify(ctx, state)
-	selection, err := s.origin.Select(ctx, model.MaxSeed, true)
+	selection, err := s.origin.Select(ctx, model.MaxSeed)
 	if err != nil {
 		return model.Spell{}, errors.Wrap(err, "[speller] failed to get selection")
 	}
@@ -75,13 +75,13 @@ func (s *Speller) generateSpell(ctx context.Context, state *model.ArtistState) (
 	}, nil
 }
 
-func (s *Speller) generateTags(ctx context.Context, version string, state *model.ArtistState) ([]string, error) {
+func (s *Speller) generateTags(ctx context.Context, version string, state *model.CreationState) ([]string, error) {
 	dictionary, err := s.getDictionary(ctx, version)
 	if err != nil {
 		return []string{}, errors.Wrap(err, "failed to get Dictionary")
 	}
 
-	tagsToTake, err := s.origin.Select(ctx, MaxTags, false)
+	tagsToTake, err := s.origin.Select(ctx, MaxTags)
 	tags := make([]string, 0, tagsToTake)
 	if err != nil {
 		return []string{}, errors.Wrap(err, "[speller][generateTags] failed get tagsToTake")
@@ -89,9 +89,9 @@ func (s *Speller) generateTags(ctx context.Context, version string, state *model
 	state.TagsCount = tagsToTake
 	s.notify(ctx, state)
 
-	allowedTagsLen := uint64(len(dictionary))
-	for i := uint64(0); i < tagsToTake; i++ {
-		tag, err := s.origin.Select(ctx, allowedTagsLen, false)
+	allowedTagsLen := uint(len(dictionary))
+	for i := uint(0); i < tagsToTake; i++ {
+		tag, err := s.origin.Select(ctx, allowedTagsLen)
 		if err != nil {
 			return []string{}, errors.Wrap(err, "[speller][generateTags] failed get tag number")
 		}
@@ -136,12 +136,12 @@ func (s *Speller) getDictionary(ctx context.Context, version string) ([]string, 
 
 func (s *Speller) selectVersion(ctx context.Context) (string, error) {
 	count := len(model.AvailableVersions)
-	idx, err := s.origin.Select(ctx, uint64(count), false)
+	idx, err := s.origin.Select(ctx, uint(count))
 	return model.AvailableVersions[idx], errors.Wrap(err, "[speller] failed to select version from origin")
 }
 
-func (s *Speller) notify(ctx context.Context, state *model.ArtistState) {
-	if err := s.notifier.NotifyArtistState(ctx, *state); err != nil {
+func (s *Speller) notify(ctx context.Context, state *model.CreationState) {
+	if err := s.notifier.NotifyCreationState(ctx, *state); err != nil {
 		log.Error().Err(err).Msgf("[speller] failed notify artist state")
 	}
 }

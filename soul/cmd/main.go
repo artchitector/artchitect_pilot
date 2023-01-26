@@ -4,13 +4,14 @@ import (
 	"context"
 	artchitectService "github.com/artchitector/artchitect/soul/core/artchitect"
 	artistService "github.com/artchitector/artchitect/soul/core/artist"
+	engine2 "github.com/artchitector/artchitect/soul/core/artist/engine"
+	creator2 "github.com/artchitector/artchitect/soul/core/creator"
 	"github.com/artchitector/artchitect/soul/core/gifter"
 	"github.com/artchitector/artchitect/soul/core/lottery"
 	merciful2 "github.com/artchitector/artchitect/soul/core/merciful"
 	originService "github.com/artchitector/artchitect/soul/core/origin"
 	"github.com/artchitector/artchitect/soul/core/origin/driver"
 	spellerService "github.com/artchitector/artchitect/soul/core/speller"
-	stateService "github.com/artchitector/artchitect/soul/core/state"
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
 	"github.com/artchitector/artchitect/soul/repository"
 	"github.com/artchitector/artchitect/soul/resources"
@@ -30,7 +31,7 @@ func main() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
 	res := resources.InitResources()
-	log.Info().Msg("service soul started")
+	log.Info().Msg("[main] service soul started")
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -39,29 +40,37 @@ func main() {
 		cancel()
 	}()
 
+	// repositoties
 	cardsRepo := repository.NewCardRepository(res.GetDB())
-	decisionRepo := repository.NewDecisionRepository(res.GetDB())
-	stateRepository := repository.NewStateRepository(res.GetDB())
-	spellRepository := repository.NewSpellRepository(res.GetDB())
-	lotteryRepository := repository.NewLotteryRepository(res.GetDB())
-	prayRepository := repository.NewPrayRepository(res.GetDB())
+	spellRepo := repository.NewSpellRepository(res.GetDB())
+	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
+	prayRepo := repository.NewPrayRepository(res.GetDB())
 
+	// notifier
 	notifier := notifier2.NewNotifier(res.GetRedis())
 
-	//randProvider := driver.NewRandDriver()
-	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL, decisionRepo)
+	// origin
+	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL)
 	origin := originService.NewOrigin(webcamDriver)
-	speller := spellerService.NewSpeller(spellRepository, origin, notifier)
-	var artist artchitectService.ArtistContract
-	if res.GetEnv().UseFakeArtist {
-		artist = artistService.NewFakeArtist(cardsRepo, notifier)
-	} else {
-		artist = artistService.NewArtist(res.GetEnv().ArtistURL, cardsRepo, notifier)
-	}
-	runner := lottery.NewRunner(lotteryRepository, cardsRepo, origin)
-	state := stateService.NewState(stateRepository)
-	merciful := merciful2.NewMerciful(prayRepository, artist, state, speller, notifier)
 
+	// speller+artist+creator
+	speller := spellerService.NewSpeller(spellRepo, origin, notifier)
+	var engine artistService.EngineContract
+	if res.GetEnv().UseFakeArtist {
+		engine = engine2.NewFakeEngine()
+	} else {
+		engine = engine2.NewArtistEngine(res.GetEnv().ArtistURL)
+	}
+	artist := artistService.NewArtist(engine, cardsRepo, notifier)
+	creator := creator2.NewCreator(artist, speller, notifier)
+
+	// lottery runner
+	runner := lottery.NewRunner(lotteryRepo, cardsRepo, origin)
+
+	// merciful
+	merciful := merciful2.NewMerciful(prayRepo, creator, notifier)
+
+	// Artchitect core scheduler
 	artchitectConfig := artchitectService.Config{
 		CardsCreationEnabled: res.GetEnv().CardCreationEnabled,
 		LotteryEnabled:       res.GetEnv().LotteryEnabled,
@@ -69,24 +78,16 @@ func main() {
 	}
 	artchitect := artchitectService.NewArtchitect(
 		artchitectConfig,
-		state,
-		speller,
-		artist,
-		lotteryRepository,
+		creator,
+		lotteryRepo,
 		runner,
 		merciful,
 		notifier,
 	)
-	gift := gifter.NewGifter(cardsRepo, origin, res.GetEnv().TelegramBotToken, res.GetEnv().TenMinChat)
 
-	// state saving (in DB) process
-	go func() {
-		if err := state.Run(ctx); err != nil {
-			log.Fatal().Err(err).Send()
-		}
-	}()
-
+	// gifter
 	if res.GetEnv().GifterActive {
+		gift := gifter.NewGifter(cardsRepo, origin, res.GetEnv().TelegramBotToken, res.GetEnv().TenMinChat)
 		go func() {
 			if err := gift.Run(ctx); err != nil {
 				log.Fatal().Err(err).Send()
@@ -105,10 +106,10 @@ mainFor:
 			tick += 1
 			err := artchitect.Run(ctx, tick)
 			if err != nil {
-				log.Error().Err(err).Msgf("failed to run artchitect task")
+				log.Error().Err(err).Msgf("[main] failed to run artchitect task")
 			}
 		}
 	}
 
-	log.Info().Msg("soul.Run finished")
+	log.Info().Msg("[main] soul.Run finished")
 }

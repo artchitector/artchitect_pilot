@@ -10,5 +10,5 @@ const (
 type PrayWithQuestion struct {
 	gorm.Model
 	State  string
-	Answer uint64
+	Answer uint
 }

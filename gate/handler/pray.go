@@ -38,7 +38,7 @@ func (ph *PrayHandler) HandleAnswer(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	answer, err := ph.prayRepository.GetAnswer(c, uint64(request.ID))
+	answer, err := ph.prayRepository.GetAnswer(c, uint(request.ID))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusOK, "0")
 		log.Info().Msgf("[pray] failed to wait pray %d. 0 sent", request.ID)

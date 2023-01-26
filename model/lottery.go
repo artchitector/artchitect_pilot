@@ -25,7 +25,7 @@ type Lottery struct {
 	Started            time.Time
 	Finished           time.Time
 	State              string
-	TotalWinners       uint64
-	WinnersJSON        string   `json:"-"` // as a JSON-string [123,546,232,543]
-	Winners            []uint64 `gorm:"-"`
+	TotalWinners       uint
+	WinnersJSON        string `json:"-"` // as a JSON-string [123,546,232,543]
+	Winners            []uint `gorm:"-"`
 }

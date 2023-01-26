@@ -34,24 +34,24 @@ func (lr *LotteryRepository) GetLastLotteries(ctx context.Context, lastN uint) (
 	return lotteries, err
 }
 
-func (lr *LotteryRepository) GetSelection(ctx context.Context) ([]uint64, error) {
-	selection := make(map[uint64]struct{})
+func (lr *LotteryRepository) GetSelection(ctx context.Context) ([]uint, error) {
+	selection := make(map[uint]struct{})
 	var lotteries []model.Lottery
 	err := lr.db.Where("state = ?", model.LotteryStateFinished).Find(&lotteries).Error
 	if err != nil {
-		return []uint64{}, err
+		return []uint{}, err
 	}
 	for _, lottery := range lotteries {
-		var winners []uint64
+		var winners []uint
 		if err := json.Unmarshal([]byte(lottery.WinnersJSON), &winners); err != nil {
-			return []uint64{}, err
+			return []uint{}, err
 		}
 		for _, winner := range winners {
 			selection[winner] = struct{}{}
 		}
 	}
 
-	list := make([]uint64, 0, len(selection))
+	list := make([]uint, 0, len(selection))
 	for id, _ := range selection {
 		list = append(list, id)
 	}
