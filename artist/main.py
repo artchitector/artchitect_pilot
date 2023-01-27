@@ -54,7 +54,7 @@ def prepareFileForInvokeAI():
     tags = request.form['tags']
     seed = request.form['seed']
     lines = []
-    lines.append(f'{tags} -S{seed} -W512 -H768 -s50 -U2')
+    lines.append(f'{tags} -S{seed} -W512 -H768 -s50 -U4')
     with open("/home/artchitector/invokeai/list.txt", "w") as text_file:
         for line in lines:
             text_file.write(line)

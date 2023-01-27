@@ -17,8 +17,8 @@ const (
 	MaxSeed = uint(4294967295)
 
 	SizeXF = "xf" // very large x4 resolution, will be in future
-	SizeF  = "f"
-	SizeM  = "m"
-	SizeS  = "s"
-	SizeXS = "xs"
+	SizeF  = "f"  // 1024x1536
+	SizeM  = "m"  // 512x768
+	SizeS  = "s"  // 256x384
+	SizeXS = "xs" // 128x192
 )

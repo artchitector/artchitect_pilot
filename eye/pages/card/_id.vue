@@ -12,7 +12,7 @@
       <p>{{ created }}</p>
       <p>seed = {{ card.Spell.Seed }}</p>
       <p>tags = <i>{{ card.Spell.Tags }}</i></p>
-      <img :src="`/api/image/f/${card.ID}`"/>
+      <img :src="`/api/image/xf/${card.ID}`"/>
     </div>
   </section>
 

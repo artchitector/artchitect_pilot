@@ -20,18 +20,21 @@ func Resize(rawImg []byte, size string) ([]byte, error) {
 
 	var height, width uint
 	switch size {
-	case model.SizeF:
+	case model.SizeXF:
 		// nothing to do, image already full
 		return rawImg, nil
+	case model.SizeF:
+		width = uint(1024)
+		height = uint(1536)
 	case model.SizeM:
-		width = uint(img.Bounds().Size().X / 2)
-		height = uint(img.Bounds().Size().Y / 2)
+		width = uint(512)
+		height = uint(768)
 	case model.SizeS:
-		width = uint(img.Bounds().Size().X / 4)
-		height = uint(img.Bounds().Size().Y / 4)
+		width = uint(256)
+		height = uint(384)
 	case model.SizeXS:
-		width = uint(img.Bounds().Size().X / 8)
-		height = uint(img.Bounds().Size().Y / 8)
+		width = uint(128)
+		height = uint(192)
 	default:
 		// TODO сделать из этого ответ bad-requst, если такое пришло
 		return []byte{}, errors.Errorf("[resizer] wrong size %s", size)
