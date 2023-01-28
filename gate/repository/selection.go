@@ -16,6 +16,6 @@ func NewSelectionRepository(db *gorm.DB) *SelectionRepository {
 
 func (r *SelectionRepository) GetSelection(ctx context.Context) ([]uint, error) {
 	var ids []uint
-	err := r.db.Select("card_id").Model(&model.Selection{}).Order("card_id DESC").Find(&ids).Error
+	err := r.db.Select("distinct(card_id)").Model(&model.Selection{}).Order("card_id DESC").Find(&ids).Error
 	return ids, err
 }
