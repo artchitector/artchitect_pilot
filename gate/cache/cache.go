@@ -135,9 +135,9 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 		for _, size := range []string{model.SizeXF, model.SizeF, model.SizeM, model.SizeS, model.SizeXS} {
 			exist, err := c.ExistsImage(ctx, uint(card.ID), size)
 			if err != nil {
-				log.Error().Err(err).Msgf("[cache] not found existing image (id=%d, size=%s", card.ID, size)
+				log.Error().Err(err).Msgf("[cache] not found existing image (id=%d, size=%s)", card.ID, size)
 			} else if exist {
-				log.Info().Msgf("[cache] skip image resizing in cache (id=%d, size=%s", card.ID, size)
+				log.Info().Msgf("[cache] skip image resizing in cache (id=%d, size=%s)", card.ID, size)
 				continue
 			}
 			log.Info().Msgf("[cache] try to take channel for resize work (id=%d,size=%s)", card.ID, size)

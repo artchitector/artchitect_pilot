@@ -47,3 +47,12 @@ func (n *Notifier) NotifyNewSelection(ctx context.Context, selection model.Selec
 	err = n.red.Publish(ctx, model.ChannelNewSelection, jsn).Err()
 	return errors.Wrap(err, "[notifier] failed to notify selection")
 }
+
+func (n *Notifier) NotifyLottery(ctx context.Context, lottery model.Lottery) error {
+	jsn, err := json.Marshal(lottery)
+	if err != nil {
+		return errors.Wrap(err, "[notifier] failed to marshal lottery")
+	}
+	err = n.red.Publish(ctx, model.ChannelLottery, jsn).Err()
+	return errors.Wrap(err, "[notifier] failed to notify lottery")
+}

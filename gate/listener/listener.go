@@ -42,6 +42,7 @@ func (l *Listener) Run(ctx context.Context) error {
 		model.ChannelNewCard,
 		model.ChannelCreation,
 		model.ChannelNewSelection,
+		model.ChannelLottery,
 	)
 	for {
 		select {
@@ -66,6 +67,7 @@ func (l *Listener) handle(ctx context.Context, msg *redis.Message) error {
 	switch msg.Channel {
 	case model.ChannelTick:
 	case model.ChannelCreation:
+	case model.ChannelLottery:
 
 	case model.ChannelNewCard:
 		if err := l.handleNewCard(ctx, msg); err != nil {

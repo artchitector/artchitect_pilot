@@ -23,6 +23,7 @@ type cardsRepository interface {
 
 type notifier interface {
 	NotifyNewSelection(ctx context.Context, selection model.Selection) error
+	NotifyLottery(ctx context.Context, lottery model.Lottery) error
 }
 
 type origin interface {
@@ -136,6 +137,8 @@ func (lr *Runner) performLotteryStep(ctx context.Context, lottery model.Lottery)
 	if err != nil {
 		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to save lottery winners (id=%d)", lottery.ID)
 	}
+	lr.notifyLottery(ctx, lottery)
+
 	selected, err := lr.selectionRepository.SaveSelection(ctx, model.Selection{
 		CardID:    cardID,
 		LotteryID: lottery.ID,
@@ -154,5 +157,21 @@ func (lr *Runner) performLotteryStep(ctx context.Context, lottery model.Lottery)
 func (lr *Runner) finishLottery(ctx context.Context, lottery model.Lottery) (model.Lottery, error) {
 	lottery.State = model.LotteryStateFinished
 	lottery.Finished = time.Now()
-	return lr.lotteryRepository.SaveLottery(ctx, lottery)
+	saved, err := lr.lotteryRepository.SaveLottery(ctx, lottery)
+	if err != nil {
+		return model.Lottery{}, errors.Wrapf(err, "[runner] failed to save lottery id=%d", lottery.ID)
+	}
+	lr.notifyLottery(ctx, saved)
+	return saved, nil
+}
+
+func (lr *Runner) notifyLottery(ctx context.Context, lottery model.Lottery) {
+	var winners []uint
+	if err := json.Unmarshal([]byte(lottery.WinnersJSON), &winners); err != nil {
+		log.Error().Err(err).Msgf("[runner] failed to unmarshal lottery winner (id=%d). Json: %s", lottery.ID, lottery.WinnersJSON)
+	}
+	lottery.Winners = winners
+	if err := lr.notifier.NotifyLottery(ctx, lottery); err != nil {
+		log.Error().Err(err).Msgf("[runner] failed to notify lottery (id=%d)", lottery.ID)
+	}
 }
