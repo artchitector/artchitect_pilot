@@ -37,6 +37,7 @@ func initDB(env *Env) *gorm.DB {
 		&model.Spell{},
 		&model.Lottery{},
 		&model.PrayWithQuestion{},
+		&model.Selection{},
 	); err != nil {
 		log.Fatal().Err(errors.Wrap(err, "failed to auto-migrate"))
 	}

@@ -36,7 +36,13 @@ func NewListener(red *redis.Client, cache cache, cardRepository cardRepository) 
 }
 
 func (l *Listener) Run(ctx context.Context) error {
-	subscriber := l.red.Subscribe(ctx, model.ChannelTick, model.ChannelNewCard, model.ChannelCreation)
+	subscriber := l.red.Subscribe(
+		ctx,
+		model.ChannelTick,
+		model.ChannelNewCard,
+		model.ChannelCreation,
+		model.ChannelNewSelection,
+	)
 	for {
 		select {
 		case <-ctx.Done():
@@ -62,10 +68,14 @@ func (l *Listener) handle(ctx context.Context, msg *redis.Message) error {
 	case model.ChannelCreation:
 
 	case model.ChannelNewCard:
-		err := l.handleNewCard(ctx, msg)
-		if err != nil {
+		if err := l.handleNewCard(ctx, msg); err != nil {
 			return errors.Wrap(err, "[listener] failed to handle new card")
 		}
+	case model.ChannelNewSelection:
+		if err := l.handleNewSelection(ctx, msg); err != nil {
+			return errors.Wrap(err, "[listener] failed to handle new selection")
+		}
+
 	default:
 		log.Error().Msgf("[listener] unknown event %s", msg.Channel)
 		return nil
@@ -93,6 +103,22 @@ func (l *Listener) handleNewCard(ctx context.Context, msg *redis.Message) error 
 	// card automatically saved when loaded in repository
 	if err := l.cache.AddLastCardID(ctx, uint(card.ID)); err != nil {
 		return errors.Wrapf(err, "[listener] failed to append new last_card to cache with id=%d", card.ID)
+	}
+	return nil
+}
+
+func (l *Listener) handleNewSelection(ctx context.Context, msg *redis.Message) error {
+	var seletion model.Selection
+	if err := json.Unmarshal([]byte(msg.Payload), &seletion); err != nil {
+		return errors.Wrap(err, "[listener] failed to unmarshal new selection")
+	}
+	log.Info().Msgf("[listener] got new selection (id=%d)", seletion.ID)
+	// card automatically cached when loaded in repository
+	card, found, err := l.cardRepository.GetCard(ctx, seletion.CardID)
+	if err != nil {
+		return errors.Wrapf(err, "[listener] failed to get card id=%d", card.ID)
+	} else if !found {
+		return errors.Errorf("[listener] not found card id=%d", card.ID)
 	}
 	return nil
 }

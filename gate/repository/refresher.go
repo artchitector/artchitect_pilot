@@ -9,12 +9,12 @@ import (
 
 // Refresher refresh cache
 type Refresher struct {
-	cardRepository    *CardRepository
-	lotteryRepository *LotteryRepository
+	cardRepository      *CardRepository
+	selectionRepository *SelectionRepository
 }
 
-func NewRefresher(cardRepository *CardRepository, lotteryRepository *LotteryRepository) *Refresher {
-	return &Refresher{cardRepository, lotteryRepository}
+func NewRefresher(cardRepository *CardRepository, selectionRepository *SelectionRepository) *Refresher {
+	return &Refresher{cardRepository, selectionRepository}
 }
 
 func (r *Refresher) StartRefreshing(ctx context.Context) error {
@@ -48,7 +48,7 @@ func (r *Refresher) RefreshLast(ctx context.Context) error {
 func (r *Refresher) RefreshSelection(ctx context.Context) error {
 	log.Info().Msgf("[refresher] god bless refresh selection - started")
 	// selection
-	ids, err := r.lotteryRepository.GetSelection(ctx)
+	ids, err := r.selectionRepository.GetSelection(ctx)
 	if err != nil {
 		return errors.Wrapf(err, "[refresher] failed to get selection")
 	}

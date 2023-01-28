@@ -2,22 +2,24 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
 type SelectionHandler struct {
-	lotteryRepository lotteryRepository
+	selectionRepository selectionRepository
 }
 
-func NewSelectionHandler(lotteryRepository lotteryRepository) *SelectionHandler {
-	return &SelectionHandler{lotteryRepository: lotteryRepository}
+func NewSelectionHandler(selectionRepository selectionRepository) *SelectionHandler {
+	return &SelectionHandler{selectionRepository: selectionRepository}
 }
 
 func (lh *SelectionHandler) Handle(c *gin.Context) {
-	selection, err := lh.lotteryRepository.GetSelection(c)
+	selection, err := lh.selectionRepository.GetSelection(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	log.Info().Msgf("%+v", selection)
 	c.JSON(http.StatusOK, selection)
 }

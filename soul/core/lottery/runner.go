@@ -13,8 +13,16 @@ type lotteryRepository interface {
 	SaveLottery(ctx context.Context, lottery model.Lottery) (model.Lottery, error)
 }
 
+type selectionRepository interface {
+	SaveSelection(ctx context.Context, selected model.Selection) (model.Selection, error)
+}
+
 type cardsRepository interface {
 	GetCardsIDsByPeriod(ctx context.Context, start time.Time, end time.Time) ([]uint, error)
+}
+
+type notifier interface {
+	NotifyNewSelection(ctx context.Context, selection model.Selection) error
 }
 
 type origin interface {
@@ -22,13 +30,27 @@ type origin interface {
 }
 
 type Runner struct {
-	lotteryRepository lotteryRepository
-	cardsRepository   cardsRepository
-	origin            origin
+	lotteryRepository   lotteryRepository
+	selectionRepository selectionRepository
+	cardsRepository     cardsRepository
+	origin              origin
+	notifier            notifier
 }
 
-func NewRunner(lotteryRepository lotteryRepository, cardsRepository cardsRepository, origin origin) *Runner {
-	return &Runner{lotteryRepository, cardsRepository, origin}
+func NewRunner(
+	lotteryRepository lotteryRepository,
+	selectionRepository selectionRepository,
+	cardsRepository cardsRepository,
+	origin origin,
+	notifier notifier,
+) *Runner {
+	return &Runner{
+		lotteryRepository,
+		selectionRepository,
+		cardsRepository,
+		origin,
+		notifier,
+	}
 }
 
 func (lr *Runner) RunLottery(ctx context.Context, lottery model.Lottery) error {
@@ -101,15 +123,30 @@ func (lr *Runner) performLotteryStep(ctx context.Context, lottery model.Lottery)
 	if err != nil {
 		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to select from origin with max=%d", totalCards)
 	}
-	log.Info().Msgf("[runner] selected %d(card id=%d), total cards %d", selection, cards[selection], len(cards))
+	cardID := cards[selection]
+	log.Info().Msgf("[runner] selected %d(card id=%d), total cards %d", selection, cardID, len(cards))
 
-	winners = append(winners, cards[selection])
+	winners = append(winners, cardID)
 	data, err := json.Marshal(winners)
 	if err != nil {
 		return model.Lottery{}, false, errors.Wrapf(err, "failed to marshal winners")
 	}
 	lottery.WinnersJSON = string(data)
 	lottery, err = lr.lotteryRepository.SaveLottery(ctx, lottery)
+	if err != nil {
+		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to save lottery winners (id=%d)", lottery.ID)
+	}
+	selected, err := lr.selectionRepository.SaveSelection(ctx, model.Selection{
+		CardID:    cardID,
+		LotteryID: lottery.ID,
+	})
+	if err != nil {
+		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to save selected card (lottery=%d, card=%d)", lottery.ID, cardID)
+	}
+	log.Info().Msgf("[runner] saved selected (lottery=%d, card=%d)", selected.LotteryID, selected.CardID)
+	if err := lr.notifier.NotifyNewSelection(ctx, selected); err != nil {
+		log.Error().Err(err).Msgf("[runner] failed to notify selection (id=%d)", selected.ID)
+	}
 
 	return lottery, false, err
 }

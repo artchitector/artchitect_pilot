@@ -15,12 +15,15 @@ type cardsRepository interface {
 type lotteryRepository interface {
 	GetActiveLottery(ctx context.Context) (model.Lottery, error)
 	GetLastLotteries(ctx context.Context, lastN uint) ([]model.Lottery, error)
-	GetSelection(ctx context.Context) ([]uint, error)
 }
 
 type prayRepository interface {
 	MakePray(ctx context.Context) (model.PrayWithQuestion, error)
 	GetAnswer(ctx context.Context, prayId uint) (uint, error)
+}
+
+type selectionRepository interface {
+	GetSelection(ctx context.Context) ([]uint, error)
 }
 
 type cache interface {

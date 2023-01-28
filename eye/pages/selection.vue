@@ -12,51 +12,76 @@
       <div class="notification is-primary" v-else-if="$fetchState.error">
         {{ $fetchState.error.message }}
       </div>
-      <div class="columns" v-else v-for="line in lines">
-        <div class="column has-text-centered" v-for="id in line">
-          <a :href="`/card/${id}`" @click.prevent="onSelect(id)">
-            <img :src="`/api/image/s/${id}`"/>
-          </a>
+      <div v-else>
+        <div v-if="wsStatus.error" class="notification is-warning is-size-7 has-text-centered">
+          websocket listening error: {{ wsStatus.error.message }}
         </div>
+        <div v-else-if="wsStatus.reconnecting" class="notification is-size-7 has-text-centered">
+          websocket connecting {{ wsStatus.reconnecting.attempt }}/{{ wsStatus.reconnecting.maxAttempts }}
+        </div>
+        <cardlist :cards="selection" cards-in-column="5" card-size="s"/>
       </div>
     </section>
-    <viewer ref="viewer"/>
   </div>
 </template>
 <script>
 import Viewer from "@/components/viewer/viewer";
+import Cardlist from "@/components/list/cardlist.vue";
+import WsConnection from "@/utils/ws_connection";
 
 export default {
-  components: {Viewer},
+  components: {Cardlist, Viewer},
   head() {
     return {
       title: this.$t('selection_title')
     }
   },
-  data () {
+  data() {
     return {
+      connection: null,
+      wsStatus: {
+        error: null,
+        reconnecting: null,
+      },
       selection: []
     }
   },
-  async fetch () {
-    this.selection = await this.$axios.$get("/selection")
+  mounted() {
+    this.connection = new WsConnection(process.env.WS_URL, '🪆', ['new_selection'], 10)
+    this.connection.onmessage((channel, selection) => {
+      this.wsStatus.error = null;
+      this.wsStatus.reconnecting = null;
+      this.selection.unshift(selection.CardID)
+      console.log(`🌄: new selection (card_id=${selection.CardID})`,)
+    })
+    this.connection.onerror((err) => this.wsStatus.error = err)
+    this.connection.onreconnecting((attempt, maxAttempts) => this.wsStatus.reconnecting = {
+      attempt: attempt,
+      maxAttempts: maxAttempts
+    })
+    this.connection.onopen(() => {
+      this.wsStatus.error = null
+      this.wsStatus.reconnecting = null
+    })
+    this.connection.connect()
   },
-  computed: {
-    lines () {
-      const lines = []
-      const chunkSize = 5
-      for (let i = 0; i < this.selection.length; i += chunkSize) {
-        lines.push(this.selection.slice(i, i + chunkSize))
+  beforeDestroy() {
+    this.connection.close()
+    this.connection = null
+  },
+  async fetch() {
+    try {
+      this.selection = await this.$axios.$get("/selection")
+    } catch (e) {
+      if (this.connection) {
+        this.connection.close()
       }
-      return lines
-    },
-    count () {
-      return this.selection.length
+      throw e;
     }
   },
-  methods: {
-    onSelect (id) {
-      this.$refs.viewer.show(this.selection, id);
+  computed: {
+    count() {
+      return this.selection.length
     }
   }
 }

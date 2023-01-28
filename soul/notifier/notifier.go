@@ -38,3 +38,12 @@ func (n *Notifier) NotifyCreationState(ctx context.Context, state model.Creation
 	err = n.red.Publish(ctx, model.ChannelCreation, jsn).Err()
 	return errors.Wrap(err, "[notifier] failed to notify artist")
 }
+
+func (n *Notifier) NotifyNewSelection(ctx context.Context, selection model.Selection) error {
+	jsn, err := json.Marshal(selection)
+	if err != nil {
+		return errors.Wrap(err, "[notifier] failed to marshal selection")
+	}
+	err = n.red.Publish(ctx, model.ChannelNewSelection, jsn).Err()
+	return errors.Wrap(err, "[notifier] failed to notify selection")
+}

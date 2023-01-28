@@ -31,9 +31,10 @@ func main() {
 	cardsRepo := repository.NewCardRepository(res.GetDB(), cache)
 	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
 	prayRepo := repository.NewPrayRepository(res.GetDB())
+	selectionRepo := repository.NewSelectionRepository(res.GetDB())
 
 	// refresher (update cache)
-	refresher := repository.NewRefresher(cardsRepo, lotteryRepo)
+	refresher := repository.NewRefresher(cardsRepo, selectionRepo)
 	go func() {
 		if err := refresher.RefreshLast(ctx); err != nil {
 			log.Error().Err(err).Msgf("[main] failed refreshing last")
@@ -58,7 +59,7 @@ func main() {
 		lotteryRepo,
 	)
 	cardHandler := handler.NewCardHandler(cardsRepo, cache)
-	selectionHander := handler.NewSelectionHandler(lotteryRepo)
+	selectionHander := handler.NewSelectionHandler(selectionRepo)
 	prayHandler := handler.NewPrayHandler(prayRepo)
 
 	// listeners with websocket handler

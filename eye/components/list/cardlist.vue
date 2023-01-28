@@ -4,7 +4,7 @@
     <div class="columns" v-for="line in lines">
       <div class="column" v-for="card in line">
         <card-complex v-if="isComplex" :card="card" @select="select(card.ID)"/>
-        <card-simple v-else :cardId="card"/>
+        <card-simple v-else :card-id="card" @select="select(card)"/>
       </div>
     </div>
   </div>
@@ -38,7 +38,14 @@ export default {
   methods: {
     select(cardId) {
       const ids = [];
-      this.cards.forEach((card) => ids.push(card.ID))
+      const isComplex = this.isComplex
+      this.cards.forEach((card) => {
+        if (isComplex) {
+          ids.push(card.ID)
+        } else {
+          ids.push(card)
+        }
+      })
       this.$refs.viewer.show(ids, cardId)
     }
   }

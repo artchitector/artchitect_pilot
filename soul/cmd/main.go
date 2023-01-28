@@ -45,6 +45,7 @@ func main() {
 	spellRepo := repository.NewSpellRepository(res.GetDB())
 	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
 	prayRepo := repository.NewPrayRepository(res.GetDB())
+	selectionRepo := repository.NewSelectionRepository(res.GetDB())
 
 	// notifier
 	notifier := notifier2.NewNotifier(res.GetRedis())
@@ -65,7 +66,7 @@ func main() {
 	creator := creator2.NewCreator(artist, speller, notifier, res.GetEnv().CardTotalTime)
 
 	// lottery runner
-	runner := lottery.NewRunner(lotteryRepo, cardsRepo, origin)
+	runner := lottery.NewRunner(lotteryRepo, selectionRepo, cardsRepo, origin, notifier)
 
 	// merciful
 	merciful := merciful2.NewMerciful(prayRepo, creator, notifier)
