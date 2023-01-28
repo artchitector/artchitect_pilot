@@ -19,7 +19,7 @@
         <div v-else-if="wsStatus.reconnecting" class="notification is-size-7 has-text-centered">
           websocket connecting {{ wsStatus.reconnecting.attempt }}/{{ wsStatus.reconnecting.maxAttempts }}
         </div>
-        <cardlist :cards="selection" cards-in-column="5" card-size="s"/>
+        <cardlist :cards="selection" cards-in-column="5" card-size="s" visible-count="50"/>
       </div>
     </section>
   </div>

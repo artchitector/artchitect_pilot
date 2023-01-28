@@ -7,6 +7,9 @@
         <card-simple v-else :card-id="card" @select="select(card)"/>
       </div>
     </div>
+    <div v-if="showLoadMore" class="has-text-centered">
+      <button class="button" @click.prevent="showMore">show more...</button>
+    </div>
   </div>
 </template>
 
@@ -21,18 +24,33 @@ export default {
     'cards',
     'cardsInColumn',
     'cardSize',
+    'visibleCount', // how many cards show at start of component
   ],
+  data() {
+    return {
+      currentVisible: 0,
+    }
+  },
   computed: {
     lines() {
+      const cards = this.cards.slice(0, this.currentVisible)
       const chunkSize = parseInt(this.cardsInColumn);
       const chunks = [];
-      for (let i = 0; i < this.cards.length; i += chunkSize) {
-        chunks.push(this.cards.slice(i, i + chunkSize));
+      for (let i = 0; i < cards.length; i += chunkSize) {
+        chunks.push(cards.slice(i, i + chunkSize));
       }
       return chunks;
     },
     isComplex() {
       return typeof this.cards[0] === 'object';
+    },
+    showLoadMore() {
+      return this.currentVisible < this.cards.length;
+    }
+  },
+  mounted() {
+    if (!!this.visibleCount) {
+      this.currentVisible = parseInt(this.visibleCount)
     }
   },
   methods: {
@@ -47,6 +65,9 @@ export default {
         }
       })
       this.$refs.viewer.show(ids, cardId)
+    },
+    showMore() {
+      this.currentVisible += parseInt(this.visibleCount)
     }
   }
 }
