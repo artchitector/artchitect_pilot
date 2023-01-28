@@ -33,7 +33,12 @@ export default {
   },
   computed: {
     lines() {
-      const cards = this.cards.slice(0, this.currentVisible)
+      let cards = []
+      if (this.currentVisible === 0) {
+        cards = this.cards
+      } else {
+        cards = this.cards.slice(0, this.currentVisible)
+      }
       const chunkSize = parseInt(this.cardsInColumn);
       const chunks = [];
       for (let i = 0; i < cards.length; i += chunkSize) {
@@ -45,7 +50,7 @@ export default {
       return typeof this.cards[0] === 'object';
     },
     showLoadMore() {
-      return this.currentVisible < this.cards.length;
+      return this.currentVisible > 0 && this.currentVisible < this.cards.length;
     }
   },
   mounted() {
