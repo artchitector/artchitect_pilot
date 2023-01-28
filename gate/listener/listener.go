@@ -125,14 +125,28 @@ func (l *Listener) broadcast(ctx context.Context, msg *redis.Message) error {
 		Name:    msg.Channel,
 		Payload: msg.Payload,
 	}
-	l.mutex.Lock()
-	defer l.mutex.Unlock()
-	for idx, ch := range l.eventChannels {
-		go func(idx int, ch chan localmodel.Event) {
-			ch <- event
-		}(idx, ch)
+	for _, ch := range l.eventChannels {
+		l.sendEvent(ctx, ch, event)
 	}
 	return nil
+}
+
+func (l *Listener) sendEvent(ctx context.Context, ch chan localmodel.Event, event localmodel.Event) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Error().Msgf("[listener] send on closed channel recovered")
+			l.mutex.Lock()
+			defer l.mutex.Unlock()
+			var err error
+			log.Info().Msgf("[listener] before %+v", l.eventChannels)
+			l.eventChannels, err = removeFromSliceByChan(l.eventChannels, ch)
+			if err != nil {
+				log.Error().Err(err).Msgf("[listener] failed to remove closed channel from eventChannels slice")
+			}
+			log.Info().Msgf("[listener] after %+v", l.eventChannels)
+		}
+	}()
+	ch <- event
 }
 
 func removeFromSliceByChan(slice []chan localmodel.Event, ch chan localmodel.Event) ([]chan localmodel.Event, error) {
