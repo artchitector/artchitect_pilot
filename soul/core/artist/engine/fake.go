@@ -22,7 +22,7 @@ func (e *FakeEngine) GetImage(ctx context.Context, spell model.Spell) ([]byte, e
 	if b, err := os.ReadFile(fmt.Sprintf("files/fakes/%d.jpeg", fakeNumber)); err != nil {
 		return []byte{}, errors.Wrap(err, "[fake artist] failed to get file")
 	} else {
-		time.Sleep(time.Second * 10) // imitation of long-running process
+		time.Sleep(time.Second * 6) // imitation of long-running process
 		return b, nil
 	}
 }

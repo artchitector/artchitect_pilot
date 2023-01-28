@@ -1,18 +1,20 @@
 <template>
   <div class="image-container">
-    <a :href="`/card/${artwork.ID}`" @click.prevent="select()">
-      <img :src="'/api/image/m/' + artwork.ID"/>
+    <a :href="`/card/${card.ID}`" @click.prevent="select()">
+      <img :src="'/api/image/m/' + card.ID"/>
     </a>
     <div class="version">
-      <span class="tag is-primary is-light">{{ artwork.Version }}</span>
+      <span class="tag is-primary is-light">{{ card.Version }}</span>
     </div>
-    <p class="is-size-7 tags">{{ artwork.Spell.Tags }}</p>
-    <p class="is-size-7 info">id={{ artwork.ID }}, <b>seed: {{ artwork.Spell.Seed }}</b></p>
+    <p class="is-size-7 tags">{{ card.Spell.Tags }}</p>
+    <p class="is-size-7 info">id={{ card.ID }}, <b>seed: {{ card.Spell.Seed }}</b></p>
   </div>
 </template>
+
 <script>
 export default {
-  props: ['artwork'],
+  name: "card-complex",
+  props: ['card'],
   methods: {
     select() {
       this.$emit('select')
@@ -20,15 +22,18 @@ export default {
   }
 }
 </script>
-<style lang="scss">
+
+<style lang="scss" scoped>
 .image-container {
   position: relative;
+
   .version {
     position: absolute;
     right: 5px;
     bottom: 10px;
     opacity: 0.7;
   }
+
   a {
     display: block;
   }

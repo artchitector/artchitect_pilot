@@ -66,6 +66,10 @@ func (c *Creator) Create(ctx context.Context) (model.Card, error) {
 	}
 
 	state.CardID = card.ID
+	state.LastCardPaintTime = state.CurrentCardPaintTime
+	if err := c.notifier.NotifyCreationState(ctx, state); err != nil {
+		log.Error().Err(err).Msgf("[creator] failed to notify fresh created card")
+	}
 	if err := c.enjoy(ctx, &state, cardStart); err != nil {
 		log.Error().Err(err).Msgf("[creator] failed enjoy :(")
 	}
@@ -85,8 +89,6 @@ func (c *Creator) enjoy(ctx context.Context, state *model.CreationState, cardSta
 	log.Info().Msgf("[creator] enjoy for %f seconds", secondsLeft)
 
 	state.EnjoyTime = uint(secondsLeft)
-	state.LastCardPaintTime = state.CurrentCardPaintTime
-
 	updaterCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	go func() {

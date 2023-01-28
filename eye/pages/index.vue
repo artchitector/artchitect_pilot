@@ -1,21 +1,21 @@
 <template>
   <div>
     <short/>
-    <promotion/>
+<!--    <promotion/> temporary disabled-->
     <heart/>
     <section>
       <a id="cards"></a>
-      <last-artworks/>
+      <last99/>
     </section>
   </div>
 </template>
 <script>
-import LastArtworks from '@/components/last-cards/last-artworks.vue'
-import Short from "@/components/description/short.vue";
-import Launch from "@/components/description/launch.vue";
+import Short from "@/components/index/short.vue";
+import Promotion from "@/components/index/promotion.vue";
+import Last99 from "@/components/index/last99.vue";
 
 export default {
-  components: {Launch, Short, LastArtworks},
+  components: {Last99, Short, Promotion},
   layout: 'artchitect',
   head() {
     return {
