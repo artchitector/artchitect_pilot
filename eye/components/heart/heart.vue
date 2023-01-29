@@ -4,15 +4,20 @@
     <h3 class="has-text-centered is-size-4">Artchitect's heart</h3>
     <hr class="divider"/>
     <div v-if="status.error" class="notification is-danger has-text-centered">
-      Error: {{status.error.message}}
+      Error: {{ status.error.message }}
     </div>
     <div v-else-if="status.reconnecting" class="notification has-text-centered">
-      connecting {{status.reconnecting.attempt}}/{{status.reconnecting.maxAttempts}}
+      <loader size="s"/>
+      <br/>
+      connecting {{ status.reconnecting.attempt }}/{{ status.reconnecting.maxAttempts }}
     </div>
-    <p v-else-if="!stateChannel">
-      no state
+    <p v-else-if="!stateChannel" class="notification has-text-centered">
+      <loader size="s"/>
+      <br/>
+      connected. waiting for event
     </p>
     <creation v-else-if="stateChannel === 'creation'" :state="state"/>
+    <heart-lottery v-else-if="stateChannel === 'lottery'" :state="state"/>
     <p v-else>
       unknown state {{ stateChannel }}
     </p>
@@ -36,7 +41,7 @@ export default {
     }
   },
   mounted() {
-    this.connection = new WsConnection(process.env.WS_URL, '🧡', ['creation'], 10)
+    this.connection = new WsConnection(process.env.WS_URL, '🧡', ['creation', 'lottery'], 10)
 
     this.connection.onmessage((channel, state) => {
       console.log('🧡: new message', channel, state)
@@ -54,6 +59,10 @@ export default {
         attempt: attempt,
         maxAttempts: maxAttempts,
       }
+    })
+    this.connection.onopen(() => {
+      this.status.reconnecting = null
+      this.status.error = null
     })
     this.connection.connect()
   },

@@ -48,8 +48,8 @@ func (n *Notifier) NotifyNewSelection(ctx context.Context, selection model.Selec
 	return errors.Wrap(err, "[notifier] failed to notify selection")
 }
 
-func (n *Notifier) NotifyLottery(ctx context.Context, lottery model.Lottery) error {
-	jsn, err := json.Marshal(lottery)
+func (n *Notifier) NotifyLottery(ctx context.Context, state model.LotteryState) error {
+	jsn, err := json.Marshal(state)
 	if err != nil {
 		return errors.Wrap(err, "[notifier] failed to marshal lottery")
 	}

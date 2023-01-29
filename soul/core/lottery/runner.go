@@ -23,7 +23,7 @@ type cardsRepository interface {
 
 type notifier interface {
 	NotifyNewSelection(ctx context.Context, selection model.Selection) error
-	NotifyLottery(ctx context.Context, lottery model.Lottery) error
+	NotifyLottery(ctx context.Context, state model.LotteryState) error
 }
 
 type origin interface {
@@ -137,7 +137,7 @@ func (lr *Runner) performLotteryStep(ctx context.Context, lottery model.Lottery)
 	if err != nil {
 		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to save lottery winners (id=%d)", lottery.ID)
 	}
-	lr.notifyLottery(ctx, lottery)
+	lr.notifyLottery(ctx, lottery, 0, 0)
 
 	selected, err := lr.selectionRepository.SaveSelection(ctx, model.Selection{
 		CardID:    cardID,
@@ -161,17 +161,40 @@ func (lr *Runner) finishLottery(ctx context.Context, lottery model.Lottery) (mod
 	if err != nil {
 		return model.Lottery{}, errors.Wrapf(err, "[runner] failed to save lottery id=%d", lottery.ID)
 	}
-	lr.notifyLottery(ctx, saved)
+	start := time.Now()
+	var enjoySeconds uint = 10
+	enjoyFinish := start.Add(time.Second * time.Duration(enjoySeconds))
+	lr.notifyLottery(ctx, saved, 0, enjoySeconds)
+forLoop:
+	for {
+		select {
+		case <-ctx.Done():
+			break forLoop
+		case <-time.Tick(time.Second):
+			if time.Now().After(enjoyFinish) {
+				lr.notifyLottery(ctx, saved, enjoySeconds, enjoySeconds)
+				break forLoop
+			} else {
+				currentEnjoySeconds := uint(time.Now().Sub(start).Seconds())
+				lr.notifyLottery(ctx, saved, currentEnjoySeconds, enjoySeconds)
+			}
+		}
+	}
 	return saved, nil
 }
 
-func (lr *Runner) notifyLottery(ctx context.Context, lottery model.Lottery) {
+func (lr *Runner) notifyLottery(ctx context.Context, lottery model.Lottery, enjoyTime uint, totalEnjoyTime uint) {
 	var winners []uint
 	if err := json.Unmarshal([]byte(lottery.WinnersJSON), &winners); err != nil {
 		log.Error().Err(err).Msgf("[runner] failed to unmarshal lottery winner (id=%d). Json: %s", lottery.ID, lottery.WinnersJSON)
 	}
 	lottery.Winners = winners
-	if err := lr.notifier.NotifyLottery(ctx, lottery); err != nil {
+	state := model.LotteryState{
+		Lottery:          lottery,
+		EnjoyCurrentTime: enjoyTime,
+		EnjoyTotalTime:   totalEnjoyTime,
+	}
+	if err := lr.notifier.NotifyLottery(ctx, state); err != nil {
 		log.Error().Err(err).Msgf("[runner] failed to notify lottery (id=%d)", lottery.ID)
 	}
 }

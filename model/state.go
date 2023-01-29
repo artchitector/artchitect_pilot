@@ -11,3 +11,9 @@ type CreationState struct {
 	EnjoyTime            uint
 	CurrentEnjoyTime     uint
 }
+
+type LotteryState struct {
+	Lottery          Lottery
+	EnjoyTotalTime   uint
+	EnjoyCurrentTime uint
+}

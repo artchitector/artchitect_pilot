@@ -39,7 +39,7 @@ export default {
   mounted() {
     this.connection = new WsConnection(process.env.WS_URL, '🏆', ['lottery'], 10)
     this.connection.onmessage((channel, lottery) => {
-      this.updateLottery(lottery)
+      this.updateLottery(lottery.Lottery)
     });
     this.connection.onerror((err) => this.wsStatus.error = err)
     this.connection.onreconnecting((attempt, maxAttempts) => this.wsStatus.reconnecting = {
