@@ -8,6 +8,7 @@
           <p v-if="state.Queue === 0">Your request is next in queue. Time to wait - less than 60 seconds.</p>
           <p v-else-if="state.Queue > 0">Requests in queue before your: {{ state.Queue }}. Time to wait -
             {{ (state.Queue + 1) * 30 + 30 }} seconds.</p>
+          <p><b>Close your eyes and concentrate on your request!</b></p>
         </template>
         <template v-else-if="state.State === 'running'">
           <p>Your answer is in work. Time to wait - less than 30 seconds</p>
