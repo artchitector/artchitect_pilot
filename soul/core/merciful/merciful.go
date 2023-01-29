@@ -6,6 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
+	"sync"
 )
 
 type creator interface {
@@ -13,8 +14,9 @@ type creator interface {
 }
 
 type prayRepository interface {
-	GetNextPray(ctx context.Context) (model.PrayWithQuestion, error)
-	AnswerPray(ctx context.Context, pray model.PrayWithQuestion, answer uint) error
+	GetNextPray(ctx context.Context) (model.Pray, error)
+	AnswerPray(ctx context.Context, pray model.Pray, answer uint) error
+	SetPrayRunning(ctx context.Context, pray model.Pray) (model.Pray, error)
 }
 
 type notifier interface {
@@ -27,13 +29,17 @@ type Merciful struct {
 	prayRepository prayRepository
 	creator        creator
 	notifier       notifier
+	mutex          sync.Mutex
 }
 
 func NewMerciful(prayRepository prayRepository, creator creator, notifier notifier) *Merciful {
-	return &Merciful{prayRepository, creator, notifier}
+	return &Merciful{prayRepository, creator, notifier, sync.Mutex{}}
 }
 
 func (m *Merciful) AnswerPray(ctx context.Context) (bool, error) {
+	m.mutex.Lock()
+	m.mutex.Unlock()
+
 	pray, err := m.prayRepository.GetNextPray(ctx)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return false, nil // next worker will take his job
@@ -41,6 +47,12 @@ func (m *Merciful) AnswerPray(ctx context.Context) (bool, error) {
 		return false, errors.Wrap(err, "[merciful] failed get next pray")
 	}
 	log.Info().Msgf("[merciful] start answering pray id=%d", pray.ID)
+	if pray.State == model.PrayStateRunning {
+		log.Info().Msgf("[merciful] rerun running pray id=%d", pray.ID)
+	}
+	if pray, err = m.prayRepository.SetPrayRunning(ctx, pray); err != nil {
+		return false, errors.Wrapf(err, "[merciful] failed to set pray running")
+	}
 	card, err := m.creator.CreateWithoutEnjoy(ctx)
 	if err != nil {
 		return false, errors.Wrap(err, "[merciful] failed to get answer")

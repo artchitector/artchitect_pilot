@@ -91,11 +91,11 @@ func main() {
 		r.GET("/card/:id", cardHandler.Handle)
 		r.GET("/selection", selectionHander.Handle)
 		r.GET("/image/:size/:id", cardHandler.HandleImage)
-		r.GET("/answer", prayHandler.Handle)
-		r.GET("/answer/:id", prayHandler.HandleAnswer)
 		r.GET("/ws", func(c *gin.Context) {
 			websocketHandler.Handle(c.Writer, c.Request)
 		})
+		r.POST("/pray", prayHandler.Handle)
+		r.POST("/pray/answer", prayHandler.HandleAnswer)
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()
 		}

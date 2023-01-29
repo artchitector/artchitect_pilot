@@ -14,15 +14,25 @@ func NewPrayRepository(db *gorm.DB) *PrayRepository {
 	return &PrayRepository{db: db}
 }
 
-func (pr *PrayRepository) GetNextPray(ctx context.Context) (model.PrayWithQuestion, error) {
-	var pray model.PrayWithQuestion
-	err := pr.db.Where("state = ?", model.PrayStateWaiting).Order("id asc").Limit(1).First(&pray).Error
+func (pr *PrayRepository) GetNextPray(ctx context.Context) (model.Pray, error) {
+	var pray model.Pray
+	err := pr.db.
+		Where("state = ? or state = ?", model.PrayStateWaiting, model.PrayStateRunning).
+		Order("id asc").
+		Limit(1).
+		First(&pray).Error
 	return pray, err
 }
 
-func (pr *PrayRepository) AnswerPray(ctx context.Context, pray model.PrayWithQuestion, answer uint) error {
+func (pr *PrayRepository) AnswerPray(ctx context.Context, pray model.Pray, answer uint) error {
 	pray.Answer = answer
 	pray.State = model.PrayStateAnswered
 	err := pr.db.Save(&pray).Error
 	return err
+}
+
+func (pr *PrayRepository) SetPrayRunning(ctx context.Context, pray model.Pray) (model.Pray, error) {
+	pray.State = model.PrayStateRunning
+	err := pr.db.Save(&pray).Error
+	return pray, err
 }

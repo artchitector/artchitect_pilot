@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-import Prayer from "@/components/pray/prayer";
+import Prayer from "@/components/pray/prayer.vue";
 
 export default {
   components: {Prayer},

@@ -4,11 +4,13 @@ import "gorm.io/gorm"
 
 const (
 	PrayStateWaiting  = "waiting"
+	PrayStateRunning  = "running"
 	PrayStateAnswered = "answered"
 )
 
-type PrayWithQuestion struct {
+type Pray struct {
 	gorm.Model
-	State  string
-	Answer uint
+	Password string
+	State    string
+	Answer   uint
 }

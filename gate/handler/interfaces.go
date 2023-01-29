@@ -18,8 +18,9 @@ type lotteryRepository interface {
 }
 
 type prayRepository interface {
-	MakePray(ctx context.Context) (model.PrayWithQuestion, error)
-	GetAnswer(ctx context.Context, prayId uint) (uint, error)
+	MakePray(ctx context.Context, password string) (model.Pray, error)
+	GetPrayWithPassword(ctx context.Context, prayId uint, password string) (model.Pray, error)
+	GetQueueBeforePray(ctx context.Context, prayID uint) (uint, error)
 }
 
 type selectionRepository interface {

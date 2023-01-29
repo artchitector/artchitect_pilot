@@ -17,3 +17,8 @@ type LotteryState struct {
 	EnjoyTotalTime   uint
 	EnjoyCurrentTime uint
 }
+
+type PrayState struct {
+	Queue   uint
+	Started bool
+}
