@@ -53,7 +53,7 @@ func (r *Refresher) RefreshSelection(ctx context.Context) error {
 		return errors.Wrapf(err, "[refresher] failed to get selection")
 	}
 	for _, id := range ids {
-		if _, _, err := r.cardRepository.GetCard(ctx, uint(id)); err != nil {
+		if _, _, err := r.cardRepository.GetCardWithImage(ctx, uint(id)); err != nil {
 			return errors.Wrapf(err, "[refresher] failed to get card id=%d", id)
 		}
 	}

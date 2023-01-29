@@ -84,7 +84,7 @@ func (g *Gifter) sendCard(ctx context.Context) error {
 		card.Spell.Tags,
 	)
 
-	r := bytes.NewReader(card.Image)
+	r := bytes.NewReader(card.Image.Data)
 	msg, err := b.SendPhoto(ctx, &bot.SendPhotoParams{
 		ChatID:    g.tenMinChatID,
 		Photo:     &models.InputFileUpload{Data: r},

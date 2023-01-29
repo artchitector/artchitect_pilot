@@ -10,11 +10,12 @@ type Card struct {
 	gorm.Model
 	SpellID   uint
 	Spell     Spell
-	Image     sql.RawBytes `json:"-"`
-	Version   string       // in what environment made card (tags set, version on StableDiffusion etc.)
-	PaintTime uint         // seconds, how much paint took
+	Version   string // in what environment made card (tags set, version on StableDiffusion etc.)
+	PaintTime uint   // seconds, how much paint took
+	Image     Image
 }
 
-func (c Card) TableName() string {
-	return "paintings"
+type Image struct {
+	CardID uint         `gorm:"primaryKey"`
+	Data   sql.RawBytes `json:"-"`
 }

@@ -67,7 +67,7 @@ func (ch *CardHandler) HandleImage(c *gin.Context) {
 		return
 	}
 
-	card, found, err := ch.cardsRepository.GetCard(c, request.ID)
+	card, found, err := ch.cardsRepository.GetCardWithImage(c, request.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -76,7 +76,7 @@ func (ch *CardHandler) HandleImage(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
-	img, err := resizer.Resize(card.Image, request.Size)
+	img, err := resizer.Resize(card.Image.Data, request.Size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

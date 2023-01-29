@@ -32,7 +32,7 @@ func NewArtist(engine EngineContract, cardRepository cardRepository, notifier no
 }
 
 func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *model.CreationState) (model.Card, error) {
-	log.Info().Msgf("Start get painting process from artist. tags: %s, seed: %d", spell.Tags, spell.Seed)
+	log.Info().Msgf("Start get card process from artist. tags: %s, seed: %d", spell.Tags, spell.Seed)
 
 	lastPaintingTime, err := a.cardRepo.GetLastCardPaintTime(ctx)
 	if err != nil {
@@ -57,21 +57,23 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 		}
 	}()
 
-	log.Info().Msgf("[artist] start image painting with spell(id=%d)", spell.ID)
+	log.Info().Msgf("[artist] start image card with spell(id=%d)", spell.ID)
 	data, err := a.engine.GetImage(ctx, spell)
 	cancel()
 	if err != nil {
 		return model.Card{}, errors.Wrap(err, "[artist] failed to get image-data for card")
 	}
 	paintTime := time.Now().Sub(paintStart)
-	painting := model.Card{
+	card := model.Card{
 		Spell:     spell,
-		Image:     data,
 		Version:   spell.Version,
 		PaintTime: uint(paintTime.Seconds()),
+		Image: model.Image{
+			Data: data,
+		},
 	}
 
-	painting, err = a.cardRepo.SaveCard(ctx, painting)
-	log.Info().Msgf("Received and saved painting from artist: id=%d", painting.ID)
-	return painting, err
+	card, err = a.cardRepo.SaveCard(ctx, card)
+	log.Info().Msgf("Received and saved card from artist: id=%d", card.ID)
+	return card, err
 }

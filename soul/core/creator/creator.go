@@ -3,6 +3,7 @@ package creator
 import (
 	"context"
 	"github.com/artchitector/artchitect/model"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"sync"
 	"time"
@@ -32,29 +33,52 @@ func NewCreator(artist artist, speller speller, notifier notifier, cardTotalTime
 	return &Creator{sync.Mutex{}, artist, speller, notifier, cardTotalTime}
 }
 
-func (c *Creator) Create(ctx context.Context) (model.Card, error) {
+func (c *Creator) CreateWithoutEnjoy(ctx context.Context) (model.Card, error) {
+	log.Info().Msgf("[creator] start card creation without enjoy")
+
+	state := model.CreationState{}
+	card, err := c.create(ctx, &state)
+
+	return card, errors.Wrap(err, "[creator] failed to create card without enjoy")
+}
+
+func (c *Creator) CreateWithEnjoy(ctx context.Context) (model.Card, error) {
+	log.Info().Msgf("[creator] start card creation with enjoy")
+	cardStart := time.Now()
+
+	state := model.CreationState{}
+
+	card, err := c.create(ctx, &state)
+	if err != nil {
+		return model.Card{}, errors.Wrap(err, "[creator] failed to create card with enjoy")
+	}
+
+	if err := c.enjoy(ctx, &state, cardStart); err != nil {
+		log.Error().Err(err).Msgf("[creator] failed enjoy :(")
+	}
+
+	return card, nil
+}
+
+func (c *Creator) create(ctx context.Context, state *model.CreationState) (model.Card, error) {
 	// only one creation process at same time
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	log.Info().Msgf("[creator] start card creation]")
-	cardStart := time.Now()
-
 	// notify about black creation state
-	state := model.CreationState{}
-	if err := c.notifier.NotifyCreationState(ctx, state); err != nil {
+	if err := c.notifier.NotifyCreationState(ctx, *state); err != nil {
 		log.Error().Err(err).Msgf("[creator] failed notify artist state")
 	}
 
 	// generate Spell (base for card)
-	spell, err := c.speller.MakeSpell(ctx, &state)
+	spell, err := c.speller.MakeSpell(ctx, state)
 	if err != nil {
 		return model.Card{}, err
 	}
 	log.Info().Msgf("[creator] got spell: %+v", spell)
 
 	// paint card in artist
-	card, err := c.artist.GetCard(ctx, spell, &state)
+	card, err := c.artist.GetCard(ctx, spell, state)
 	if err != nil {
 		return model.Card{}, err
 	}
@@ -67,11 +91,8 @@ func (c *Creator) Create(ctx context.Context) (model.Card, error) {
 
 	state.CardID = card.ID
 	state.LastCardPaintTime = state.CurrentCardPaintTime
-	if err := c.notifier.NotifyCreationState(ctx, state); err != nil {
+	if err := c.notifier.NotifyCreationState(ctx, *state); err != nil {
 		log.Error().Err(err).Msgf("[creator] failed to notify fresh created card")
-	}
-	if err := c.enjoy(ctx, &state, cardStart); err != nil {
-		log.Error().Err(err).Msgf("[creator] failed enjoy :(")
 	}
 
 	return card, nil

@@ -22,21 +22,16 @@ func NewCardRepository(db *gorm.DB, cache cache) *CardRepository {
 	return &CardRepository{db, cache}
 }
 
-func (pr *CardRepository) GetLastCard(ctx context.Context) (model.Card, bool, error) {
-	card := model.Card{}
-	err := pr.db.Preload("Spell").Last(&card).Error
-	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return card, false, nil
-	} else if err != nil {
-		return card, false, errors.Wrap(err, "failed to get last card")
-	} else {
-		return card, true, nil
-	}
-}
-
 func (pr *CardRepository) GetLastCards(ctx context.Context, count uint) ([]model.Card, error) {
 	cards := make([]model.Card, 0, count)
-	err := pr.db.Preload("Spell").Limit(int(count)).Order("id desc").Limit(int(count)).Find(&cards).Error
+	err := pr.db.
+		Joins("Spell").
+		Joins("Image").
+		Limit(int(count)).
+		Order("cards.id desc").
+		Limit(int(count)).
+		Find(&cards).
+		Error
 	if err != nil {
 		return []model.Card{}, errors.Wrapf(err, "failed to get cards count=%d", count)
 	}
@@ -51,7 +46,28 @@ func (pr *CardRepository) GetLastCards(ctx context.Context, count uint) ([]model
 
 func (pr *CardRepository) GetCard(ctx context.Context, ID uint) (model.Card, bool, error) {
 	card := model.Card{}
-	err := pr.db.Preload("Spell").Where("id = ?", ID).Last(&card).Error
+	err := pr.db.
+		Joins("Spell").
+		Where("cards.id = ?", ID).
+		Last(&card).
+		Error
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return card, false, nil
+	} else if err != nil {
+		return card, false, errors.Wrap(err, "failed to get card")
+	} else {
+		return card, true, nil
+	}
+}
+
+func (pr *CardRepository) GetCardWithImage(ctx context.Context, ID uint) (model.Card, bool, error) {
+	card := model.Card{}
+	err := pr.db.
+		Joins("Spell").
+		Joins("Image").
+		Where("cards.id = ?", ID).
+		Last(&card).
+		Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return card, false, nil
 	} else if err != nil {
@@ -64,23 +80,4 @@ func (pr *CardRepository) GetCard(ctx context.Context, ID uint) (model.Card, boo
 		}()
 		return card, true, nil
 	}
-}
-func (pr *CardRepository) GetCardsRange(ctx context.Context, from uint, to uint) ([]model.Card, error) {
-	var min, max uint
-	var order string
-	if from < to {
-		min = from
-		max = to
-		order = "id asc"
-	} else {
-		min = to
-		max = from
-		order = "id desc"
-	}
-	if max-min > 100 {
-		return []model.Card{}, errors.Errorf("maximum 100 cards allowed")
-	}
-	cards := make([]model.Card, 0, max-min)
-	err := pr.db.Preload("Spell").Where("id between ? and ?", min, max).Order(order).Find(&cards).Error
-	return cards, err
 }

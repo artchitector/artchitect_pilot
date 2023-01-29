@@ -13,7 +13,7 @@ type notifier interface {
 }
 
 type creator interface {
-	Create(ctx context.Context) (model.Card, error)
+	CreateWithEnjoy(ctx context.Context) (model.Card, error)
 }
 
 type merciful interface {
@@ -96,7 +96,7 @@ func (a *Artchitect) Run(ctx context.Context, tick int) error {
 
 func (a *Artchitect) runCardCreation(ctx context.Context) error {
 	log.Info().Msgf("[artchitect] start card creation]")
-	if card, err := a.creator.Create(ctx); err != nil {
+	if card, err := a.creator.CreateWithEnjoy(ctx); err != nil {
 		return errors.Wrap(err, "[artchitect] failed to create card")
 	} else {
 		log.Info().Msgf("[artchitect] card created id=%d", card.ID)

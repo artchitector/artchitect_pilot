@@ -18,7 +18,7 @@ type cache interface {
 }
 
 type cardRepository interface {
-	GetCard(ctx context.Context, ID uint) (model.Card, bool, error)
+	GetCardWithImage(ctx context.Context, ID uint) (model.Card, bool, error)
 }
 
 // Listener read incoming request from redis and do some actions
@@ -96,7 +96,7 @@ func (l *Listener) handleNewCard(ctx context.Context, msg *redis.Message) error 
 		return errors.Wrap(err, "[listener] failed to unmarshal new card")
 	}
 	log.Info().Msgf("[listener] got new card event(id=%d)", card.ID)
-	card, found, err := l.cardRepository.GetCard(ctx, card.ID)
+	card, found, err := l.cardRepository.GetCardWithImage(ctx, card.ID)
 	if err != nil {
 		return errors.Wrapf(err, "[listener] failed to get card id=%d", card.ID)
 	} else if !found {
@@ -116,7 +116,7 @@ func (l *Listener) handleNewSelection(ctx context.Context, msg *redis.Message) e
 	}
 	log.Info().Msgf("[listener] got new selection (id=%d)", seletion.ID)
 	// card automatically cached when loaded in repository
-	card, found, err := l.cardRepository.GetCard(ctx, seletion.CardID)
+	card, found, err := l.cardRepository.GetCardWithImage(ctx, seletion.CardID)
 	if err != nil {
 		return errors.Wrapf(err, "[listener] failed to get card id=%d", card.ID)
 	} else if !found {

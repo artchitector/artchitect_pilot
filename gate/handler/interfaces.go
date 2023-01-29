@@ -8,8 +8,8 @@ import (
 
 type cardsRepository interface {
 	GetCard(ctx context.Context, ID uint) (model.Card, bool, error)
+	GetCardWithImage(ctx context.Context, ID uint) (model.Card, bool, error)
 	GetLastCards(ctx context.Context, count uint) ([]model.Card, error)
-	GetCardsRange(ctx context.Context, from uint, to uint) ([]model.Card, error)
 }
 
 type lotteryRepository interface {

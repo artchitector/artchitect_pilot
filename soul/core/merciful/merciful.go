@@ -4,11 +4,12 @@ import (
 	"context"
 	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
 
 type creator interface {
-	Create(ctx context.Context) (model.Card, error)
+	CreateWithoutEnjoy(ctx context.Context) (model.Card, error)
 }
 
 type prayRepository interface {
@@ -39,10 +40,12 @@ func (m *Merciful) AnswerPray(ctx context.Context) (bool, error) {
 	} else if err != nil {
 		return false, errors.Wrap(err, "[merciful] failed get next pray")
 	}
-	card, err := m.creator.Create(ctx)
+	log.Info().Msgf("[merciful] start answering pray id=%d", pray.ID)
+	card, err := m.creator.CreateWithoutEnjoy(ctx)
 	if err != nil {
 		return false, errors.Wrap(err, "[merciful] failed to get answer")
 	}
+	log.Info().Msgf("[merciful] created card id=%d for pray %d", card.ID, pray.ID)
 	err = m.prayRepository.AnswerPray(ctx, pray, card.ID)
 	if err != nil {
 		return false, errors.Wrap(err, "[merciful] failed to save answer")

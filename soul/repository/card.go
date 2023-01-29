@@ -34,7 +34,13 @@ func (pr *CardRepository) GetTotalCards(ctx context.Context) (uint, error) {
 
 func (pr *CardRepository) GetCardWithOffset(offset uint) (model.Card, error) {
 	var card model.Card
-	err := pr.db.Preload("Spell").Order("id asc").Limit(1).Offset(int(offset)).Find(&card).Error
+	err := pr.db.
+		Joins("Spell").
+		Joins("Image").
+		Order("cards.id asc").
+		Limit(1).
+		Offset(int(offset)).
+		Find(&card).Error
 	return card, err
 }
 

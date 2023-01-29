@@ -143,7 +143,7 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 			log.Info().Msgf("[cache] try to take channel for resize work (id=%d,size=%s)", card.ID, size)
 			c.workers <- struct{}{}
 			log.Info().Msgf("[cache] start resizing process(%d, %s)", card.ID, size)
-			resized, err := resizer.Resize(card.Image, size)
+			resized, err := resizer.Resize(card.Image.Data, size)
 			if err != nil {
 				log.Error().Err(err).Msgf("[cache] failed to resize image into size (id=%d, size=%s)", card.ID, size)
 				continue
