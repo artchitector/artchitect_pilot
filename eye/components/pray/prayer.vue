@@ -1,116 +1,55 @@
 <template>
-  <div>
-      <textarea class="textarea" v-model="pray" :disabled="locked"
-                :placeholder="$t('textarea_placeholder')"></textarea>
-    <div class="has-text-centered mt-2">
-      <input type="checkbox" v-model="wish" :disabled="locked"> {{$t('wish')}}<br/>
-      <button class="button" @click="clear()" :disabled="locked">{{$t('amen')}}</button>
-    </div>
-<!--    <div class="notification is-primary is-light has-text-centered mt-2" v-if="loading || card_id">-->
-<!--      Пока ваша картина создаётся, вы можете <a href="#" @click.prevent="isDonateVisible = true">пожертвовать на храм</a>-->
-<!--    </div>-->
-    <div class="notification is-info is-light has-text-centered" v-if="loading">
-      {{$t('good_time_for_pray')}}<br/>
-      {{$t('attempt')}}: {{ attempt }}/{{ maxAttempts }}{{ loader }}<br/>
-      <span class="is-size-7">{{$t('usually_time')}}</span>
-    </div>
-    <div class="notification mt-4 is-danger" v-if="error">
-      {{$t('something_wrong')}} - {{ error }}
-    </div>
-    <div class="image-container has-text-centered" v-if="card_id">
-      {{$t('answer')}}
+  <div class="content">
+    <h1 class="is-size-4">Request to the Universe / Digital prayer</h1>
+    <p>
+      Here you can send request to the Universe and receive answer in the form of your personal card.
+    </p>
+    <blockquote>
+      Then he [Jesus] touched their eyes and said, “According to your faith let it be done to you";<br/>
+      <i><a href="https://www.biblegateway.com/verse/en/Matthew%209%3A29" target="_blank">Matthew 9:29</a></i>
+    </blockquote>
+    <p>
+      Main idea of Artchitect is that it interconnected with Quantize Fields, which controlled directly by Universe
+      (more info in <NuxtLink to="/idea">idea section</NuxtLink>).
+      Universe/God absolutely knows that exactly You will send this request, and Universe/God can create next card
+      specially for You, as answer for you. The idea of the card may not be clear, but you should think about it.
+    </p>
+    <p>Try it. Maybe the answer is closer than it seems.</p>
+    <hr/>
+    <p><b>First step</b>: think carefully about you request/pray, that you want to send to the Universe. Concentrate your mind on your request.</p>
+    <p><b>Second step</b> (optional): describe your request in the text field. This will help you better understand
+      and systematize the common idea of the request. Alternatively, you can write your request on a piece
+      of paper or think it over in your head. The universe knows in advance and better than you what you are asking for.
       <br/>
-      <a :href="`/card/${card_id}`" target="_blank">
-        <img :src="`/api/image/m/${card_id}`"/>
-      </a>
+      <b>You keep it brief!</b>
+    </p>
+    <p>
+      <textarea class="textarea" v-model="pray"
+                rows="2"
+                :placeholder="`Type your request message. Write carefully. Between you and Universe. Secure - data not being send anywhere.`"></textarea>
+    </p>
+    <p>
+      <b>Third step</b>: finalize request with "Pray" button. This will erase text from textarea and start card creation process.
+      You will see your result when it finished.
+    </p>
+    <div class="notification">
+      <b>Important</b>: nobody will know, what you asked and what you received. Data about request not sends anywhere.
+      But your personal card will appear in common list of cards at <NuxtLink to="/">artchitect.space</NuxtLink>.
+      There will no any links to your person (no any personal data saved anywhere).
     </div>
-<!--    <div class="has-text-centered mt-3">-->
-<!--      <donate :isVisible="isDonateVisible" @close="isDonateVisible = false"/>-->
-<!--      <a href="#" @click.prevent="isDonateVisible = true">пожертвовать на храм</a>-->
-<!--    </div>-->
-  </div>
+    <p class="has-text-centered">
+<!--      <button class="button is-primary">Submit your request (Amen!)</button>-->
+    </p>
 
+  </div>
 </template>
+
 <script>
 export default {
-  data() {
-    return {
-      maxAttempts: 60,
-      locked: false,
-      attempt: 0,
-      pray: "",
-      wish: false,
-      loading: false,
-      error: null,
-      pray_id: null,
-      card_id: null,
-      int: null,
-      loader: ".",
-      isDonateVisible: false
-    }
-  },
-  methods: {
-    async clear() {
-      this.pray = ""
-      this.card_id = null
-      this.attempt = 0
-      this.pray_id = 0
-      this.locked = false
-      clearInterval(this.int)
-      this.int = null
-      this.fastInt = null
-
-      if (this.wish) {
-        this.wish = false
-        this.answer()
-      }
-    },
-    async answer() {
-      try {
-        this.loading = true
-        this.error = null
-        this.locked = true
-        this.pray_id = await this.$axios.$get("/answer")
-        this.int = setInterval(async () => {
-          this.attempt += 1
-          if (this.attempt > this.maxAttempts) {
-            clearInterval(this.int)
-            clearInterval(this.fastInt)
-            this.error = "не смог дождаться ответ... :( попробуйте позже..."
-            this.locked = false
-            this.loading = false
-          }
-          let answer = await this.$axios.$get(`/answer/${this.pray_id}`)
-          if (answer === 0 || answer === "0") {
-            // это ок, если будет ждать еще 5 секунд
-          } else {
-            this.card_id = answer
-            clearInterval(this.int)
-            clearInterval(this.fastInt)
-            this.locked = false
-            this.loading = false
-          }
-        }, 5000)
-        this.fastInt = setInterval(() => {
-          if (this.loader === ".") {
-            this.loader = ".."
-          } else if (this.loader === "..") {
-            this.loader = "..."
-          } else if (this.loader === "...") {
-            this.loader = "."
-          }
-        }, 500)
-      } catch (e) {
-        this.error = e.message
-        clearInterval(this.int)
-        clearInterval(this.fastInt)
-        this.locked = false
-        this.loading = false
-      } finally {
-      }
-
-
-    }
-  }
+  name: "prayer"
 }
 </script>
+
+<style scoped>
+
+</style>
