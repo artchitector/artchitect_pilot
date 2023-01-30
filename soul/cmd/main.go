@@ -12,6 +12,7 @@ import (
 	originService "github.com/artchitector/artchitect/soul/core/origin"
 	"github.com/artchitector/artchitect/soul/core/origin/driver"
 	spellerService "github.com/artchitector/artchitect/soul/core/speller"
+	"github.com/artchitector/artchitect/soul/core/watermark"
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
 	"github.com/artchitector/artchitect/soul/repository"
 	"github.com/artchitector/artchitect/soul/resources"
@@ -62,7 +63,8 @@ func main() {
 	} else {
 		engine = engine2.NewArtistEngine(res.GetEnv().ArtistURL)
 	}
-	artist := artistService.NewArtist(engine, cardsRepo, notifier)
+	watermarkMaker := watermark.NewWatermark()
+	artist := artistService.NewArtist(engine, cardsRepo, notifier, watermarkMaker)
 	creator := creator2.NewCreator(artist, speller, notifier, res.GetEnv().CardTotalTime)
 
 	// lottery runner

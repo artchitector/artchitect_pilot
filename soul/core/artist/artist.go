@@ -1,10 +1,13 @@
 package artist
 
 import (
+	"bytes"
 	"context"
 	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"image"
+	"image/jpeg"
 	"time"
 )
 
@@ -16,19 +19,25 @@ type notifier interface {
 	NotifyCreationState(ctx context.Context, state model.CreationState) error
 }
 
+type watermark interface {
+	AddWatermark(originalImage image.Image, cardID uint) (image.Image, error)
+}
+
 type cardRepository interface {
 	SaveCard(ctx context.Context, painting model.Card) (model.Card, error)
 	GetLastCardPaintTime(ctx context.Context) (uint, error)
+	DeleteCard(ctx context.Context, cardID uint) error
 }
 
 type Artist struct {
-	engine   EngineContract
-	cardRepo cardRepository
-	notifier notifier
+	engine    EngineContract
+	cardRepo  cardRepository
+	notifier  notifier
+	watermark watermark
 }
 
-func NewArtist(engine EngineContract, cardRepository cardRepository, notifier notifier) *Artist {
-	return &Artist{engine, cardRepository, notifier}
+func NewArtist(engine EngineContract, cardRepository cardRepository, notifier notifier, watermark watermark) *Artist {
+	return &Artist{engine, cardRepository, notifier, watermark}
 }
 
 func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *model.CreationState) (model.Card, error) {
@@ -63,17 +72,55 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 	if err != nil {
 		return model.Card{}, errors.Wrap(err, "[artist] failed to get image-data for card")
 	}
+
 	paintTime := time.Now().Sub(paintStart)
 	card := model.Card{
 		Spell:     spell,
 		Version:   spell.Version,
 		PaintTime: uint(paintTime.Seconds()),
-		Image: model.Image{
-			Data: data,
-		},
+	}
+	card, err = a.cardRepo.SaveCard(ctx, card)
+	if err != nil {
+		return model.Card{}, errors.Wrap(err, "[artist] failed to save card")
 	}
 
+	data, err = a.prepareImage(data, card.ID)
+	if err != nil {
+		return model.Card{}, errors.Wrap(err, "[artist] failed to prepare image")
+	}
+	card.Image = model.Image{
+		Data: data,
+	}
 	card, err = a.cardRepo.SaveCard(ctx, card)
+	if err != nil {
+		// TODO need to test delete failed card without image
+		if err := a.cardRepo.DeleteCard(ctx, card.ID); err != nil {
+			log.Error().Err(err).Msgf("[artist] failed to delete card after failed image creation (id=%d)", card.ID)
+		}
+		return model.Card{}, errors.Wrap(err, "[artist] failed to save card")
+	}
+
 	log.Info().Msgf("Received and saved card from artist: id=%d", card.ID)
 	return card, err
+}
+
+// decode+encode jpeg, add watermark
+func (a *Artist) prepareImage(data []byte, cardID uint) ([]byte, error) {
+	buf := bytes.NewBuffer(data)
+	img, err := jpeg.Decode(buf)
+	if err != nil {
+		return []byte{}, errors.Wrap(err, "[artist] failed to decode jpeg from response")
+	}
+
+	img, err = a.watermark.AddWatermark(img, cardID)
+	if err != nil {
+		return []byte{}, errors.Wrap(err, "[artist] failed to add watermark")
+	}
+
+	buf = new(bytes.Buffer)
+	if err := jpeg.Encode(buf, img, &jpeg.Options{Quality: 100}); err != nil {
+		return []byte{}, errors.Wrap(err, "[artist] failed to encode image into jpeg data")
+	}
+
+	return buf.Bytes(), nil
 }

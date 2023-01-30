@@ -20,6 +20,11 @@ func (pr *CardRepository) SaveCard(ctx context.Context, painting model.Card) (mo
 	return painting, err
 }
 
+func (pr *CardRepository) DeleteCard(ctx context.Context, cardID uint) error {
+	err := pr.db.Where("id = ?", cardID).Delete(&model.Card{}).Error
+	return err
+}
+
 func (pr *CardRepository) GetCardsIDsByPeriod(ctx context.Context, start time.Time, end time.Time) ([]uint, error) {
 	var ids []uint
 	err := pr.db.Model(&model.Card{}).Select("id").Where("created_at between ? and ?", start, end).Find(&ids).Error
