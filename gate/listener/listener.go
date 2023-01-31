@@ -14,11 +14,15 @@ import (
 
 type cache interface {
 	SaveCard(ctx context.Context, card model.Card) error
-	AddLastCardID(ctx context.Context, ID uint) error
+	PrependLastCardID(ctx context.Context, ID uint) error
+}
+
+type carder interface {
+	AddTask(cardID uint, sizes []string)
 }
 
 type cardRepository interface {
-	GetCardWithImage(ctx context.Context, ID uint) (model.Card, bool, error)
+	GetCard(ctx context.Context, ID uint) (model.Card, error)
 }
 
 // Listener read incoming request from redis and do some actions
@@ -27,12 +31,13 @@ type Listener struct {
 	mutex          sync.Mutex
 	red            *redis.Client
 	cache          cache
+	carder         carder
 	cardRepository cardRepository
 	eventChannels  []chan localmodel.Event
 }
 
-func NewListener(red *redis.Client, cache cache, cardRepository cardRepository) *Listener {
-	return &Listener{sync.Mutex{}, red, cache, cardRepository, []chan localmodel.Event{}}
+func NewListener(red *redis.Client, cache cache, carder carder, cardRepository cardRepository) *Listener {
+	return &Listener{sync.Mutex{}, red, cache, carder, cardRepository, []chan localmodel.Event{}}
 }
 
 func (l *Listener) Run(ctx context.Context) error {
@@ -43,6 +48,7 @@ func (l *Listener) Run(ctx context.Context) error {
 		model.ChannelCreation,
 		model.ChannelNewSelection,
 		model.ChannelLottery,
+		model.ChannelPrehotCard,
 	)
 	for {
 		select {
@@ -63,12 +69,16 @@ func (l *Listener) Run(ctx context.Context) error {
 }
 
 func (l *Listener) handle(ctx context.Context, msg *redis.Message) error {
-	log.Info().Msgf("[listener] got %s event:  %s", msg.Channel, msg.Payload)
 	switch msg.Channel {
 	case model.ChannelTick:
 	case model.ChannelCreation:
 	case model.ChannelLottery:
 
+	case model.ChannelPrehotCard:
+		if err := l.handlePrehotCard(ctx, msg); err != nil {
+			return errors.Wrap(err, "[listener] failed to prehot new card")
+		}
+		return nil // don't broadcast (it's for cache only)
 	case model.ChannelNewCard:
 		if err := l.handleNewCard(ctx, msg); err != nil {
 			return errors.Wrap(err, "[listener] failed to handle new card")
@@ -95,33 +105,48 @@ func (l *Listener) handleNewCard(ctx context.Context, msg *redis.Message) error 
 	if err := json.Unmarshal([]byte(msg.Payload), &card); err != nil {
 		return errors.Wrap(err, "[listener] failed to unmarshal new card")
 	}
+
 	log.Info().Msgf("[listener] got new card event(id=%d)", card.ID)
-	card, found, err := l.cardRepository.GetCardWithImage(ctx, card.ID)
-	if err != nil {
-		return errors.Wrapf(err, "[listener] failed to get card id=%d", card.ID)
-	} else if !found {
-		return errors.Errorf("[listener] not found card id=%d", card.ID)
+
+	if err := l.cacheCard(ctx, card.ID); err != nil {
+		return errors.Wrapf(err, "[listener] failed to cacheCard (id=%d)", card.ID)
 	}
-	// card automatically saved when loaded in repository
-	if err := l.cache.AddLastCardID(ctx, uint(card.ID)); err != nil {
+
+	if err := l.cache.PrependLastCardID(ctx, uint(card.ID)); err != nil {
 		return errors.Wrapf(err, "[listener] failed to append new last_card to cache with id=%d", card.ID)
 	}
 	return nil
 }
 
+func (l *Listener) handlePrehotCard(ctx context.Context, msg *redis.Message) error {
+	var card model.Card
+	if err := json.Unmarshal([]byte(msg.Payload), &card); err != nil {
+		return errors.Wrap(err, "[listener] failed to unmarshal new card")
+	}
+	log.Info().Msgf("[listener] prehot card(id=%d)", card.ID)
+	return l.cacheCard(ctx, card.ID)
+}
+
 func (l *Listener) handleNewSelection(ctx context.Context, msg *redis.Message) error {
-	var seletion model.Selection
-	if err := json.Unmarshal([]byte(msg.Payload), &seletion); err != nil {
+	var selection model.Selection
+	if err := json.Unmarshal([]byte(msg.Payload), &selection); err != nil {
 		return errors.Wrap(err, "[listener] failed to unmarshal new selection")
 	}
-	log.Info().Msgf("[listener] got new selection (id=%d)", seletion.ID)
-	// card automatically cached when loaded in repository
-	card, found, err := l.cardRepository.GetCardWithImage(ctx, seletion.CardID)
+	log.Info().Msgf("[listener] got new selection (id=%d)", selection.ID)
+	return l.cacheCard(ctx, selection.ID)
+}
+
+func (l *Listener) cacheCard(ctx context.Context, cardID uint) error {
+	card, err := l.cardRepository.GetCard(ctx, cardID)
 	if err != nil {
 		return errors.Wrapf(err, "[listener] failed to get card id=%d", card.ID)
-	} else if !found {
-		return errors.Errorf("[listener] not found card id=%d", card.ID)
 	}
+
+	if err := l.cache.SaveCard(ctx, card); err != nil {
+		return errors.Wrapf(err, "[listener] failed to cache card, id=%d", card.ID)
+	}
+
+	l.carder.AddTask(card.ID, nil)
 	return nil
 }
 

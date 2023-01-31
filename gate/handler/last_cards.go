@@ -15,7 +15,7 @@ type LastCardsHandler struct {
 	cache           cache
 }
 
-func NewLastPaintingsHandler(paintingsRepository cardsRepository, cache cache) *LastCardsHandler {
+func NewLastCardsHandler(paintingsRepository cardsRepository, cache cache) *LastCardsHandler {
 	return &LastCardsHandler{paintingsRepository, cache}
 }
 

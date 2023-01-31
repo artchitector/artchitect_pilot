@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/artchitector/artchitect/gate/resizer"
 	"github.com/artchitector/artchitect/model"
 	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
@@ -14,7 +13,6 @@ import (
 )
 
 const (
-	MaxResizeWorkers = 4
 	// KeyLastCards stores last cards IDs - last_cards = [1000, 999, 998, 997...]
 	KeyLastCards = "last_cards"
 	// KeyCard stores json data of specified card - card:1000 = {ID: 1000, ...}
@@ -25,22 +23,19 @@ const (
 var ErrorNotFound = errors.Errorf("[cache] not found cached data")
 
 type Cache struct {
-	mutex   sync.Mutex
-	rdb     *redis.Client
-	workers chan struct{}
+	mutex sync.Mutex
+	rdb   *redis.Client
 }
 
 func NewCache(rdb *redis.Client) *Cache {
-	return &Cache{sync.Mutex{}, rdb, make(chan struct{}, MaxResizeWorkers)}
+	return &Cache{sync.Mutex{}, rdb}
 }
 
 func (c *Cache) Flushall(ctx context.Context) error {
-	log.Fatal().Msgf("flushall disabled")
 	return c.rdb.FlushAll(ctx).Err()
 }
 
 func (c *Cache) GetLastCards(ctx context.Context, count uint) ([]model.Card, error) {
-	// if last card was 5-minutes old, then need to clear cache
 	start := int64(0)
 	stop := int64(count - 1)
 	result := c.rdb.LRange(ctx, KeyLastCards, start, stop)
@@ -130,35 +125,13 @@ func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
 		return errors.Wrapf(err, "[cache] failed to set card into redis id=%d", card.ID)
 	}
 
-	go func() {
-		// save each card size in Redis
-		for _, size := range []string{model.SizeF, model.SizeM, model.SizeS, model.SizeXS} {
-			exist, err := c.ExistsImage(ctx, uint(card.ID), size)
-			if err != nil {
-				log.Error().Err(err).Msgf("[cache] not found existing image (id=%d, size=%s)", card.ID, size)
-			} else if exist {
-				log.Info().Msgf("[cache] skip image resizing in cache (id=%d, size=%s)", card.ID, size)
-				continue
-			}
-			log.Info().Msgf("[cache] try to take channel for resize work (id=%d,size=%s)", card.ID, size)
-			c.workers <- struct{}{}
-			log.Info().Msgf("[cache] start resizing process(%d, %s)", card.ID, size)
-			resized, err := resizer.Resize(card.Image.Data, size)
-			if err != nil {
-				log.Error().Err(err).Msgf("[cache] failed to resize image into size (id=%d, size=%s)", card.ID, size)
-				continue
-			}
-			key := fmt.Sprintf(KeyCardImage, card.ID, size)
-			if err := c.rdb.Set(ctx, key, resized, time.Hour*24).Err(); err != nil {
-				log.Error().Err(err).Msgf("[cache] failed to save size into cache (id=%d, size=%s)", card.ID, size)
-				continue
-			}
-			log.Info().Msgf("[cache] image resized(%d, %s)", card.ID, size)
-			<-c.workers
-		}
-	}()
-
 	return nil
+}
+
+func (c *Cache) SaveImage(ctx context.Context, cardID uint, size string, data []byte) error {
+	key := fmt.Sprintf(KeyCardImage, cardID, size)
+	err := c.rdb.Set(ctx, key, data, time.Hour*24).Err()
+	return errors.Wrapf(err, "[cache] failed to save image id=%d, size=%s", cardID, size)
 }
 
 func (c *Cache) ExistsImage(ctx context.Context, ID uint, size string) (bool, error) {
@@ -177,7 +150,7 @@ func (c *Cache) GetImage(ctx context.Context, ID uint, size string) ([]byte, err
 	return result.Bytes()
 }
 
-func (c *Cache) AddLastCardID(ctx context.Context, ID uint) error {
+func (c *Cache) PrependLastCardID(ctx context.Context, ID uint) error {
 	return errors.Wrapf(
 		c.rdb.LPush(ctx, KeyLastCards, ID).Err(),
 		"[cache] failed to append last card id=%d",

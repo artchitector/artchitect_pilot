@@ -16,6 +16,7 @@ type speller interface {
 	MakeSpell(ctx context.Context, artistState *model.CreationState) (model.Spell, error)
 }
 type notifier interface {
+	NotifyPrehotCard(ctx context.Context, card model.Card) error
 	NotifyNewCard(ctx context.Context, card model.Card) error
 	NotifyCreationState(ctx context.Context, state model.CreationState) error
 }
@@ -84,6 +85,13 @@ func (c *Creator) create(ctx context.Context, state *model.CreationState) (model
 	}
 	log.Info().Msgf("[creator] got card: id=%d, spell_id=%d", card.ID, spell.ID)
 
+	// notify prehot
+	if err := c.notifier.NotifyPrehotCard(ctx, card); err != nil {
+		log.Error().Err(err).Msgf("[creator] failed to notify new card")
+	}
+
+	// give time to prehot cache
+	<-time.After(time.Second)
 	// notify new card created
 	if err := c.notifier.NotifyNewCard(ctx, card); err != nil {
 		log.Error().Err(err).Msgf("[creator] failed to notify new card")

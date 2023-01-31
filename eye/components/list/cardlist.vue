@@ -28,13 +28,15 @@ export default {
   ],
   data() {
     return {
-      currentVisible: 0,
+      currentVisible: -1,
     }
   },
   computed: {
     lines() {
       let cards = []
-      if (this.currentVisible === 0) {
+      if (this.currentVisible === -1) {
+        cards = []
+      } else if (this.currentVisible === 0) {
         cards = this.cards
       } else {
         cards = this.cards.slice(0, this.currentVisible)
@@ -56,6 +58,8 @@ export default {
   mounted() {
     if (!!this.visibleCount) {
       this.currentVisible = parseInt(this.visibleCount)
+    } else {
+      this.visibleCount = 0
     }
   },
   methods: {

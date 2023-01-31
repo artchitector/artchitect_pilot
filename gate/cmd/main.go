@@ -13,6 +13,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"os"
 	"os/signal"
+	"runtime"
 )
 
 func main() {
@@ -24,36 +25,21 @@ func main() {
 	res := resources.InitResources()
 	log.Info().Msg("service gate started")
 
-	// cache
-	cache := cache2.NewCache(res.GetRedis())
-
 	// repos
-	cardsRepo := repository.NewCardRepository(res.GetDB(), cache)
+	cardsRepo := repository.NewCardRepository(res.GetDB())
 	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
 	prayRepo := repository.NewPrayRepository(res.GetDB())
 	selectionRepo := repository.NewSelectionRepository(res.GetDB())
 
-	// refresher (update cache)
-	refresher := repository.NewRefresher(cardsRepo, selectionRepo)
-	go func() {
-		if err := refresher.RefreshLast(ctx); err != nil {
-			log.Error().Err(err).Msgf("[main] failed refreshing last")
-			cancel() // stop application and it will be reloaded
-		}
-		if err := refresher.RefreshSelection(ctx); err != nil {
-			log.Error().Err(err).Msgf("[main] failed refreshing selection")
-			cancel() // stop application and it will be reloaded
-		}
-	}()
-	go func() {
-		if err := refresher.StartRefreshing(ctx); err != nil {
-			log.Error().Err(err).Msgf("[main] failed start refreshing")
-			cancel() // stop application and it will be reloaded
-		}
-	}()
+	// cache
+	cache := cache2.NewCache(res.GetRedis())
+	carder := cache2.NewCarder(cardsRepo, cache)
+	carder.RunWorkers(ctx, runtime.NumCPU())
+	enhotter := cache2.NewEnhotter(cardsRepo, selectionRepo, cache, carder)
+	enhotter.Run(ctx)
 
 	// handlers
-	lastPaintingsHandler := handler.NewLastPaintingsHandler(cardsRepo, cache)
+	lastCardsHandler := handler.NewLastCardsHandler(cardsRepo, cache)
 	lotteryHandler := handler.NewLotteryHandler(
 		log.With().Str("service", "lottery_handler").Logger(),
 		lotteryRepo,
@@ -63,7 +49,7 @@ func main() {
 	prayHandler := handler.NewPrayHandler(prayRepo)
 
 	// listeners with websocket handler
-	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo)
+	lis := listener.NewListener(res.GetRedis(), cache, carder, cardsRepo)
 	websocketHandler := handler.NewWebsocketHandler(lis)
 
 	go func() {
@@ -86,7 +72,7 @@ func main() {
 		r.GET("/ping", func(c *gin.Context) {
 			c.JSON(200, gin.H{"message": "pong"})
 		})
-		r.GET("/last_paintings/:quantity", lastPaintingsHandler.Handle)
+		r.GET("/last_paintings/:quantity", lastCardsHandler.Handle)
 		r.GET("/lottery/:lastN", lotteryHandler.HandleLast)
 		r.GET("/card/:id", cardHandler.Handle)
 		r.GET("/selection", selectionHander.Handle)

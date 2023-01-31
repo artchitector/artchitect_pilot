@@ -21,6 +21,15 @@ func (n *Notifier) NotifyTick(ctx context.Context, tick int) error {
 	return errors.Wrap(err, "[notifier] failed to notify tick")
 }
 
+func (n *Notifier) NotifyPrehotCard(ctx context.Context, card model.Card) error {
+	jsn, err := json.Marshal(card)
+	if err != nil {
+		return errors.Wrap(err, "[notifier] failed to marshal card")
+	}
+	err = n.red.Publish(ctx, model.ChannelPrehotCard, jsn).Err()
+	return errors.Wrap(err, "[notifier] failed to notify card")
+}
+
 func (n *Notifier) NotifyNewCard(ctx context.Context, card model.Card) error {
 	jsn, err := json.Marshal(card)
 	if err != nil {

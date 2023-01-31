@@ -7,8 +7,8 @@ import (
 )
 
 type cardsRepository interface {
-	GetCard(ctx context.Context, ID uint) (model.Card, bool, error)
-	GetCardWithImage(ctx context.Context, ID uint) (model.Card, bool, error)
+	GetCard(ctx context.Context, ID uint) (model.Card, error)
+	GetImage(ctx context.Context, cardID uint) (model.Image, error)
 	GetLastCards(ctx context.Context, count uint) ([]model.Card, error)
 }
 
@@ -31,6 +31,7 @@ type cache interface {
 	GetImage(ctx context.Context, ID uint, size string) ([]byte, error)
 	GetCard(ctx context.Context, ID uint) (model.Card, error)
 	GetLastCards(ctx context.Context, count uint) ([]model.Card, error)
+	SaveImage(ctx context.Context, cardID uint, size string, data []byte) error
 }
 
 type listener interface {

@@ -24,8 +24,11 @@ func Resize(rawImg []byte, size string) ([]byte, error) {
 	var quality int
 	switch size {
 	case model.SizeXF:
-		// nothing to do, image already full
-		// it's 2560x3840 (it's 5Mb size, and it's not cached in redis)
+		// image already full size, but downgrade quality
+		// it's 2560x3840 (it's 5Mb size with 100% quality, down to 90%)
+		width = uint(img.Bounds().Dx())
+		height = uint(math.Round(float64(width) * dimension))
+		quality = 90
 		return rawImg, nil
 	case model.SizeF:
 		width = uint(1024)

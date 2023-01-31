@@ -34,7 +34,6 @@ func (wh *WebsocketHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	defer close(ch)
 
 	for event := range ch {
-		log.Info().Msgf("event: %+v", event)
 		j, err := json.Marshal(event)
 		if err != nil {
 			log.Error().Err(err).Msgf("[websocket] failed to marshal event")
