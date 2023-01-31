@@ -14,6 +14,9 @@ app = Flask(__name__)
 def painting():
     print(request.form['tags'])
     print(request.form['seed'])
+    print(request.form['width'])
+    print(request.form['height'])
+    print(request.form['steps'])
 
     filename = getPaintingFromInvokeAIFilename()
 
@@ -32,11 +35,9 @@ def getPaintingFromInvokeAIFilename():
     pattern = re.compile(".*(\/home\/artchitector\/invokeai\/outputs\/[0-9\.]+png).*")
     filename = None
 
-    # print("###START running invoke.py")
     ret = os.popen(
         '/home/artchitector/invokeai/.venv/bin/python /home/artchitector/invokeai/.venv/bin/invoke.py --from_file "/home/artchitector/invokeai/list.txt"'
         )
-    # print("### GOT RESPONSE")
     lines = ret.readlines()
     for line in lines:
         match = pattern.match(line)
@@ -53,8 +54,13 @@ def getPaintingFromInvokeAIFilename():
 def prepareFileForInvokeAI():
     tags = request.form['tags']
     seed = request.form['seed']
+    width = request.form['width']
+    height = request.form['height']
+    steps = request.form['steps']
+    upscale = request.form['upscale']
+
     lines = []
-    lines.append(f'{tags} -S{seed} -W768 -H1152 -s50 -U4')
+    lines.append(f'{tags} -S{seed} -W{width} -H{height} -s{steps} -U{upscale}')
     with open("/home/artchitector/invokeai/list.txt", "w") as text_file:
         for line in lines:
             text_file.write(line)
