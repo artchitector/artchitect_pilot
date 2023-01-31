@@ -91,7 +91,8 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 	}
 
 	card.Image = model.Image{
-		Data: bts,
+		Data:      bts,
+		Watermark: true,
 	}
 	card, err = a.cardRepo.SaveCard(ctx, card)
 	if err != nil {

@@ -53,11 +53,14 @@ func (w *Watermark) AddWatermark(originalImage image.Image, cardID uint) (image.
 // we need bounds to select font-size for current image (there are old low-res images and new hi-res)
 func (w *Watermark) makeWatermarkImage(bounds image.Rectangle, cardID uint) image.Image {
 	var size float64
-	if bounds.Dx() < 2000 {
-		// new hi-res (2048x3072)
+	if bounds.Dx() < 1000 {
+		// very old
+		size = 30.0
+	} else if bounds.Dx() < 2000 {
+		// old low-res (1024x1536)
 		size = 43.0
 	} else {
-		// old low-res (1024x1536)
+		// new hi-res
 		size = 86.0
 	}
 

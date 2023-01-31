@@ -16,6 +16,7 @@ import (
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
 	"github.com/artchitector/artchitect/soul/repository"
 	"github.com/artchitector/artchitect/soul/resources"
+	"github.com/artchitector/artchitect/soul/workers/watermaker"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -97,6 +98,11 @@ func main() {
 			}
 		}()
 	}
+
+	wm := watermaker.NewWatermaker(res.GetDB(), watermarkMaker)
+	go func() {
+		wm.Work(ctx)
+	}()
 
 	// main loop to make artworks
 	var tick int

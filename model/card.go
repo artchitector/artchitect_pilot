@@ -16,6 +16,7 @@ type Card struct {
 }
 
 type Image struct {
-	CardID uint         `gorm:"primaryKey"`
-	Data   sql.RawBytes `json:"-"`
+	CardID    uint         `gorm:"primaryKey"`
+	Data      sql.RawBytes `json:"-"`
+	Watermark bool         // is there any watermark on image?
 }
