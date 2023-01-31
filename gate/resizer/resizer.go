@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"image/jpeg"
+	"math"
 	"time"
 )
 
@@ -18,6 +19,7 @@ func Resize(rawImg []byte, size string) ([]byte, error) {
 		return []byte{}, errors.Wrap(err, "[card_handler] failed to decode jpeg")
 	}
 
+	dimension := float64(img.Bounds().Dy()) / float64(img.Bounds().Dx())
 	var height, width uint
 	var quality int
 	switch size {
@@ -27,19 +29,19 @@ func Resize(rawImg []byte, size string) ([]byte, error) {
 		return rawImg, nil
 	case model.SizeF:
 		width = uint(1024)
-		height = uint(1536)
+		height = uint(math.Round(float64(width) * dimension))
 		quality = 90
 	case model.SizeM:
 		width = uint(512)
-		height = uint(768)
+		height = uint(math.Round(float64(width) * dimension))
 		quality = 80
 	case model.SizeS:
 		width = uint(256)
-		height = uint(384)
+		height = uint(math.Round(float64(width) * dimension))
 		quality = 75
 	case model.SizeXS:
 		width = uint(128)
-		height = uint(192)
+		height = uint(math.Round(float64(width) * dimension))
 		quality = 75
 	default:
 		// TODO сделать из этого ответ bad-requst, если такое пришло

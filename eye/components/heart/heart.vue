@@ -76,8 +76,10 @@ export default {
     this.connection.connect()
   },
   beforeDestroy() {
-    this.connection.close()
-    this.connection = null
+    if (!this.maintenance) {
+      this.connection.close()
+      this.connection = null
+    }
   },
 }
 </script>

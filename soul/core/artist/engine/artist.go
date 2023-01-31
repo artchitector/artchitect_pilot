@@ -27,8 +27,12 @@ func (e *ArtistEngine) GetImage(ctx context.Context, spell model.Spell) (image.I
 		Timeout: time.Second * 90,
 	}
 	response, err := client.PostForm(e.artistURL+"/painting", url.Values{
-		"tags": {spell.Tags},
-		"seed": {fmt.Sprintf("%d", spell.Seed)},
+		"tags":    {spell.Tags},
+		"seed":    {fmt.Sprintf("%d", spell.Seed)},
+		"width":   {"640"},
+		"height":  {"960"},
+		"steps":   {"50"},
+		"upscale": {"4"},
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to make request to artist")
