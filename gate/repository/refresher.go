@@ -52,6 +52,9 @@ func (r *Refresher) RefreshSelection(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrapf(err, "[refresher] failed to get selection")
 	}
+	if len(ids) > 100 {
+		ids = ids[:100]
+	}
 	for _, id := range ids {
 		if _, _, err := r.cardRepository.GetCardWithImage(ctx, uint(id)); err != nil {
 			return errors.Wrapf(err, "[refresher] failed to get card id=%d", id)

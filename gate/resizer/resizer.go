@@ -25,7 +25,7 @@ func Resize(rawImg []byte, size string) ([]byte, error) {
 	switch size {
 	case model.SizeXF:
 		// nothing to do, image already full
-		// it's 3072x4608 (it's 5Mb size)
+		// it's 2560x3840 (it's 5Mb size, and it's not cached in redis)
 		return rawImg, nil
 	case model.SizeF:
 		width = uint(1024)
