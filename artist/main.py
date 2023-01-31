@@ -21,9 +21,9 @@ def painting():
     print(im.format, im.size, im.mode)
 
     img_byte_arr = io.BytesIO()
-    im.save(img_byte_arr, format="JPEG")
+    im.save(img_byte_arr, format="PNG")
 
-    return Response(img_byte_arr.getvalue(), content_type="image/jpeg")
+    return Response(img_byte_arr.getvalue(), content_type="image/png")
 
 
 def getPaintingFromInvokeAIFilename():
