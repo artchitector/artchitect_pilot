@@ -1,26 +1,30 @@
 <template>
   <section class="heart">
-
-    <h3 class="has-text-centered is-size-4">Artchitect's heart</h3>
-    <hr class="divider"/>
-    <div v-if="status.error" class="notification is-danger has-text-centered">
-      Error: {{ status.error.message }}
+    <div v-if="maintenance" class="notification is-warning">
+      Artchitect is offline today. Maintenance. No new cards.
     </div>
-    <div v-else-if="status.reconnecting" class="notification has-text-centered">
-      <loader size="s"/>
-      <br/>
-      connecting {{ status.reconnecting.attempt }}/{{ status.reconnecting.maxAttempts }}
-    </div>
-    <p v-else-if="!stateChannel" class="notification has-text-centered">
-      <loader size="s"/>
-      <br/>
-      connected. waiting for event
-    </p>
-    <creation v-else-if="stateChannel === 'creation'" :state="state"/>
-    <heart-lottery v-else-if="stateChannel === 'lottery'" :state="state"/>
-    <p v-else>
-      unknown state {{ stateChannel }}
-    </p>
+    <template v-else>
+      <h3 class="has-text-centered is-size-4">Artchitect's heart</h3>
+      <hr class="divider"/>
+      <div v-if="status.error" class="notification is-danger has-text-centered">
+        Error: {{ status.error.message }}
+      </div>
+      <div v-else-if="status.reconnecting" class="notification has-text-centered">
+        <loader size="s"/>
+        <br/>
+        connecting {{ status.reconnecting.attempt }}/{{ status.reconnecting.maxAttempts }}
+      </div>
+      <p v-else-if="!stateChannel" class="notification has-text-centered">
+        <loader size="s"/>
+        <br/>
+        connected. waiting for event
+      </p>
+      <creation v-else-if="stateChannel === 'creation'" :state="state"/>
+      <heart-lottery v-else-if="stateChannel === 'lottery'" :state="state"/>
+      <p v-else>
+        unknown state {{ stateChannel }}
+      </p>
+    </template>
   </section>
 </template>
 <script>
@@ -35,12 +39,17 @@ export default {
         error: null,
         reconnecting: null,
       },
+      maintenance: false,
       connection: null,
       stateChannel: null,
       state: null,
     }
   },
   mounted() {
+    if (process.env.SOUL_MAINTENANCE === 'true') {
+      this.maintenance = true
+      return
+    }
     this.connection = new WsConnection(process.env.WS_URL, '🧡', ['creation', 'lottery'], 10)
 
     this.connection.onmessage((channel, state) => {
