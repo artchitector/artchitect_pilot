@@ -216,8 +216,8 @@ export default {
     background-color: rgba(0, 0, 0, 0.5);
     .tags-p {
       overflow: hidden;
-      text-overflow: ellipsis;
-      max-height: 3em;
+      word-break: break-all;
+      max-height: 3.5rem;
     }
   }
 }

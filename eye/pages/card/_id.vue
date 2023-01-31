@@ -11,7 +11,7 @@
       <p><span class="tag is-primary is-light">version {{ card.Version }}</span></p>
       <p>{{ created }}</p>
       <p>seed = {{ card.Spell.Seed }}</p>
-      <p>tags = <i>{{ card.Spell.Tags }}</i></p>
+      <p class="tags">tags = <i>{{ card.Spell.Tags }}</i></p>
       <img :src="`/api/image/xf/${card.ID}`"/>
     </div>
   </section>
@@ -44,3 +44,10 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+  p.tags {
+    word-wrap: break-word;
+    word-break: break-all;
+    overflow: hidden;
+  }
+</style>
