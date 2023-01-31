@@ -65,7 +65,7 @@ func main() {
 	}
 	watermarkMaker := watermark.NewWatermark()
 	artist := artistService.NewArtist(engine, cardsRepo, notifier, watermarkMaker)
-	creator := creator2.NewCreator(artist, speller, notifier, res.GetEnv().CardTotalTime)
+	creator := creator2.NewCreator(artist, speller, notifier, res.GetEnv().CardTotalTime, res.GetEnv().PrehotDelay)
 
 	// lottery runner
 	runner := lottery.NewRunner(lotteryRepo, selectionRepo, cardsRepo, origin, notifier)

@@ -24,6 +24,7 @@ type Env struct {
 
 	// settings
 	CardTotalTime uint
+	PrehotDelay   uint
 
 	// telegram constants
 	TelegramBotToken string
@@ -38,6 +39,11 @@ func initEnv() *Env {
 
 	cardTotalTimeStr := os.Getenv("CARD_TOTAL_TIME")
 	cardTotalTime, err := strconv.Atoi(cardTotalTimeStr)
+	if err != nil {
+		log.Fatal().Err(err)
+	}
+	prehotDelayStr := os.Getenv("PREHOT_TIME")
+	prehotDelay, err := strconv.Atoi(prehotDelayStr)
 	if err != nil {
 		log.Fatal().Err(err)
 	}
@@ -56,6 +62,7 @@ func initEnv() *Env {
 		ArtistURL:     os.Getenv("ARTIST_URL"),
 
 		CardTotalTime: uint(cardTotalTime),
+		PrehotDelay:   uint(prehotDelay),
 
 		TelegramBotToken: os.Getenv("TELEGRAM_BOT_TOKEN"),
 		TenMinChat:       os.Getenv("TEN_MIN_CHAT"),

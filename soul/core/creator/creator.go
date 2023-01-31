@@ -28,10 +28,11 @@ type Creator struct {
 	speller       speller
 	notifier      notifier
 	cardTotalTime uint // in seconds
+	prehotDelay   uint // in seconds
 }
 
-func NewCreator(artist artist, speller speller, notifier notifier, cardTotalTime uint) *Creator {
-	return &Creator{sync.Mutex{}, artist, speller, notifier, cardTotalTime}
+func NewCreator(artist artist, speller speller, notifier notifier, cardTotalTime uint, prehotDelay uint) *Creator {
+	return &Creator{sync.Mutex{}, artist, speller, notifier, cardTotalTime, prehotDelay}
 }
 
 func (c *Creator) CreateWithoutEnjoy(ctx context.Context) (model.Card, error) {
@@ -91,7 +92,7 @@ func (c *Creator) create(ctx context.Context, state *model.CreationState) (model
 	}
 
 	// give time to prehot cache
-	<-time.After(time.Second)
+	<-time.After(time.Second * time.Duration(c.prehotDelay))
 	// notify new card created
 	if err := c.notifier.NotifyNewCard(ctx, card); err != nil {
 		log.Error().Err(err).Msgf("[creator] failed to notify new card")
