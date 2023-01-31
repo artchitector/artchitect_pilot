@@ -23,6 +23,7 @@ func Resize(rawImg []byte, size string) ([]byte, error) {
 	switch size {
 	case model.SizeXF:
 		// nothing to do, image already full
+		// it's 3072x4608 (it's 5Mb size)
 		return rawImg, nil
 	case model.SizeF:
 		width = uint(1024)
@@ -35,11 +36,11 @@ func Resize(rawImg []byte, size string) ([]byte, error) {
 	case model.SizeS:
 		width = uint(256)
 		height = uint(384)
-		quality = 80
+		quality = 75
 	case model.SizeXS:
 		width = uint(128)
 		height = uint(192)
-		quality = 80
+		quality = 75
 	default:
 		// TODO сделать из этого ответ bad-requst, если такое пришло
 		return []byte{}, errors.Errorf("[resizer] wrong size %s", size)
