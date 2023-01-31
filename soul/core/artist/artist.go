@@ -12,7 +12,7 @@ import (
 )
 
 type EngineContract interface {
-	GetImage(ctx context.Context, spell model.Spell) ([]byte, error)
+	GetImage(ctx context.Context, spell model.Spell) (image.Image, error)
 }
 
 type notifier interface {
@@ -67,7 +67,7 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 	}()
 
 	log.Info().Msgf("[artist] start image card with spell(id=%d)", spell.ID)
-	data, err := a.engine.GetImage(ctx, spell)
+	img, err := a.engine.GetImage(ctx, spell)
 	cancel()
 	if err != nil {
 		return model.Card{}, errors.Wrap(err, "[artist] failed to get image-data for card")
@@ -84,12 +84,14 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 		return model.Card{}, errors.Wrap(err, "[artist] failed to save card")
 	}
 
-	data, err = a.prepareImage(data, card.ID)
+	var bts []byte
+	bts, err = a.prepareImage(img, card.ID)
 	if err != nil {
 		return model.Card{}, errors.Wrap(err, "[artist] failed to prepare image")
 	}
+
 	card.Image = model.Image{
-		Data: data,
+		Data: bts,
 	}
 	card, err = a.cardRepo.SaveCard(ctx, card)
 	if err != nil {
@@ -105,19 +107,14 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 }
 
 // decode+encode jpeg, add watermark
-func (a *Artist) prepareImage(data []byte, cardID uint) ([]byte, error) {
-	buf := bytes.NewBuffer(data)
-	img, err := jpeg.Decode(buf)
-	if err != nil {
-		return []byte{}, errors.Wrap(err, "[artist] failed to decode jpeg from response")
-	}
-
+func (a *Artist) prepareImage(img image.Image, cardID uint) ([]byte, error) {
+	var err error
 	img, err = a.watermark.AddWatermark(img, cardID)
 	if err != nil {
 		return []byte{}, errors.Wrap(err, "[artist] failed to add watermark")
 	}
 
-	buf = new(bytes.Buffer)
+	buf := new(bytes.Buffer)
 	if err := jpeg.Encode(buf, img, &jpeg.Options{Quality: 100}); err != nil {
 		return []byte{}, errors.Wrap(err, "[artist] failed to encode image into jpeg data")
 	}

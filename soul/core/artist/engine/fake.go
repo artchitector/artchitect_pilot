@@ -1,10 +1,13 @@
 package engine
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
+	"image"
+	"image/jpeg"
 	"math/rand"
 	"os"
 	"time"
@@ -17,12 +20,14 @@ func NewFakeEngine() *FakeEngine {
 	return &FakeEngine{}
 }
 
-func (e *FakeEngine) GetImage(ctx context.Context, spell model.Spell) ([]byte, error) {
+func (e *FakeEngine) GetImage(ctx context.Context, spell model.Spell) (image.Image, error) {
 	fakeNumber := rand.Intn(20) + 1
 	if b, err := os.ReadFile(fmt.Sprintf("files/fakes/%d.jpeg", fakeNumber)); err != nil {
-		return []byte{}, errors.Wrap(err, "[fake artist] failed to get file")
+		return nil, errors.Wrap(err, "[fake artist] failed to get file")
 	} else {
 		time.Sleep(time.Second * 6) // imitation of long-running process
-		return b, nil
+		buf := bytes.NewBuffer(b)
+		img, err := jpeg.Decode(buf)
+		return img, errors.Wrap(err, "[fake_artist] failed to decode jpeg")
 	}
 }

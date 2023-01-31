@@ -82,6 +82,8 @@ func (s *Speller) generateTags(ctx context.Context, version string, state *model
 	}
 
 	tagsToTake, err := s.origin.Select(ctx, MaxTags)
+	tagsToTake += 1 // Select returns [0,MaxTags). Plus 1 is ok
+
 	tags := make([]string, 0, tagsToTake)
 	if err != nil {
 		return []string{}, errors.Wrap(err, "[speller][generateTags] failed get tagsToTake")

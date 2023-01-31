@@ -1,10 +1,13 @@
 package engine
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
+	"image"
+	"image/png"
 	"io"
 	"net/http"
 	"net/url"
@@ -19,7 +22,7 @@ func NewArtistEngine(artistURL string) *ArtistEngine {
 	return &ArtistEngine{artistURL}
 }
 
-func (e *ArtistEngine) GetImage(ctx context.Context, spell model.Spell) ([]byte, error) {
+func (e *ArtistEngine) GetImage(ctx context.Context, spell model.Spell) (image.Image, error) {
 	client := http.Client{
 		Timeout: time.Second * 90,
 	}
@@ -28,10 +31,16 @@ func (e *ArtistEngine) GetImage(ctx context.Context, spell model.Spell) ([]byte,
 		"seed": {fmt.Sprintf("%d", spell.Seed)},
 	})
 	if err != nil {
-		return []byte{}, errors.Wrap(err, "failed to make request to artist")
+		return nil, errors.Wrap(err, "failed to make request to artist")
 	}
 	defer response.Body.Close()
 
 	bts, err := io.ReadAll(response.Body)
-	return bts, errors.Wrap(err, "[artist] failed to read response body")
+	r := bytes.NewReader(bts)
+	img, err := png.Decode(r)
+	if err != nil {
+		return nil, errors.Wrap(err, "[artist] failed to get valid jpeg")
+	}
+
+	return img, errors.Wrap(err, "[artist] failed to read response body")
 }
