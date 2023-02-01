@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/artchitector/artchitect/model"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"time"
 )
@@ -41,7 +42,6 @@ func (pr *CardRepository) GetCardWithOffset(offset uint) (model.Card, error) {
 	var card model.Card
 	err := pr.db.
 		Joins("Spell").
-		Joins("Image").
 		Order("cards.id asc").
 		Limit(1).
 		Offset(int(offset)).
@@ -53,4 +53,24 @@ func (pr *CardRepository) GetLastCardPaintTime(ctx context.Context) (uint, error
 	var paintTime uint
 	err := pr.db.Select("paint_time").Model(&model.Card{}).Order("id desc").Limit(1).Scan(&paintTime).Error
 	return paintTime, err
+}
+
+func (pr *CardRepository) GetCard(ctx context.Context, ID uint) (model.Card, error) {
+	card := model.Card{}
+	err := pr.db.
+		Joins("Spell").
+		Where("cards.id = ?", ID).
+		Last(&card).
+		Error
+	if err != nil {
+		return card, errors.Wrapf(err, "[card_repository] failed to find card %d", ID)
+	} else {
+		return card, nil
+	}
+}
+
+func (pr *CardRepository) GetImage(ctx context.Context, cardID uint) (model.Image, error) {
+	var image model.Image
+	err := pr.db.Where("card_id=?", cardID).First(&image).Error
+	return image, err
 }

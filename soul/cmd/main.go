@@ -5,6 +5,7 @@ import (
 	artchitectService "github.com/artchitector/artchitect/soul/core/artchitect"
 	artistService "github.com/artchitector/artchitect/soul/core/artist"
 	engine2 "github.com/artchitector/artchitect/soul/core/artist/engine"
+	"github.com/artchitector/artchitect/soul/core/bot"
 	creator2 "github.com/artchitector/artchitect/soul/core/creator"
 	"github.com/artchitector/artchitect/soul/core/gifter"
 	"github.com/artchitector/artchitect/soul/core/lottery"
@@ -89,9 +90,18 @@ func main() {
 		notifier,
 	)
 
+	artchitectBot := bot.NewBot(
+		res.GetEnv().TelegramBotToken,
+		cardsRepo,
+		res.GetEnv().ArtchitectorChatID,
+		res.GetEnv().TenMinChat,
+		res.GetEnv().InfiniteChat,
+	)
+	go artchitectBot.Run(ctx)
+
 	// gifter
 	if res.GetEnv().GifterActive {
-		gift := gifter.NewGifter(cardsRepo, origin, res.GetEnv().TelegramBotToken, res.GetEnv().TenMinChat)
+		gift := gifter.NewGifter(cardsRepo, origin, artchitectBot)
 		go func() {
 			if err := gift.Run(ctx); err != nil {
 				log.Fatal().Err(err).Send()
