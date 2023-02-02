@@ -15,11 +15,13 @@ import (
 
 const (
 	CommandSendInfinite = "/send_infinite"
+	CommandGive         = "/give" // give one selected card from all
 )
 
 type cardRepository interface {
 	GetCard(ctx context.Context, cardID uint) (model.Card, error)
 	GetImage(ctx context.Context, cardID uint) (model.Image, error)
+	GetOriginSelectedCard(ctx context.Context) (model.Card, error)
 }
 
 type Bot struct {
@@ -44,6 +46,7 @@ func (t *Bot) Run(ctx context.Context) {
 	} else {
 		// handlers
 		b.RegisterHandler(bot.HandlerTypeMessageText, CommandSendInfinite, bot.MatchTypePrefix, t.infiniteHandler)
+		b.RegisterHandler(bot.HandlerTypeMessageText, CommandGive, bot.MatchTypeExact, t.giveHandler)
 		// start bot to listen all messages
 		log.Info().Msgf("[bot] starting bot")
 		t.bot = b
@@ -138,6 +141,25 @@ func (t *Bot) infiniteHandler(ctx context.Context, b *bot.Bot, update *models.Up
 	if err != nil {
 		t.replyError(ctx, update.Message, err)
 	}
+}
+
+func (t *Bot) giveHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	if update.Message == nil {
+		t.replyError(ctx, update.Message, errors.Errorf("only in private chats available"))
+		return
+	}
+	card, err := t.cardRepository.GetOriginSelectedCard(ctx)
+	if err != nil {
+		log.Error().Err(err).Msgf("[bot_give] failed to get card")
+		t.replyError(ctx, update.Message, errors.Errorf("failed to get card. try once more"))
+		return
+	}
+	if err := t.sendCard(ctx, card.ID, strconv.FormatInt(update.Message.Chat.ID, 10)); err != nil {
+		log.Error().Err(err).Msgf("[bot_give] failed to send card %d", card.ID)
+		t.replyError(ctx, update.Message, errors.Errorf("failed to send message. try once more"))
+		return
+	}
+	log.Info().Msgf("[bot_give] sent given card %d to chat %d", card.ID, update.Message.Chat.ID)
 }
 
 func (t *Bot) checkArtchitector(msg *models.Message) error {

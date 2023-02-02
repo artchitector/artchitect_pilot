@@ -76,6 +76,7 @@ func (g *Gifter) sendCard(ctx context.Context) error {
 }
 
 func (g *Gifter) getCard(ctx context.Context) (uint, error) {
+	// TODO use cardRepository.GetOriginSelectedCard
 	totalCards, err := g.cardRepository.GetTotalCards(ctx)
 	if err != nil {
 		return 0, errors.Wrap(err, "[gifter] failed get total cards")

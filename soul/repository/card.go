@@ -8,12 +8,17 @@ import (
 	"time"
 )
 
-type CardRepository struct {
-	db *gorm.DB
+type origin interface {
+	Select(ctx context.Context, totalVariants uint) (uint, error)
 }
 
-func NewCardRepository(db *gorm.DB) *CardRepository {
-	return &CardRepository{db}
+type CardRepository struct {
+	db     *gorm.DB
+	origin origin
+}
+
+func NewCardRepository(db *gorm.DB, origin origin) *CardRepository {
+	return &CardRepository{db, origin}
 }
 
 func (pr *CardRepository) SaveCard(ctx context.Context, painting model.Card) (model.Card, error) {
@@ -38,6 +43,24 @@ func (pr *CardRepository) GetTotalCards(ctx context.Context) (uint, error) {
 	return count, err
 }
 
+func (pr *CardRepository) GetOriginSelectedCard(ctx context.Context) (model.Card, error) {
+	totalCards, err := pr.GetTotalCards(ctx)
+	if err != nil {
+		return model.Card{}, errors.Wrap(err, "[gifter] failed get total cards")
+	}
+	selection, err := pr.origin.Select(ctx, totalCards)
+	if err != nil {
+		return model.Card{}, errors.Wrap(err, "[gifter] failed to select from origin")
+	}
+	card, err := pr.GetCardWithOffset(selection)
+	if err != nil {
+		return model.Card{}, errors.Wrapf(err, "[gifter] failed to GetCardWithOffset %d", selection-1)
+	}
+	return card, nil
+}
+
+// TODO deprecated public use, need make internal and remove usage from gifter.
+// use GetOriginSelectedCard instead
 func (pr *CardRepository) GetCardWithOffset(offset uint) (model.Card, error) {
 	var card model.Card
 	err := pr.db.

@@ -43,8 +43,12 @@ func main() {
 		cancel()
 	}()
 
+	// origin
+	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL)
+	origin := originService.NewOrigin(webcamDriver)
+
 	// repositoties
-	cardsRepo := repository.NewCardRepository(res.GetDB())
+	cardsRepo := repository.NewCardRepository(res.GetDB(), origin)
 	spellRepo := repository.NewSpellRepository(res.GetDB())
 	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
 	prayRepo := repository.NewPrayRepository(res.GetDB())
@@ -52,10 +56,6 @@ func main() {
 
 	// notifier
 	notifier := notifier2.NewNotifier(res.GetRedis())
-
-	// origin
-	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL)
-	origin := originService.NewOrigin(webcamDriver)
 
 	// speller+artist+creator
 	speller := spellerService.NewSpeller(spellRepo, origin, notifier)
