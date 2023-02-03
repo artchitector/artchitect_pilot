@@ -28,7 +28,7 @@ func NewS3(storageEnabled bool, host string, accessKey string, secretKey string,
 	}
 
 	log.Info().Msg("[s3] minio is set up")
-	return &Storage{client: minioClient, bucketName: bucketName}, nil
+	return &Storage{storageEnabled: true, client: minioClient, bucketName: bucketName}, nil
 }
 
 func (s *Storage) Upload(ctx context.Context, filename string, file []byte) error {
