@@ -37,7 +37,6 @@ func (f *Filler) Work(ctx context.Context) {
 				log.Info().Msgf("[storage_filler] no images not uploaded. stop worker")
 				return
 			}
-			return
 		}
 	}
 }
