@@ -159,6 +159,7 @@ func (a *Artist) encodeImage(img image.Image) ([]byte, error) {
 
 // upload image to storage with original size with quality 95
 func (a *Artist) uploadToStorage(ctx context.Context, img image.Image, cardID uint) error {
+	log.Info().Msgf("[artist] upload card %d to storage", cardID)
 	filename := fmt.Sprintf("card-%d.jpg", cardID)
 	buf := new(bytes.Buffer)
 

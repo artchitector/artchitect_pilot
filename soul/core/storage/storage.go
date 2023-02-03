@@ -33,6 +33,7 @@ func NewS3(storageEnabled bool, host string, accessKey string, secretKey string,
 
 func (s *Storage) Upload(ctx context.Context, filename string, file []byte) error {
 	if !s.storageEnabled {
+		log.Info().Msgf("[s3] not upload file %s. storage disabled", filename)
 		return nil
 	}
 	r := bytes.NewReader(file)
