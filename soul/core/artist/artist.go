@@ -114,6 +114,7 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 		return model.Card{}, errors.Wrap(err, "[artist] failed to upload card into storage")
 	}
 
+	card.UploadedToStorage = true
 	card.Image = model.Image{
 		Data:      bts,
 		Watermark: true,
