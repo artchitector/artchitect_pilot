@@ -43,6 +43,6 @@ func (s *Storage) Upload(ctx context.Context, filename string, file []byte) erro
 	if err != nil {
 		return errors.Wrapf(err, "[s3] failed to put object %s", filename)
 	}
-	log.Info().Msgf("[s3] file put success: %+v", info)
+	log.Info().Msgf("[s3] file put success: %s", info.Key)
 	return nil
 }

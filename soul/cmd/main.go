@@ -18,7 +18,7 @@ import (
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
 	"github.com/artchitector/artchitect/soul/repository"
 	"github.com/artchitector/artchitect/soul/resources"
-	"github.com/artchitector/artchitect/soul/workers/watermaker"
+	"github.com/artchitector/artchitect/soul/workers/storage_filler"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -124,9 +124,9 @@ func main() {
 		}()
 	}
 
-	wm := watermaker.NewWatermaker(res.GetDB(), watermarkMaker)
+	sf := storage_filler.NewFiller(res.GetDB(), strg)
 	go func() {
-		wm.Work(ctx)
+		sf.Work(ctx)
 	}()
 
 	// main loop to make artworks
