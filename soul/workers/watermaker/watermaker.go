@@ -26,6 +26,7 @@ func NewWatermaker(db *gorm.DB, watermark watermark) *Watermaker {
 }
 
 func (w *Watermaker) Work(ctx context.Context) {
+	return // already worked
 	for {
 		select {
 		case <-ctx.Done():

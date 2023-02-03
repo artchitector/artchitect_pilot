@@ -3,7 +3,7 @@ module github.com/artchitector/artchitect/gate
 go 1.19
 
 require (
-	github.com/artchitector/artchitect/model v0.0.0-20230106173218-d6f998a32b38
+	github.com/artchitector/artchitect/model v0.0.0-20230203133021-ba066d64422a
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis/v8 v8.11.5
@@ -11,13 +11,14 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/pkg/errors v0.9.1
-	github.com/rs/zerolog v1.28.0
+	github.com/rs/zerolog v1.29.0
 	github.com/stretchr/testify v1.8.1
 	gorm.io/driver/postgres v1.4.5
-	gorm.io/gorm v1.24.3
+	gorm.io/gorm v1.24.5
 )
 
 require (
+	github.com/artchitector/artchitect/resizer v0.0.0-20230203133021-ba066d64422a // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
@@ -39,7 +40,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.16 // indirect
+	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
@@ -47,7 +48,7 @@ require (
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	golang.org/x/crypto v0.4.0 // indirect
 	golang.org/x/net v0.4.0 // indirect
-	golang.org/x/sys v0.3.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
@@ -55,3 +56,4 @@ require (
 )
 
 replace github.com/artchitector/artchitect/model => ../model
+replace github.com/artchitector/artchitect/resizer => ../resizer

@@ -21,4 +21,10 @@ const (
 	SizeM  = "m"  // 512x768
 	SizeS  = "s"  // 256x384
 	SizeXS = "xs" // 128x192
+
+	QualityXF = 95
+	QualityF  = 90
+	QualityM  = 80
+	QualityS  = 75
+	QualityXS = 75
 )

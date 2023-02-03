@@ -13,6 +13,7 @@ import (
 	originService "github.com/artchitector/artchitect/soul/core/origin"
 	"github.com/artchitector/artchitect/soul/core/origin/driver"
 	spellerService "github.com/artchitector/artchitect/soul/core/speller"
+	"github.com/artchitector/artchitect/soul/core/storage"
 	"github.com/artchitector/artchitect/soul/core/watermark"
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
 	"github.com/artchitector/artchitect/soul/repository"
@@ -57,6 +58,18 @@ func main() {
 	// notifier
 	notifier := notifier2.NewNotifier(res.GetRedis())
 
+	// s3 storage
+	strg, err := storage.NewS3(
+		res.GetEnv().StorageEnabled,
+		res.GetEnv().MinioHost,
+		res.GetEnv().MinioAccessKey,
+		res.GetEnv().MinioSecretKey,
+		res.GetEnv().MinioBucket,
+	)
+	if err != nil {
+		log.Fatal().Err(err).Send()
+	}
+
 	// speller+artist+creator
 	speller := spellerService.NewSpeller(spellRepo, origin, notifier)
 	var engine artistService.EngineContract
@@ -66,7 +79,7 @@ func main() {
 		engine = engine2.NewArtistEngine(res.GetEnv().ArtistURL)
 	}
 	watermarkMaker := watermark.NewWatermark()
-	artist := artistService.NewArtist(engine, cardsRepo, notifier, watermarkMaker)
+	artist := artistService.NewArtist(engine, cardsRepo, notifier, watermarkMaker, strg)
 	creator := creator2.NewCreator(artist, speller, notifier, res.GetEnv().CardTotalTime, res.GetEnv().PrehotDelay)
 
 	// lottery runner
@@ -97,7 +110,9 @@ func main() {
 		res.GetEnv().TenMinChat,
 		res.GetEnv().InfiniteChat,
 	)
-	go artchitectBot.Run(ctx)
+	if res.GetEnv().TelegramBotEnabled {
+		go artchitectBot.Run(ctx)
+	}
 
 	// gifter
 	if res.GetEnv().GifterActive {

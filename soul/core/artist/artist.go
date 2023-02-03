@@ -3,7 +3,9 @@ package artist
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"github.com/artchitector/artchitect/model"
+	"github.com/artchitector/artchitect/resizer"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"image"
@@ -29,15 +31,20 @@ type cardRepository interface {
 	DeleteCard(ctx context.Context, cardID uint) error
 }
 
+type storage interface {
+	Upload(ctx context.Context, filename string, file []byte) error
+}
+
 type Artist struct {
 	engine    EngineContract
 	cardRepo  cardRepository
 	notifier  notifier
 	watermark watermark
+	storage   storage
 }
 
-func NewArtist(engine EngineContract, cardRepository cardRepository, notifier notifier, watermark watermark) *Artist {
-	return &Artist{engine, cardRepository, notifier, watermark}
+func NewArtist(engine EngineContract, cardRepository cardRepository, notifier notifier, watermark watermark, storage storage) *Artist {
+	return &Artist{engine, cardRepository, notifier, watermark, storage}
 }
 
 func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *model.CreationState) (model.Card, error) {
@@ -84,10 +91,27 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 		return model.Card{}, errors.Wrap(err, "[artist] failed to save card")
 	}
 
-	var bts []byte
-	bts, err = a.prepareImage(img, card.ID)
+	img, err = a.prepareImage(img, card.ID)
 	if err != nil {
 		return model.Card{}, errors.Wrap(err, "[artist] failed to prepare image")
+	}
+
+	err = a.uploadToStorage(ctx, img, card.ID)
+	if err != nil {
+		log.Error().Err(err).Msgf("[artist] failed to send image to storage. delete card %d", card.ID)
+		if err := a.cardRepo.DeleteCard(ctx, card.ID); err != nil {
+			log.Error().Err(err).Msgf("[artist] failed to delete card after failed image creation (id=%d)", card.ID)
+		}
+		return model.Card{}, errors.Wrap(err, "[artist] failed to upload card into storage")
+	}
+
+	bts, err := a.encodeImage(img)
+	if err != nil {
+		log.Error().Err(err).Msgf("[artist] failed to encode image. delete card %d", card.ID)
+		if err := a.cardRepo.DeleteCard(ctx, card.ID); err != nil {
+			log.Error().Err(err).Msgf("[artist] failed to delete card after failed image creation (id=%d)", card.ID)
+		}
+		return model.Card{}, errors.Wrap(err, "[artist] failed to upload card into storage")
 	}
 
 	card.Image = model.Image{
@@ -107,18 +131,41 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 	return card, err
 }
 
-// decode+encode jpeg, add watermark
-func (a *Artist) prepareImage(img image.Image, cardID uint) ([]byte, error) {
+// add watermark
+func (a *Artist) prepareImage(img image.Image, cardID uint) (image.Image, error) {
 	var err error
 	img, err = a.watermark.AddWatermark(img, cardID)
 	if err != nil {
-		return []byte{}, errors.Wrap(err, "[artist] failed to add watermark")
+		return nil, errors.Wrap(err, "[artist] failed to add watermark")
+	}
+
+	return img, nil
+}
+
+// resize image to F-size, and it will be saved to database
+func (a *Artist) encodeImage(img image.Image) ([]byte, error) {
+	img, err := resizer.ResizeImage(img, model.SizeF)
+	if err != nil {
+		return []byte{}, errors.Wrap(err, "failed to resize image")
 	}
 
 	buf := new(bytes.Buffer)
-	if err := jpeg.Encode(buf, img, &jpeg.Options{Quality: 100}); err != nil {
+	if err := jpeg.Encode(buf, img, &jpeg.Options{Quality: model.QualityF}); err != nil {
 		return []byte{}, errors.Wrap(err, "[artist] failed to encode image into jpeg data")
 	}
-
 	return buf.Bytes(), nil
+}
+
+// upload image to storage with original size with quality 95
+func (a *Artist) uploadToStorage(ctx context.Context, img image.Image, cardID uint) error {
+	filename := fmt.Sprintf("card-%d.jpg", cardID)
+	buf := new(bytes.Buffer)
+
+	if err := jpeg.Encode(buf, img, &jpeg.Options{Quality: model.QualityXF}); err != nil {
+		return errors.Wrapf(err, "[artist] failed to encode image into jpeg with q=%d", model.QualityXF)
+	}
+	if err := a.storage.Upload(ctx, filename, buf.Bytes()); err != nil {
+		return errors.Wrapf(err, "[artist] failed to save image to storage %s", filename)
+	}
+	return nil
 }

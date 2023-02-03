@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"github.com/artchitector/artchitect/gate/resizer"
+	"github.com/artchitector/artchitect/model"
+	"github.com/artchitector/artchitect/resizer"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -60,6 +61,11 @@ func (ch *CardHandler) HandleImage(c *gin.Context) {
 		return
 	}
 
+	if request.Size == model.SizeXF {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "XF size is not supported in gate"})
+		return
+	}
+
 	cached, err := ch.cache.GetImage(c, uint(request.ID), request.Size)
 	if err != nil {
 		log.Error().Err(err).Msgf("[card_controller:HandleImage] failed to get cached image")
@@ -76,7 +82,7 @@ func (ch *CardHandler) HandleImage(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	dat, err := resizer.Resize(img.Data, request.Size)
+	dat, err := resizer.ResizeBytes(img.Data, request.Size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

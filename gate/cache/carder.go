@@ -2,8 +2,8 @@ package cache
 
 import (
 	"context"
-	"github.com/artchitector/artchitect/gate/resizer"
 	"github.com/artchitector/artchitect/model"
+	"github.com/artchitector/artchitect/resizer"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"sync"
@@ -94,7 +94,7 @@ func (c *Carder) DoneTask(ctx context.Context, t task) error {
 			log.Info().Msgf("[carder] image already exists cardID=%d, size=%s", t.cardID, size)
 			continue
 		} else {
-			resized, err := resizer.Resize(img.Data, size)
+			resized, err := resizer.ResizeBytes(img.Data, size)
 			if err != nil {
 				return errors.Wrapf(err, "[carder] failed to resize cardID=%d, size=%s", t.cardID, size)
 			}

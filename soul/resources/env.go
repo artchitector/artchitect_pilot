@@ -14,13 +14,19 @@ type Env struct {
 	MercifulEnabled     bool
 	GifterActive        bool
 	UseFakeArtist       bool
+	TelegramBotEnabled  bool
+	StorageEnabled      bool
 
 	// external resources
-	DbDSN         string
-	RedisHost     string
-	RedisPassword string
-	OriginURL     string
-	ArtistURL     string
+	DbDSN          string
+	RedisHost      string
+	RedisPassword  string
+	OriginURL      string
+	ArtistURL      string
+	MinioHost      string
+	MinioAccessKey string
+	MinioSecretKey string
+	MinioBucket    string
 
 	// settings
 	CardTotalTime uint
@@ -63,12 +69,18 @@ func initEnv() *Env {
 		MercifulEnabled:     os.Getenv("MERCIFUL_ENABLED") == "true",
 		GifterActive:        os.Getenv("GIFTER_ACTIVE") == "true",
 		UseFakeArtist:       os.Getenv("USE_FAKE_ARTIST") == "true",
+		TelegramBotEnabled:  os.Getenv("TELEGRAM_BOT_ENABLE") == "true",
+		StorageEnabled:      os.Getenv("STORAGE_ENABLED") == "true",
 
-		DbDSN:         os.Getenv("DB_DSN"),
-		RedisHost:     os.Getenv("REDIS_HOST"),
-		RedisPassword: os.Getenv("REDIS_PASSWORD"),
-		OriginURL:     os.Getenv("ORIGIN_URL"),
-		ArtistURL:     os.Getenv("ARTIST_URL"),
+		DbDSN:          os.Getenv("DB_DSN"),
+		RedisHost:      os.Getenv("REDIS_HOST"),
+		RedisPassword:  os.Getenv("REDIS_PASSWORD"),
+		OriginURL:      os.Getenv("ORIGIN_URL"),
+		ArtistURL:      os.Getenv("ARTIST_URL"),
+		MinioHost:      os.Getenv("MINIO_HOST"),
+		MinioAccessKey: os.Getenv("MINIO_ACCESS_KEY"),
+		MinioSecretKey: os.Getenv("MINIO_SECRET_KEY"),
+		MinioBucket:    os.Getenv("MINIO_BUCKET"),
 
 		CardTotalTime: uint(cardTotalTime),
 		PrehotDelay:   uint(prehotDelay),

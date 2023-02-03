@@ -43,7 +43,24 @@ func ResizeImage(img image.Image, size string) (image.Image, error) {
 	return img, nil
 }
 
-func ResizeBytes(rawImg []byte, size string, quality int) ([]byte, error) {
+func ResizeBytes(rawImg []byte, size string) ([]byte, error) {
+	var quality int
+	switch size {
+	case model.SizeXF:
+		quality = model.QualityXF
+	case model.SizeF:
+		quality = model.QualityF
+	case model.SizeM:
+		quality = model.QualityM
+	case model.SizeS:
+		quality = model.QualityS
+	case model.SizeXS:
+		quality = model.QualityXS
+	}
+	return ResizeBytesWithQuality(rawImg, size, quality)
+}
+
+func ResizeBytesWithQuality(rawImg []byte, size string, quality int) ([]byte, error) {
 	start := time.Now()
 	r := bytes.NewReader(rawImg)
 	img, err := jpeg.Decode(r)
