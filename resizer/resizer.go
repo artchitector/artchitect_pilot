@@ -6,12 +6,44 @@ import (
 	"github.com/nfnt/resize"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"image"
 	"image/jpeg"
 	"math"
 	"time"
 )
 
-func Resize(rawImg []byte, size string) ([]byte, error) {
+func ResizeImage(img image.Image, size string) (image.Image, error) {
+	dimension := float64(img.Bounds().Dy()) / float64(img.Bounds().Dx())
+	var height, width uint
+
+	switch size {
+	case model.SizeXF:
+		// image already full size, but downgrade quality
+		// it's 2560x3840 (it's 5Mb size with 100% quality, down to 90%)
+		width = uint(img.Bounds().Dx())
+		height = uint(math.Round(float64(width) * dimension))
+	case model.SizeF:
+		width = uint(1024)
+		height = uint(math.Round(float64(width) * dimension))
+	case model.SizeM:
+		width = uint(512)
+		height = uint(math.Round(float64(width) * dimension))
+	case model.SizeS:
+		width = uint(256)
+		height = uint(math.Round(float64(width) * dimension))
+	case model.SizeXS:
+		width = uint(128)
+		height = uint(math.Round(float64(width) * dimension))
+	default:
+		// TODO сделать из этого ответ bad-requst, если такое пришло
+		return nil, errors.Errorf("[resizer] wrong size %s", size)
+	}
+
+	img = resize.Resize(width, height, img, resize.Lanczos3)
+	return img, nil
+}
+
+func ResizeBytes(rawImg []byte, size string, quality int) ([]byte, error) {
 	start := time.Now()
 	r := bytes.NewReader(rawImg)
 	img, err := jpeg.Decode(r)
@@ -19,39 +51,11 @@ func Resize(rawImg []byte, size string) ([]byte, error) {
 		return []byte{}, errors.Wrap(err, "[card_handler] failed to decode jpeg")
 	}
 
-	dimension := float64(img.Bounds().Dy()) / float64(img.Bounds().Dx())
-	var height, width uint
-	var quality int
-	switch size {
-	case model.SizeXF:
-		// image already full size, but downgrade quality
-		// it's 2560x3840 (it's 5Mb size with 100% quality, down to 90%)
-		width = uint(img.Bounds().Dx())
-		height = uint(math.Round(float64(width) * dimension))
-		quality = 90
-		return rawImg, nil
-	case model.SizeF:
-		width = uint(1024)
-		height = uint(math.Round(float64(width) * dimension))
-		quality = 90
-	case model.SizeM:
-		width = uint(512)
-		height = uint(math.Round(float64(width) * dimension))
-		quality = 80
-	case model.SizeS:
-		width = uint(256)
-		height = uint(math.Round(float64(width) * dimension))
-		quality = 75
-	case model.SizeXS:
-		width = uint(128)
-		height = uint(math.Round(float64(width) * dimension))
-		quality = 75
-	default:
-		// TODO сделать из этого ответ bad-requst, если такое пришло
-		return []byte{}, errors.Errorf("[resizer] wrong size %s", size)
+	img, err = ResizeImage(img, size)
+	if err != nil {
+		return []byte{}, errors.Wrapf(err, "[resizer] failed to resize image %s/%d", size, quality)
 	}
 
-	img = resize.Resize(width, height, img, resize.Lanczos3)
 	buf := new(bytes.Buffer)
 	if err := jpeg.Encode(buf, img, &jpeg.Options{Quality: quality}); err != nil {
 		return []byte{}, errors.Wrapf(err, "[resizer] failed to encode jpeg")
