@@ -2,31 +2,28 @@ package handler
 
 import (
 	"fmt"
-	"github.com/artchitector/artchitect/model"
-	"github.com/artchitector/artchitect/resizer"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"io"
-	"math"
 	"net/http"
-	"os"
-	"path"
 	"strconv"
 )
-
-var sizes = []string{model.SizeF, model.SizeM, model.SizeS, model.SizeXS}
 
 type UploadRequest struct {
 	Password string ``
 }
 
-type UploadHandler struct {
-	cardsPath string
+type saver interface {
+	SaveImage(cardID uint, data []byte) error
 }
 
-func NewUploadHandler(cardsPath string) *UploadHandler {
-	return &UploadHandler{cardsPath}
+type UploadHandler struct {
+	saver saver
+}
+
+func NewUploadHandler(saver saver) *UploadHandler {
+	return &UploadHandler{saver}
 }
 
 func (h *UploadHandler) Handle(c *gin.Context) {
@@ -60,42 +57,9 @@ func (h *UploadHandler) Handle(c *gin.Context) {
 		c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	if err := h.saveUploadedFile(data, uint(cardID)); err != nil {
+	if err := h.saver.SaveImage(uint(cardID), data); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
-}
-
-/*
-file structure:
-  - all images are in /root/cards folder (specified from .env variable)
-  - every 10k cards is in separate folder: folder=(id % 10000)
-  - card names in these folders:
-    card-56910-f.jpg
-    card-56910-m.jpg
-    card-56910-s.jpg
-    card-56910-xs.jpg
-    these files statically served by nginx, and gate services can take img and proxy it
-*/
-func (h *UploadHandler) saveUploadedFile(data []byte, cardID uint) error {
-	for _, size := range sizes {
-		resized, err := resizer.ResizeBytes(data, size)
-		if err != nil {
-			return errors.Wrapf(err, "[saver_upload] failed to resize card %d, %s", cardID, size)
-		}
-
-		idFolder := fmt.Sprintf("%d", int(math.Ceil(float64(cardID)/10000)))
-		folderPath := path.Join(h.cardsPath, idFolder)
-		if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
-			return errors.Wrapf(err, "[saver_upload] failed to create folder")
-		}
-
-		p := path.Join(folderPath, fmt.Sprintf("card-%d-%s.jpg", cardID, size))
-		err = os.WriteFile(p, resized, os.ModePerm)
-		if err != nil {
-			return errors.Wrapf(err, "[saver_upload] failed to save file %s", p)
-		}
-	}
-	return nil
 }
