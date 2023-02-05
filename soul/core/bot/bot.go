@@ -3,7 +3,6 @@ package bot
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"github.com/artchitector/artchitect/model"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -56,35 +55,44 @@ func (t *Bot) Run(ctx context.Context) {
 }
 
 func (t *Bot) SendCardTo10Min(ctx context.Context, cardID uint) error {
-	return t.sendCard(ctx, cardID, t.chat10Min)
-}
-
-func (t *Bot) sendCardToInfinite(ctx context.Context, cardID uint) error {
-	return t.sendCard(ctx, cardID, t.chatInfinite)
-}
-
-func (t *Bot) sendCard(ctx context.Context, cardID uint, chatID string) error {
-	if t.bot == nil {
-		return errors.Errorf("[bot] not initialized")
-	}
 	card, err := t.getCard(ctx, cardID)
 	if err != nil {
 		return errors.Wrapf(err, "[bot] failed to get card by ID=%d", cardID)
 	}
+	text := getTextWithoutCaption(card)
+	return t.sendCard(ctx, card, text, t.chat10Min)
+}
+
+func (t *Bot) sendCardToInfinite(ctx context.Context, cardID uint, caption string) error {
+	card, err := t.getCard(ctx, cardID)
+	if err != nil {
+		return errors.Wrapf(err, "[bot] failed to get card by ID=%d", cardID)
+	}
+	var text string
+	if caption == "" {
+		text = getTextWithoutCaption(card)
+	} else {
+		text = getTextWithCaption(card, caption)
+	}
+	return t.sendCard(ctx, card, text, t.chatInfinite)
+}
+
+func (t *Bot) sendCardBack(ctx context.Context, cardID uint, chatID string) error {
+	card, err := t.getCard(ctx, cardID)
+	if err != nil {
+		return errors.Wrapf(err, "[bot] failed to get card by ID=%d", cardID)
+	}
+	return t.sendCard(ctx, card, getTextWithoutCaption(card), chatID)
+}
+
+func (t *Bot) sendCard(ctx context.Context, card model.Card, text string, chatID string) error {
+	if t.bot == nil {
+		return errors.Errorf("[bot] not initialized")
+	}
 	if card.Image.CardID == 0 {
 		return errors.Errorf("[bot] not found image in card(id=%d), given to bot", card.ID)
 	}
-	text := fmt.Sprintf(
-		"Card #%d. (https://artchitect.space/card/%d)\n\n"+
-			"Created: %s\n"+
-			"Seed: %d\n"+
-			"Tags: %s",
-		card.ID,
-		card.ID,
-		card.CreatedAt.Format("2006 Jan 2 15:04"),
-		card.Spell.Seed,
-		card.Spell.Tags,
-	)
+
 	r := bytes.NewReader(card.Image.Data)
 	msg, err := t.bot.SendPhoto(ctx, &bot.SendPhotoParams{
 		ChatID:  chatID,
@@ -136,8 +144,14 @@ func (t *Bot) infiniteHandler(ctx context.Context, b *bot.Bot, update *models.Up
 		t.replyError(ctx, update.Message, errors.Errorf("[bot_infinite] cardID must be uint"))
 		return
 	}
+
+	var caption string
+	if len(args) > 1 {
+		caption = strings.Join(args[1:], " ")
+	}
+
 	log.Info().Msgf("[bot_infinite] got infinite command with cardID", cardID)
-	err = t.sendCardToInfinite(ctx, uint(cardID))
+	err = t.sendCardToInfinite(ctx, uint(cardID), caption)
 	if err != nil {
 		t.replyError(ctx, update.Message, err)
 	}
@@ -154,7 +168,8 @@ func (t *Bot) giveHandler(ctx context.Context, b *bot.Bot, update *models.Update
 		t.replyError(ctx, update.Message, errors.Errorf("failed to get card. try once more"))
 		return
 	}
-	if err := t.sendCard(ctx, card.ID, strconv.FormatInt(update.Message.Chat.ID, 10)); err != nil {
+
+	if err := t.sendCardBack(ctx, card.ID, strconv.FormatInt(update.Message.Chat.ID, 10)); err != nil {
 		log.Error().Err(err).Msgf("[bot_give] failed to send card %d", card.ID)
 		t.replyError(ctx, update.Message, errors.Errorf("failed to send message. try once more"))
 		return
