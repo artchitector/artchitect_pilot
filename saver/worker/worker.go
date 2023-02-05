@@ -47,9 +47,11 @@ func (w *Worker) copyImage(ctx context.Context) (bool, error) {
 	} else if err != nil {
 		return false, err
 	}
-	err = w.saver.SaveImage(card.ID, img.Data)
-	if err != nil {
+	if err = w.saver.SaveImage(card.ID, img.Data); err != nil {
 		return false, errors.Wrapf(err, "[worker] failed to save file")
+	}
+	if card, err := w.setCardFinished(card); err != nil {
+		return false, errors.Wrapf(err, "[worker] failed to set status for card %d", card.ID)
 	}
 	log.Info().Msgf("[worker] done with %d", card.ID)
 	return false, nil
@@ -67,4 +69,10 @@ func (w *Worker) getNextCardAndImage() (model.Card, model.Image, error) {
 		return model.Card{}, model.Image{}, errors.Wrapf(err, "[worker] failed to get image for card %d", card.ID)
 	}
 	return card, image, nil
+}
+
+func (w *Worker) setCardFinished(card model.Card) (model.Card, error) {
+	card.UploadedToMemory = true
+	err := w.db.Save(&card).Error
+	return card, err
 }
