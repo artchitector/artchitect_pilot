@@ -10,6 +10,7 @@ import (
 )
 
 type artist interface {
+	// TODO need to get image, not card. Artist is too complex
 	GetCard(ctx context.Context, spell model.Spell, artistState *model.CreationState) (model.Card, error)
 }
 type speller interface {

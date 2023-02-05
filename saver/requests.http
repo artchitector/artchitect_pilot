@@ -1,0 +1,15 @@
+### Send a form with the text and file fields
+POST http://localhost:8083/upload
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="card_id"
+Content-Type: text/plain
+
+1000
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="1.jpeg"
+Content-Type: application/json
+
+< ../soul/files/fakes/1.jpeg
+--WebAppBoundary--

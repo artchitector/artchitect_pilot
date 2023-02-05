@@ -12,13 +12,13 @@ import (
 	merciful2 "github.com/artchitector/artchitect/soul/core/merciful"
 	originService "github.com/artchitector/artchitect/soul/core/origin"
 	"github.com/artchitector/artchitect/soul/core/origin/driver"
+	"github.com/artchitector/artchitect/soul/core/saver"
 	spellerService "github.com/artchitector/artchitect/soul/core/speller"
 	"github.com/artchitector/artchitect/soul/core/storage"
 	"github.com/artchitector/artchitect/soul/core/watermark"
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
 	"github.com/artchitector/artchitect/soul/repository"
 	"github.com/artchitector/artchitect/soul/resources"
-	"github.com/artchitector/artchitect/soul/workers/storage_filler"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -78,8 +78,9 @@ func main() {
 	} else {
 		engine = engine2.NewArtistEngine(res.GetEnv().ArtistURL)
 	}
+	sav := saver.NewSaver(res.GetEnv().SaverURL)
 	watermarkMaker := watermark.NewWatermark()
-	artist := artistService.NewArtist(engine, cardsRepo, notifier, watermarkMaker, strg)
+	artist := artistService.NewArtist(engine, cardsRepo, notifier, watermarkMaker, strg, sav)
 	creator := creator2.NewCreator(artist, speller, notifier, res.GetEnv().CardTotalTime, res.GetEnv().PrehotDelay)
 
 	// lottery runner
@@ -123,11 +124,6 @@ func main() {
 			}
 		}()
 	}
-
-	sf := storage_filler.NewFiller(res.GetDB(), strg)
-	go func() {
-		sf.Work(ctx)
-	}()
 
 	// main loop to make artworks
 	var tick int

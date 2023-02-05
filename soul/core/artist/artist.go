@@ -35,16 +35,21 @@ type storage interface {
 	Upload(ctx context.Context, filename string, file []byte) error
 }
 
+type saver interface {
+	SaveImage(cardID uint, imageData []byte) error
+}
+
 type Artist struct {
 	engine    EngineContract
 	cardRepo  cardRepository
 	notifier  notifier
 	watermark watermark
 	storage   storage
+	saver     saver
 }
 
-func NewArtist(engine EngineContract, cardRepository cardRepository, notifier notifier, watermark watermark, storage storage) *Artist {
-	return &Artist{engine, cardRepository, notifier, watermark, storage}
+func NewArtist(engine EngineContract, cardRepository cardRepository, notifier notifier, watermark watermark, storage storage, saver saver) *Artist {
+	return &Artist{engine, cardRepository, notifier, watermark, storage, saver}
 }
 
 func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *model.CreationState) (model.Card, error) {
@@ -114,6 +119,15 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 		return model.Card{}, errors.Wrap(err, "[artist] failed to upload card into storage")
 	}
 
+	if err := a.saver.SaveImage(card.ID, bts); err != nil {
+		log.Error().Err(err).Msgf("[artist] failed to save image to saver. delete card %d", card.ID)
+		if err := a.cardRepo.DeleteCard(ctx, card.ID); err != nil {
+			log.Error().Err(err).Msgf("[artist] failed to delete card after failed image creation (id=%d)", card.ID)
+		}
+		return model.Card{}, errors.Wrap(err, "[artist] failed to upload card into storage")
+	}
+
+	card.UploadedToMemory = true
 	card.UploadedToStorage = true
 	card.Image = model.Image{
 		Data:      bts,
