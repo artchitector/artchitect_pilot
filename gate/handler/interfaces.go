@@ -8,7 +8,6 @@ import (
 
 type cardsRepository interface {
 	GetCard(ctx context.Context, ID uint) (model.Card, error)
-	GetImage(ctx context.Context, cardID uint) (model.Image, error)
 	GetLastCards(ctx context.Context, count uint) ([]model.Card, error)
 }
 
@@ -28,12 +27,14 @@ type selectionRepository interface {
 }
 
 type cache interface {
-	GetImage(ctx context.Context, ID uint, size string) ([]byte, error)
 	GetCard(ctx context.Context, ID uint) (model.Card, error)
 	GetLastCards(ctx context.Context, count uint) ([]model.Card, error)
-	SaveImage(ctx context.Context, cardID uint, size string, data []byte) error
 }
 
 type listener interface {
 	EventChannel() (chan localmodel.Event, chan struct{})
+}
+
+type memory interface {
+	GetImage(ctx context.Context, cardID uint, size string) ([]byte, error)
 }

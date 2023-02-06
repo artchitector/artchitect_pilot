@@ -17,10 +17,6 @@ type cache interface {
 	PrependLastCardID(ctx context.Context, ID uint) error
 }
 
-type carder interface {
-	AddTask(cardID uint, sizes []string)
-}
-
 type cardRepository interface {
 	GetCard(ctx context.Context, ID uint) (model.Card, error)
 }
@@ -31,13 +27,12 @@ type Listener struct {
 	mutex          sync.Mutex
 	red            *redis.Client
 	cache          cache
-	carder         carder
 	cardRepository cardRepository
 	eventChannels  []chan localmodel.Event
 }
 
-func NewListener(red *redis.Client, cache cache, carder carder, cardRepository cardRepository) *Listener {
-	return &Listener{sync.Mutex{}, red, cache, carder, cardRepository, []chan localmodel.Event{}}
+func NewListener(red *redis.Client, cache cache, cardRepository cardRepository) *Listener {
+	return &Listener{sync.Mutex{}, red, cache, cardRepository, []chan localmodel.Event{}}
 }
 
 func (l *Listener) Run(ctx context.Context) error {
@@ -146,7 +141,6 @@ func (l *Listener) cacheCard(ctx context.Context, cardID uint) error {
 		return errors.Wrapf(err, "[listener] failed to cache card, id=%d", card.ID)
 	}
 
-	l.carder.AddTask(card.ID, nil)
 	return nil
 }
 

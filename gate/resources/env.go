@@ -11,6 +11,7 @@ type Env struct {
 	HttpPort      string
 	RedisHost     string
 	RedisPassword string
+	MemoryHost    string
 }
 
 func initEnv() *Env {
@@ -24,5 +25,6 @@ func initEnv() *Env {
 		HttpPort:      os.Getenv("HTTP_PORT"),
 		RedisHost:     os.Getenv("REDIS_HOST"),
 		RedisPassword: os.Getenv("REDIS_PASSWORD"),
+		MemoryHost:    os.Getenv("MEMORY_HOST"),
 	}
 }

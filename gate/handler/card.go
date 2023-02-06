@@ -2,7 +2,6 @@ package handler
 
 import (
 	"github.com/artchitector/artchitect/model"
-	"github.com/artchitector/artchitect/resizer"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -22,10 +21,11 @@ type ImageRequest struct {
 type CardHandler struct {
 	cardsRepository cardsRepository
 	cache           cache
+	memory          memory
 }
 
-func NewCardHandler(cardsRepository cardsRepository, cache cache) *CardHandler {
-	return &CardHandler{cardsRepository, cache}
+func NewCardHandler(cardsRepository cardsRepository, cache cache, memory memory) *CardHandler {
+	return &CardHandler{cardsRepository, cache, memory}
 }
 
 func (lh *CardHandler) Handle(c *gin.Context) {
@@ -66,32 +66,11 @@ func (ch *CardHandler) HandleImage(c *gin.Context) {
 		return
 	}
 
-	cached, err := ch.cache.GetImage(c, uint(request.ID), request.Size)
-	if err != nil {
-		log.Error().Err(err).Msgf("[card_controller:HandleImage] failed to get cached image")
-	} else {
-		c.Data(http.StatusOK, "image/jpeg", cached)
-		return
-	}
-
-	img, err := ch.cardsRepository.GetImage(c, request.ID)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
-		return
-	} else if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	dat, err := resizer.ResizeBytes(img.Data, request.Size)
+	imageBytes, err := ch.memory.GetImage(c, request.ID, request.Size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	go func() {
-		if err := ch.cache.SaveImage(c, request.ID, request.Size, dat); err != nil {
-			log.Error().Err(err).Send()
-		}
-	}()
-	c.Data(http.StatusOK, "image/jpeg", dat)
+	c.Data(http.StatusOK, "image/jpeg", imageBytes)
 }

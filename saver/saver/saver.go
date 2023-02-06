@@ -5,7 +5,6 @@ import (
 	"github.com/artchitector/artchitect/model"
 	"github.com/artchitector/artchitect/resizer"
 	"github.com/pkg/errors"
-	"math"
 	"os"
 	"path"
 )
@@ -38,7 +37,7 @@ func (h *Saver) SaveImage(cardID uint, data []byte) error {
 			return errors.Wrapf(err, "[saver_upload] failed to resize card %d, %s", cardID, size)
 		}
 
-		idFolder := fmt.Sprintf("%d", int(math.Ceil(float64(cardID)/10000)))
+		idFolder := fmt.Sprintf("%d", model.GetCardThousand(cardID))
 		folderPath := path.Join(h.cardsPath, idFolder)
 		if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
 			return errors.Wrapf(err, "[saver_upload] failed to create folder")

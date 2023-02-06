@@ -5,6 +5,7 @@ import (
 	cache2 "github.com/artchitector/artchitect/gate/cache"
 	"github.com/artchitector/artchitect/gate/handler"
 	"github.com/artchitector/artchitect/gate/listener"
+	"github.com/artchitector/artchitect/gate/memory"
 	"github.com/artchitector/artchitect/gate/repository"
 	"github.com/artchitector/artchitect/gate/resources"
 	"github.com/gin-contrib/cors"
@@ -13,7 +14,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"os"
 	"os/signal"
-	"runtime"
 )
 
 func main() {
@@ -33,10 +33,9 @@ func main() {
 
 	// cache
 	cache := cache2.NewCache(res.GetRedis())
-	carder := cache2.NewCarder(cardsRepo, cache)
-	carder.RunWorkers(ctx, runtime.NumCPU())
-	enhotter := cache2.NewEnhotter(cardsRepo, selectionRepo, cache, carder)
+	enhotter := cache2.NewEnhotter(cardsRepo, selectionRepo, cache)
 	enhotter.Run(ctx)
+	mmr := memory.NewMemory(res.GetEnv().MemoryHost)
 
 	// handlers
 	lastCardsHandler := handler.NewLastCardsHandler(cardsRepo, cache)
@@ -44,12 +43,12 @@ func main() {
 		log.With().Str("service", "lottery_handler").Logger(),
 		lotteryRepo,
 	)
-	cardHandler := handler.NewCardHandler(cardsRepo, cache)
+	cardHandler := handler.NewCardHandler(cardsRepo, cache, mmr)
 	selectionHander := handler.NewSelectionHandler(selectionRepo)
 	prayHandler := handler.NewPrayHandler(prayRepo)
 
 	// listeners with websocket handler
-	lis := listener.NewListener(res.GetRedis(), cache, carder, cardsRepo)
+	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo)
 	websocketHandler := handler.NewWebsocketHandler(lis)
 
 	go func() {

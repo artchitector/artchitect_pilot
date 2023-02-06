@@ -44,9 +44,3 @@ func (pr *CardRepository) GetCard(ctx context.Context, ID uint) (model.Card, err
 		return card, nil
 	}
 }
-
-func (pr *CardRepository) GetImage(ctx context.Context, cardID uint) (model.Image, error) {
-	image := model.Image{}
-	err := pr.db.Where("card_id = ?", cardID).First(&image).Error
-	return image, err
-}

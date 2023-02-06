@@ -7,7 +7,6 @@ import (
 
 type cardRepository interface {
 	GetCard(ctx context.Context, ID uint) (model.Card, error)
-	GetImage(ctx context.Context, cardID uint) (model.Image, error)
 	GetLastCards(ctx context.Context, count uint) ([]model.Card, error)
 }
 
