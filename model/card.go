@@ -1,7 +1,6 @@
 package model
 
 import (
-	"database/sql"
 	"gorm.io/gorm"
 )
 
@@ -14,11 +13,4 @@ type Card struct {
 	PaintTime         uint   // seconds, how much paint took
 	UploadedToStorage bool   `gorm:"not null;default:false"` // full-size file uploaded to s3-storage
 	UploadedToMemory  bool   `gorm:"not null;default:false"` // file was uploaded to storage in all sizes as files
-	Image             Image
-}
-
-type Image struct {
-	CardID    uint         `gorm:"primaryKey"`
-	Data      sql.RawBytes `json:"-"`
-	Watermark bool         // is there any watermark on image?
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/artchitector/artchitect/memory"
 	artchitectService "github.com/artchitector/artchitect/soul/core/artchitect"
 	artistService "github.com/artchitector/artchitect/soul/core/artist"
 	engine2 "github.com/artchitector/artchitect/soul/core/artist/engine"
@@ -103,10 +104,11 @@ func main() {
 		merciful,
 		notifier,
 	)
-
+	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
 	artchitectBot := bot.NewBot(
 		res.GetEnv().TelegramBotToken,
 		cardsRepo,
+		mmr,
 		res.GetEnv().ArtchitectorChatID,
 		res.GetEnv().TenMinChat,
 		res.GetEnv().InfiniteChat,

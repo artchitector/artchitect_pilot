@@ -25,6 +25,7 @@ type Env struct {
 	OriginURL      string
 	ArtistURL      string
 	SaverURL       string
+	MemoryHost     string
 	MinioHost      string
 	MinioAccessKey string
 	MinioSecretKey string
@@ -80,6 +81,7 @@ func initEnv() *Env {
 		RedisPassword:  os.Getenv("REDIS_PASSWORD"),
 		OriginURL:      os.Getenv("ORIGIN_URL"),
 		ArtistURL:      os.Getenv("ARTIST_URL"),
+		MemoryHost:     os.Getenv("MEMORY_HOST"),
 		MinioHost:      os.Getenv("MINIO_HOST"),
 		MinioAccessKey: os.Getenv("MINIO_ACCESS_KEY"),
 		MinioSecretKey: os.Getenv("MINIO_SECRET_KEY"),

@@ -3,7 +3,7 @@ module github.com/artchitector/artchitect/soul
 go 1.19
 
 require (
-	github.com/artchitector/artchitect/model v0.0.0-20230202095112-87f90686da20
+	github.com/artchitector/artchitect/model v0.0.0-20230206140145-9401fffc0575
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-telegram/bot v0.4.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
@@ -13,10 +13,11 @@ require (
 	golang.org/x/image v0.3.0
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/postgres v1.4.5
-	gorm.io/gorm v1.24.3
+	gorm.io/gorm v1.24.5
 )
 
 require (
+	github.com/artchitector/artchitect/memory v0.0.0-20230206141224-ef4d2c479ec6 // indirect
 	github.com/artchitector/artchitect/resizer v0.0.0-20230203133021-ba066d64422a // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
@@ -37,7 +38,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.1.0 // indirect
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.16 // indirect
+	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/minio-go/v7 v7.0.47 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect
@@ -48,10 +49,11 @@ require (
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	golang.org/x/crypto v0.3.0 // indirect
 	golang.org/x/net v0.2.0 // indirect
-	golang.org/x/sys v0.2.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.6.0 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 )
 
 replace github.com/artchitector/artchitect/model => ../model
 replace github.com/artchitector/artchitect/resizer => ../resizer
+replace github.com/artchitector/artchitect/memory => ../memory

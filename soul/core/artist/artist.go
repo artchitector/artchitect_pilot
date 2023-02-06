@@ -129,10 +129,6 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 
 	card.UploadedToMemory = true
 	card.UploadedToStorage = true
-	card.Image = model.Image{
-		Data:      bts,
-		Watermark: true,
-	}
 	card, err = a.cardRepo.SaveCard(ctx, card)
 	if err != nil {
 		// TODO need to test delete failed card without image

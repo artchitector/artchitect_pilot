@@ -11,7 +11,6 @@ import (
 type cardRepository interface {
 	GetTotalCards(ctx context.Context) (uint, error)
 	GetCardWithOffset(offset uint) (model.Card, error)
-	GetImage(ctx context.Context, cardID uint) (model.Image, error)
 }
 
 type origin interface {

@@ -19,21 +19,25 @@ const (
 
 type cardRepository interface {
 	GetCard(ctx context.Context, cardID uint) (model.Card, error)
-	GetImage(ctx context.Context, cardID uint) (model.Image, error)
 	GetOriginSelectedCard(ctx context.Context) (model.Card, error)
+}
+
+type memory interface {
+	DownloadImage(ctx context.Context, cardID uint, size string) ([]byte, error)
 }
 
 type Bot struct {
 	token            string
 	bot              *bot.Bot
 	cardRepository   cardRepository
+	memory           memory
 	artchitectorChat int64
 	chat10Min        string
 	chatInfinite     string
 }
 
-func NewBot(token string, cardRepository cardRepository, artchitectorChat int64, chat10Min string, chatInfinite string) *Bot {
-	return &Bot{token, nil, cardRepository, artchitectorChat, chat10Min, chatInfinite}
+func NewBot(token string, cardRepository cardRepository, memory memory, artchitectorChat int64, chat10Min string, chatInfinite string) *Bot {
+	return &Bot{token, nil, cardRepository, memory, artchitectorChat, chat10Min, chatInfinite}
 }
 
 func (t *Bot) Run(ctx context.Context) {
@@ -55,16 +59,16 @@ func (t *Bot) Run(ctx context.Context) {
 }
 
 func (t *Bot) SendCardTo10Min(ctx context.Context, cardID uint) error {
-	card, err := t.getCard(ctx, cardID)
+	card, img, err := t.getCard(ctx, cardID)
 	if err != nil {
 		return errors.Wrapf(err, "[bot] failed to get card by ID=%d", cardID)
 	}
 	text := getTextWithoutCaption(card)
-	return t.sendCard(ctx, card, text, t.chat10Min)
+	return t.sendCard(ctx, card, img, text, t.chat10Min)
 }
 
 func (t *Bot) sendCardToInfinite(ctx context.Context, cardID uint, caption string) error {
-	card, err := t.getCard(ctx, cardID)
+	card, img, err := t.getCard(ctx, cardID)
 	if err != nil {
 		return errors.Wrapf(err, "[bot] failed to get card by ID=%d", cardID)
 	}
@@ -74,26 +78,23 @@ func (t *Bot) sendCardToInfinite(ctx context.Context, cardID uint, caption strin
 	} else {
 		text = getTextWithCaption(card, caption)
 	}
-	return t.sendCard(ctx, card, text, t.chatInfinite)
+	return t.sendCard(ctx, card, img, text, t.chatInfinite)
 }
 
 func (t *Bot) sendCardBack(ctx context.Context, cardID uint, chatID string) error {
-	card, err := t.getCard(ctx, cardID)
+	card, img, err := t.getCard(ctx, cardID)
 	if err != nil {
 		return errors.Wrapf(err, "[bot] failed to get card by ID=%d", cardID)
 	}
-	return t.sendCard(ctx, card, getTextWithoutCaption(card), chatID)
+	return t.sendCard(ctx, card, img, getTextWithoutCaption(card), chatID)
 }
 
-func (t *Bot) sendCard(ctx context.Context, card model.Card, text string, chatID string) error {
+func (t *Bot) sendCard(ctx context.Context, card model.Card, img []byte, text string, chatID string) error {
 	if t.bot == nil {
 		return errors.Errorf("[bot] not initialized")
 	}
-	if card.Image.CardID == 0 {
-		return errors.Errorf("[bot] not found image in card(id=%d), given to bot", card.ID)
-	}
 
-	r := bytes.NewReader(card.Image.Data)
+	r := bytes.NewReader(img)
 	msg, err := t.bot.SendPhoto(ctx, &bot.SendPhotoParams{
 		ChatID:  chatID,
 		Photo:   &models.InputFileUpload{Data: r},
@@ -107,18 +108,17 @@ func (t *Bot) sendCard(ctx context.Context, card model.Card, text string, chatID
 	return nil
 }
 
-func (t *Bot) getCard(ctx context.Context, cardID uint) (model.Card, error) {
+func (t *Bot) getCard(ctx context.Context, cardID uint) (model.Card, []byte, error) {
 	card, err := t.cardRepository.GetCard(ctx, cardID)
 	if err != nil {
-		return model.Card{}, errors.Wrapf(err, "[bot] failed to GetCard %d", cardID)
+		return model.Card{}, nil, errors.Wrapf(err, "[bot] failed to GetCard %d", cardID)
 	}
-	image, err := t.cardRepository.GetImage(ctx, card.ID)
+
+	image, err := t.memory.DownloadImage(ctx, cardID, model.SizeF)
 	if err != nil {
-		return model.Card{}, errors.Wrapf(err, "[bot] failed to get image for card %d", card.ID)
-	} else {
-		card.Image = image
+		return model.Card{}, nil, errors.Wrapf(err, "[bot] failed to get image for card %d", card.ID)
 	}
-	return card, nil
+	return card, image, nil
 }
 
 func (t *Bot) handler(ctx context.Context, b *bot.Bot, update *models.Update) {

@@ -28,6 +28,9 @@ func NewMemory(memoryURL string, cache cache) *Memory {
 }
 
 func (m *Memory) GetImage(ctx context.Context, cardID uint, size string) ([]byte, error) {
+	if m.cache == nil {
+		return nil, errors.Errorf("[memory] cache not initialized, use DownloadImage instead")
+	}
 	start := time.Now()
 
 	exists, err := m.cache.ExistsImage(ctx, cardID, size)
@@ -42,7 +45,7 @@ func (m *Memory) GetImage(ctx context.Context, cardID uint, size string) ([]byte
 			return img, nil
 		}
 	}
-	img, err := m.downloadImage(ctx, cardID, size)
+	img, err := m.DownloadImage(ctx, cardID, size)
 	if err != nil {
 		return []byte{}, errors.Wrapf(err, "[memory] failed to download image %d/%s", cardID, size)
 	}
@@ -57,7 +60,7 @@ func (m *Memory) GetImage(ctx context.Context, cardID uint, size string) ([]byte
 	return img, nil
 }
 
-func (m *Memory) downloadImage(ctx context.Context, cardID uint, size string) ([]byte, error) {
+func (m *Memory) DownloadImage(ctx context.Context, cardID uint, size string) ([]byte, error) {
 	// get image from remote memory server
 	thousand := model.GetCardThousand(cardID)
 	url := fmt.Sprintf("%s/cards/%d/card-%d-%s.jpg", m.memoryURL, thousand, cardID, size)
