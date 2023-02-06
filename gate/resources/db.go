@@ -21,7 +21,7 @@ func initDB(env *Env) *gorm.DB {
 			SlowThreshold:             time.Second,
 			Colorful:                  true,
 			IgnoreRecordNotFoundError: true,
-			LogLevel:                  logger.Info,
+			LogLevel:                  logger.Warn,
 		},
 	)
 	db, err := gorm.Open(pg, &gorm.Config{

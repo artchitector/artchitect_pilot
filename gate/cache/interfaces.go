@@ -13,3 +13,7 @@ type cardRepository interface {
 type selectionRepository interface {
 	GetSelectionLimit(ctx context.Context, limit int) ([]uint, error)
 }
+
+type memory interface {
+	GetImage(ctx context.Context, cardID uint, size string) ([]byte, error)
+}

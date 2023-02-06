@@ -17,6 +17,8 @@ const (
 	KeyLastCards = "last_cards"
 	// KeyCard stores json data of specified card - card:1000 = {ID: 1000, ...}
 	KeyCard = "card:%d"
+	// KeyCardImage stores binary image
+	KeyCardImage = "card:%d:image:%s"
 )
 
 var ErrorNotFound = errors.Errorf("[cache] not found cached data")
@@ -133,4 +135,26 @@ func (c *Cache) PrependLastCardID(ctx context.Context, ID uint) error {
 		"[cache] failed to append last card id=%d",
 		ID,
 	)
+}
+
+func (c *Cache) SaveImage(ctx context.Context, cardID uint, size string, data []byte) error {
+	key := fmt.Sprintf(KeyCardImage, cardID, size)
+	err := c.rdb.Set(ctx, key, data, time.Hour*24).Err()
+	return errors.Wrapf(err, "[cache] failed to save image id=%d, size=%s", cardID, size)
+}
+
+func (c *Cache) ExistsImage(ctx context.Context, ID uint, size string) (bool, error) {
+	key := fmt.Sprintf(KeyCardImage, ID, size)
+	i, err := c.rdb.Exists(ctx, key).Result()
+	return i > 0, err
+}
+
+func (c *Cache) GetImage(ctx context.Context, ID uint, size string) ([]byte, error) {
+	var b []byte
+	key := fmt.Sprintf(KeyCardImage, ID, size)
+	result := c.rdb.Get(ctx, key)
+	if err := result.Err(); err != nil {
+		return b, errors.Wrapf(err, "[cache] failed to get image (id=%d, size=%s)", ID, size)
+	}
+	return result.Bytes()
 }

@@ -33,9 +33,10 @@ func main() {
 
 	// cache
 	cache := cache2.NewCache(res.GetRedis())
-	enhotter := cache2.NewEnhotter(cardsRepo, selectionRepo, cache)
+	_ = cache.Flushall(ctx)
+	mmr := memory.NewMemory(res.GetEnv().MemoryHost, cache)
+	enhotter := cache2.NewEnhotter(cardsRepo, selectionRepo, cache, mmr)
 	enhotter.Run(ctx)
-	mmr := memory.NewMemory(res.GetEnv().MemoryHost)
 
 	// handlers
 	lastCardsHandler := handler.NewLastCardsHandler(cardsRepo, cache)
@@ -48,7 +49,7 @@ func main() {
 	prayHandler := handler.NewPrayHandler(prayRepo)
 
 	// listeners with websocket handler
-	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo)
+	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo, mmr)
 	websocketHandler := handler.NewWebsocketHandler(lis)
 
 	go func() {

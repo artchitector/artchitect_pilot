@@ -28,3 +28,5 @@ const (
 	QualityS  = 75
 	QualityXS = 75
 )
+
+var PublicSizes = []string{SizeF, SizeM, SizeS, SizeXS}

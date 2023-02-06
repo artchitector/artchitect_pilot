@@ -21,6 +21,10 @@ type cardRepository interface {
 	GetCard(ctx context.Context, ID uint) (model.Card, error)
 }
 
+type memory interface {
+	GetImage(ctx context.Context, cardID uint, size string) ([]byte, error)
+}
+
 // Listener read incoming request from redis and do some actions
 // new card saved - load it to redis
 type Listener struct {
@@ -28,11 +32,12 @@ type Listener struct {
 	red            *redis.Client
 	cache          cache
 	cardRepository cardRepository
+	memory         memory
 	eventChannels  []chan localmodel.Event
 }
 
-func NewListener(red *redis.Client, cache cache, cardRepository cardRepository) *Listener {
-	return &Listener{sync.Mutex{}, red, cache, cardRepository, []chan localmodel.Event{}}
+func NewListener(red *redis.Client, cache cache, cardRepository cardRepository, memory memory) *Listener {
+	return &Listener{sync.Mutex{}, red, cache, cardRepository, memory, []chan localmodel.Event{}}
 }
 
 func (l *Listener) Run(ctx context.Context) error {
@@ -135,6 +140,12 @@ func (l *Listener) cacheCard(ctx context.Context, cardID uint) error {
 	card, err := l.cardRepository.GetCard(ctx, cardID)
 	if err != nil {
 		return errors.Wrapf(err, "[listener] failed to get card id=%d", card.ID)
+	}
+
+	for _, size := range model.PublicSizes {
+		if _, err := l.memory.GetImage(ctx, cardID, size); err != nil {
+			log.Error().Err(err).Msgf("[listener] failed to get image from memory %d/%s", cardID, size)
+		}
 	}
 
 	if err := l.cache.SaveCard(ctx, card); err != nil {
