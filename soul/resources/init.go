@@ -6,9 +6,9 @@ import (
 )
 
 type Resources struct {
-	env   *Env
-	db    *gorm.DB
-	redis *redis.Client
+	env     *Env
+	db      *gorm.DB
+	redises map[string]*redis.Client
 }
 
 func (r *Resources) GetDB() *gorm.DB {
@@ -19,14 +19,14 @@ func (r *Resources) GetEnv() *Env {
 	return r.env
 }
 
-func (r *Resources) GetRedis() *redis.Client {
-	return r.redis
+func (r *Resources) GetRedises() map[string]*redis.Client {
+	return r.redises
 }
 
 func InitResources() *Resources {
 	env := initEnv()
 	db := initDB(env)
-	red := initRedis(env)
+	redises := initRedises(env)
 
-	return &Resources{env, db, red}
+	return &Resources{env, db, redises}
 }

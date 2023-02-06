@@ -56,7 +56,7 @@ func main() {
 	selectionRepo := repository.NewSelectionRepository(res.GetDB())
 
 	// notifier
-	notifier := notifier2.NewNotifier(res.GetRedis())
+	notifier := notifier2.NewNotifier(res.GetRedises())
 
 	// s3 storage
 	strg, err := storage.NewS3(

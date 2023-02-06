@@ -9,15 +9,17 @@ import (
 )
 
 type Notifier struct {
-	red *redis.Client
+	redises map[string]*redis.Client
 }
 
-func NewNotifier(red *redis.Client) *Notifier {
-	return &Notifier{red: red}
+func NewNotifier(redises map[string]*redis.Client) *Notifier {
+	return &Notifier{
+		redises,
+	}
 }
 
 func (n *Notifier) NotifyTick(ctx context.Context, tick int) error {
-	err := n.red.Publish(ctx, model.ChannelTick, tick).Err()
+	err := n.publish(ctx, model.ChannelTick, tick)
 	return errors.Wrap(err, "[notifier] failed to notify tick")
 }
 
@@ -26,7 +28,7 @@ func (n *Notifier) NotifyPrehotCard(ctx context.Context, card model.Card) error 
 	if err != nil {
 		return errors.Wrap(err, "[notifier] failed to marshal card")
 	}
-	err = n.red.Publish(ctx, model.ChannelPrehotCard, jsn).Err()
+	err = n.publish(ctx, model.ChannelPrehotCard, jsn)
 	return errors.Wrap(err, "[notifier] failed to notify card")
 }
 
@@ -35,7 +37,7 @@ func (n *Notifier) NotifyNewCard(ctx context.Context, card model.Card) error {
 	if err != nil {
 		return errors.Wrap(err, "[notifier] failed to marshal card")
 	}
-	err = n.red.Publish(ctx, model.ChannelNewCard, jsn).Err()
+	err = n.publish(ctx, model.ChannelNewCard, jsn)
 	return errors.Wrap(err, "[notifier] failed to notify card")
 }
 
@@ -44,7 +46,7 @@ func (n *Notifier) NotifyCreationState(ctx context.Context, state model.Creation
 	if err != nil {
 		return errors.Wrap(err, "[notifier] failed to marshal artist state")
 	}
-	err = n.red.Publish(ctx, model.ChannelCreation, jsn).Err()
+	err = n.publish(ctx, model.ChannelCreation, jsn)
 	return errors.Wrap(err, "[notifier] failed to notify artist")
 }
 
@@ -53,7 +55,7 @@ func (n *Notifier) NotifyNewSelection(ctx context.Context, selection model.Selec
 	if err != nil {
 		return errors.Wrap(err, "[notifier] failed to marshal selection")
 	}
-	err = n.red.Publish(ctx, model.ChannelNewSelection, jsn).Err()
+	err = n.publish(ctx, model.ChannelNewSelection, jsn)
 	return errors.Wrap(err, "[notifier] failed to notify selection")
 }
 
@@ -62,6 +64,15 @@ func (n *Notifier) NotifyLottery(ctx context.Context, state model.LotteryState) 
 	if err != nil {
 		return errors.Wrap(err, "[notifier] failed to marshal lottery")
 	}
-	err = n.red.Publish(ctx, model.ChannelLottery, jsn).Err()
+	err = n.publish(ctx, model.ChannelLottery, jsn)
 	return errors.Wrap(err, "[notifier] failed to notify lottery")
+}
+
+func (n *Notifier) publish(ctx context.Context, channel string, data interface{}) error {
+	for key, r := range n.redises {
+		if err := r.Publish(ctx, channel, data).Err(); err != nil {
+			return errors.Wrapf(err, "[notifier] failed to publish to redis(%s)", key)
+		}
+	}
+	return nil
 }

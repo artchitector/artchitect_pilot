@@ -19,7 +19,8 @@ type Env struct {
 
 	// external resources
 	DbDSN          string
-	RedisHost      string
+	RedisHostRU    string
+	RedisHostEU    string
 	RedisPassword  string
 	OriginURL      string
 	ArtistURL      string
@@ -74,7 +75,8 @@ func initEnv() *Env {
 		StorageEnabled:      os.Getenv("STORAGE_ENABLED") == "true",
 
 		DbDSN:          os.Getenv("DB_DSN"),
-		RedisHost:      os.Getenv("REDIS_HOST"),
+		RedisHostRU:    os.Getenv("REDIS_HOST_RU"),
+		RedisHostEU:    os.Getenv("REDIS_HOST_EU"),
 		RedisPassword:  os.Getenv("REDIS_PASSWORD"),
 		OriginURL:      os.Getenv("ORIGIN_URL"),
 		ArtistURL:      os.Getenv("ARTIST_URL"),
