@@ -33,7 +33,7 @@ func main() {
 
 	// cache
 	cache := cache2.NewCache(res.GetRedis())
-	_ = cache.Flushall(ctx)
+	//_ = cache.Flushall(ctx)
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, cache)
 	enhotter := cache2.NewEnhotter(cardsRepo, selectionRepo, cache, mmr)
 	enhotter.Run(ctx)
