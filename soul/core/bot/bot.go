@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -20,6 +21,7 @@ const (
 type cardRepository interface {
 	GetCard(ctx context.Context, cardID uint) (model.Card, error)
 	GetOriginSelectedCard(ctx context.Context) (model.Card, error)
+	GetOriginSelectedCardByPeriod(ctx context.Context, start time.Time, end time.Time) (model.Card, error)
 }
 
 type memory interface {
@@ -162,10 +164,33 @@ func (t *Bot) giveHandler(ctx context.Context, b *bot.Bot, update *models.Update
 		t.replyError(ctx, update.Message, errors.Errorf("only in private chats available"))
 		return
 	}
-	card, err := t.cardRepository.GetOriginSelectedCard(ctx)
-	if err != nil {
-		log.Error().Err(err).Msgf("[bot_give] failed to get card")
-		t.replyError(ctx, update.Message, errors.Errorf("failed to get card. try once more"))
+
+	var card model.Card
+	var err error
+	args := t.parseArguments(update.Message.Text)
+	if len(args) == 0 {
+		card, err = t.cardRepository.GetOriginSelectedCard(ctx)
+		if err != nil {
+			log.Error().Err(err).Msgf("[bot_give] failed to get card")
+			t.replyError(ctx, update.Message, errors.Errorf("failed to get card. try once more"))
+			return
+		}
+	} else if len(args) == 1 {
+		dur, err := time.ParseDuration(args[0])
+		if err != nil {
+			t.replyError(ctx, update.Message, errors.Errorf("failed to parse duration in string %s", args[0]))
+			return
+		}
+		now := time.Now()
+		start := now.Add(-1 * dur)
+		card, err = t.cardRepository.GetOriginSelectedCardByPeriod(ctx, start, now)
+		if err != nil {
+			log.Error().Err(err).Msgf("[bot_give] failed to get GetOriginSelectedCardByPeriod")
+			t.replyError(ctx, update.Message, errors.Errorf("failed to get card with period. try once more"))
+			return
+		}
+	} else {
+		t.replyError(ctx, update.Message, errors.Errorf("[bot_infinite] too many arguments"))
 		return
 	}
 

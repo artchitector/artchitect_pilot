@@ -59,6 +59,24 @@ func (pr *CardRepository) GetOriginSelectedCard(ctx context.Context) (model.Card
 	return card, nil
 }
 
+func (pr *CardRepository) GetOriginSelectedCardByPeriod(ctx context.Context, start time.Time, end time.Time) (model.Card, error) {
+	var total uint
+	err := pr.db.Select("count(id)").Where("created_at between ? and ?", start, end).Model(&model.Card{}).Scan(&total).Error
+	if err != nil {
+		return model.Card{}, errors.Wrapf(err, "[card_repository] failed to get number of cards")
+	}
+	selection, err := pr.origin.Select(ctx, total)
+	if err != nil {
+		return model.Card{}, errors.Wrapf(err, "[card_repository] failed to get selection from origin")
+	}
+	var card model.Card
+	err = pr.db.Where("created_at between ? and ?").Limit(1).Offset(int(selection)).First(&card).Error
+	if err != nil {
+		return model.Card{}, errors.Wrapf(err, "[card_repository] failed to get card with offset %d", selection)
+	}
+	return card, nil
+}
+
 // TODO deprecated public use, need make internal and remove usage from gifter.
 // use GetOriginSelectedCard instead
 func (pr *CardRepository) GetCardWithOffset(offset uint) (model.Card, error) {
