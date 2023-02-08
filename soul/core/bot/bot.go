@@ -51,7 +51,7 @@ func (t *Bot) Run(ctx context.Context) {
 	} else {
 		// handlers
 		b.RegisterHandler(bot.HandlerTypeMessageText, CommandSendInfinite, bot.MatchTypePrefix, t.infiniteHandler)
-		b.RegisterHandler(bot.HandlerTypeMessageText, CommandGive, bot.MatchTypeExact, t.giveHandler)
+		b.RegisterHandler(bot.HandlerTypeMessageText, CommandGive, bot.MatchTypePrefix, t.giveHandler)
 		// start bot to listen all messages
 		log.Info().Msgf("[bot] starting bot")
 		t.bot = b
