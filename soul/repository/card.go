@@ -70,7 +70,7 @@ func (pr *CardRepository) GetOriginSelectedCardByPeriod(ctx context.Context, sta
 		return model.Card{}, errors.Wrapf(err, "[card_repository] failed to get selection from origin")
 	}
 	var card model.Card
-	err = pr.db.Where("created_at between ? and ?").Limit(1).Offset(int(selection)).First(&card).Error
+	err = pr.db.Where("created_at between ? and ?", start, end).Limit(1).Offset(int(selection)).First(&card).Error
 	if err != nil {
 		return model.Card{}, errors.Wrapf(err, "[card_repository] failed to get card with offset %d", selection)
 	}
