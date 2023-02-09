@@ -1,21 +1,43 @@
+<i18n>
+{
+  "en": {
+    "last_99": "last 99 cards",
+    "loading": "loading",
+    "error": "Error",
+    "not_loaded": "cards not loaded",
+    "connecting": "connecting",
+    "connected": "connected. waiting for event"
+  },
+  "ru": {
+    "last_99": "последние 99 карточек",
+    "loading": "Загрузка",
+    "error": "Ошибка",
+    "not_loaded": "карточки не загрузились",
+    "connecting": "соединение",
+    "connected": "соединение установлено. ожидаю событий",
+    "ws_error": "websocket listening error",
+    "ws_connecting": "websocket connecting"
+  }
+}
+</i18n>
 <template>
   <div>
-    <h3 class="is-size-4 has-text-centered mb-4">last 99 cards</h3>
+    <h3 class="is-size-4 has-text-centered mb-4">{{$t('last_99')}}</h3>
     <div v-if="$fetchState.pending" class="notification has-text-centered">
-      loading...
+      {{$t('loading')}}...
     </div>
     <div v-else-if="$fetchState.error" class="notification is-danger">
-      {{ $fetchState.error.message }}
+      {{$t('error')}} {{ $fetchState.error.message }}
     </div>
     <div v-else-if="!this.cards || !this.cards.length" class="notification is-danger">
-      cards not loaded :(
+      {{$t('not_loaded')}} :(
     </div>
     <div v-else>
       <div v-if="wsStatus.error" class="notification is-warning is-size-7 has-text-centered">
-        websocket listening error: {{wsStatus.error.message}}
+        {{$t('ws_error')}}: {{wsStatus.error.message}}
       </div>
       <div v-else-if="wsStatus.reconnecting" class="notification is-size-7 has-text-centered">
-        websocket connecting {{wsStatus.reconnecting.attempt}}/{{wsStatus.reconnecting.maxAttempts}}
+        {{$t('ws_connecting')}} {{wsStatus.reconnecting.attempt}}/{{wsStatus.reconnecting.maxAttempts}}
       </div>
       <cardlist :cards="this.cards" cards-in-column="3" card-size="m" visible-count="33"/>
     </div>

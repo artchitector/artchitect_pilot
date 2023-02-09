@@ -1,3 +1,23 @@
+<i18n>
+{
+  "en": {
+    "version": "Version",
+    "seed":"Seed",
+    "tags_count": "Tags count",
+    "tags":"Tags",
+    "paint_progress": "Paint progress",
+    "enjoy_progress":"Enjoy progress"
+  },
+  "ru": {
+    "version": "Версия",
+    "seed":"Зерно",
+    "tags_count": "Кол-во тегов",
+    "tags":"Теги",
+    "paint_progress": "Прогресс рисования",
+    "enjoy_progress":"Прогресс наслаждения"
+  }
+}
+</i18n>
 <template>
   <div class="is-flex is-flex-direction-row">
     <viewer ref="viewer"/>
@@ -8,20 +28,20 @@
       </a>
     </div>
     <div class="info-container">
-      <p>Version: {{ state.Version }}</p>
-      <p>Seed: {{ state.Seed }}</p>
+      <p>{{$t('version')}}: {{ state.Version }}</p>
+      <p>{{$t('seed')}}: {{ state.Seed }}</p>
       <p>
-        Tags count:
+        {{$t('tags_count')}}:
         <span v-if="state.TagsCount === 0">-</span>
         <span v-else>{{ state.Tags ? state.Tags.length : 0 }}/{{ state.TagsCount }}</span>
       </p>
       <p class="is-size-7">
-        Tags:
+        {{$t('tags')}}:
         <span v-if="!state.Tags || !state.Tags.length">-</span>
         <span v-else>{{ state.Tags.join(', ') }}</span>
       </p>
       <p>
-        Paint progress:
+        {{$t('paint_progress')}}:
         <span v-if="state.CurrentCardPaintTime === null">
         -
       </span>
@@ -30,7 +50,7 @@
       </span>
       </p>
       <p>
-        Enjoy progress:
+        {{$t('enjoy_progress')}}:
         <span v-if="state.CurrentEnjoyTime === null">
           -
           </span>

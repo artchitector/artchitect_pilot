@@ -58,17 +58,10 @@ export default {
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'i18n_redirected',
-      redirectOn: 'root',  // recommended
+      redirectOn: 'root'  // recommended
     },
     vueI18n: {
-      fallbackLocale: 'en',
-      messages: {
-        en: {
-          lottery_title: 'Artchitect - daily lottery',
-          selection_title: 'Artchitect - selection',
-          pray_title: 'Artchitect - pray to Universe',
-        }
-      }
+      fallbackLocale: 'en'
     }
   }
 }

@@ -5,7 +5,6 @@ import (
 	"github.com/artchitector/artchitect/saver/handler"
 	"github.com/artchitector/artchitect/saver/resources"
 	"github.com/artchitector/artchitect/saver/saver"
-	"github.com/artchitector/artchitect/saver/worker"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -42,10 +41,6 @@ func main() {
 	log.Info().Msg("service gate started")
 	svr := saver.NewSaver(res.GetEnv().CardsPath)
 	uploadHandler := handler.NewUploadHandler(svr)
-	wrk := worker.NewWorker(res.GetDB(), svr)
-	go func() {
-		wrk.Work(ctx)
-	}()
 
 	go func() {
 		r := gin.Default()
