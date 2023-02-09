@@ -1,19 +1,40 @@
+<i18n>
+{
+  "en": {
+    "card": "Card",
+    "loading": "loading...",
+    "error": "error: ",
+    "version": "version",
+    "seed": "Seed",
+    "tags": "tags",
+    "full_size": "view full size"
+  },
+  "ru": {
+    "card": "Карточка",
+    "loading": "загрузка...",
+    "error": "ошибка: ",
+    "version": "версия",
+    "seed": "Зерно",
+    "tags": "теги",
+    "full_size": "смотреть в полном размере"}
+}
+</i18n>
 <template>
   <section>
     <div class="notification is-primary" v-if="$fetchState.pending">
-      loading...
+      {{$t('loading')}}
     </div>
     <div class="notification is-danger" v-if="$fetchState.error">
-      {{ $fetchState.error.message }}
+      {{$t('error')}} {{ $fetchState.error.message }}
     </div>
     <div v-else-if="card">
       <h1 class="is-size-2 has-text-centered">{{ $t('card') }} #{{ card.ID }}</h1>
-      <p><span class="tag is-primary is-light">version {{ card.Version }}</span></p>
+      <p><span class="tag is-primary is-light">{{$t('version')}} {{ card.Version }}</span></p>
       <p>{{ created }}</p>
-      <p>seed = {{ card.Spell.Seed }}</p>
-      <p class="tags">tags = <i>{{ card.Spell.Tags }}</i></p>
+      <p>{{$t('seed')}} = {{ card.Spell.Seed }}</p>
+      <p class="tags">{{$t('tags')}} = <i>{{ card.Spell.Tags }}</i></p>
       <p class="has-text-centered">
-        <a :href="fullSizeUrl" target="_blank" class="is-size-7">view full size</a>
+        <a :href="fullSizeUrl" target="_blank" class="is-size-7">{{$t('full_size')}}</a>
       </p>
       <img :src="`/api/image/f/${card.ID}`"/>
     </div>

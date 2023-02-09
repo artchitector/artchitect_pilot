@@ -1,3 +1,26 @@
+<i18n>
+{
+  "en": {
+    "card": "Card",
+    "error": "Error",
+    "try_later": "Try later, Artchitect is down",
+    "close": "Close",
+    "created": "created",
+    "seed": "seed",
+    "tags": "tags"
+
+  },
+  "ru": {
+    "card": "Карточка",
+    "error": "Ошибка",
+    "try_later": "Попробуйте позже, сейчас Архитектору плохо",
+    "close": "Закрыть",
+    "created": "создано",
+    "seed": "зерно",
+    "tags": "теги"
+  }
+}
+</i18n>
 <template>
   <div v-if="isVisible" class="modal-container">
     <div class="background" @click="close()"></div>
@@ -12,7 +35,7 @@
     </div>
     <div class="header">
       <h1 class="is-size-4" v-if="card">
-        <NuxtLink :to="`/card/${card.ID}`">
+        <NuxtLink :to="localePath(`/card/${card.ID}`)">
           {{ $t('card') }} #{{ card.ID }}
         </NuxtLink>
       </h1>
@@ -24,12 +47,12 @@
       <loader v-if="loading"/>
       <div v-else-if="error">
         <div class="notification is-danger">
-          <p>Ошибка:</p>
+          <p>{{$t('error')}}:</p>
           <p>{{ error }}</p>
-          <p>Попробуйте позже, сейчас Артхитектору плохо</p>
+          <p>{{$t('try_later')}}</p>
         </div>
         <div class="has-text-centered">
-          <button class="button" @click="close()">Закрыть</button>
+          <button class="button" @click="close()">{{$t('close')}}</button>
         </div>
       </div>
       <!-- Main image here-->

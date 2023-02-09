@@ -1,21 +1,39 @@
+<i18n>
+{
+  "en": {
+    "loading": "loading",
+    "error": "error",
+    "ws_error": "websocket listening error",
+    "ws_connecting": "websocket connecting",
+    "only_10": "only last 10 lotteries shows"
+  },
+  "ru": {
+    "loading": "загрузка",
+    "error": "ошибка",
+    "ws_error": "ошибка подключения к websocket",
+    "ws_connecting": "подключение к websocket",
+    "only_10": "только 10 последних лотерей показывается"
+  }
+}
+</i18n>
 <template>
   <div>
     <div class="notification is-primary" v-if="$fetchState.pending">
-      loading...
+      {{$t('loading')}}...
     </div>
     <div class="notification is-danger" v-if="$fetchState.error">
-      {{ $fetchState.error.message }}
+      {{$t('error')}}: {{ $fetchState.error.message }}
     </div>
     <div v-else>
       <div v-if="wsStatus.error" class="notification is-warning is-size-7 has-text-centered">
-        websocket listening error: {{wsStatus.error.message}}
+        {{$t('ws_error')}}: {{wsStatus.error.message}}
       </div>
       <div v-else-if="wsStatus.reconnecting" class="notification is-size-7 has-text-centered">
-        websocket connecting {{wsStatus.reconnecting.attempt}}/{{wsStatus.reconnecting.maxAttempts}}
+        {{$t('ws_connecting')}} {{wsStatus.reconnecting.attempt}}/{{wsStatus.reconnecting.maxAttempts}}
       </div>
       <lottery v-for="lottery in lotteries" v-bind:key="lottery.ID" :lottery="lottery"/>
       <div class="is-size-7 has-text-centered" v-if="lotteries.length >= 10">
-        only last 10 lotteries shows
+        {{$t('only_10')}}
       </div>
     </div>
   </div>

@@ -1,3 +1,21 @@
+<i18n>
+{
+  "en": {
+    "main": "main",
+    "idea": "idea",
+    "lottery": "lottery",
+    "selection": "selection",
+    "pray": "pray"
+  },
+  "ru": {
+    "main": "главная",
+    "idea": "идея",
+    "lottery": "лотерея",
+    "selection": "отборное",
+    "pray": "молитва"
+  }
+}
+</i18n>
 <template>
   <div>
     <div><template v-html="yandexMetrica"></template></div>
@@ -18,10 +36,10 @@
         <span> - </span>
         <NuxtLink :to="localePath('selection')">{{$t('selection')}}</NuxtLink>
         <span> - </span>
-        <NuxtLink to="/pray/create">{{$t('pray')}}</NuxtLink>
-<!--        <span> - </span>-->
-<!--        <NuxtLink :to="switchLocalePath('en')">en</NuxtLink>-->
-<!--        <NuxtLink :to="switchLocalePath('ru')">ru</NuxtLink>-->
+        <NuxtLink :to="localePath('/pray')">{{$t('pray')}}</NuxtLink>
+        <span> - </span>
+        <NuxtLink :to="switchLocalePath('en')">en</NuxtLink>
+        <NuxtLink :to="switchLocalePath('ru')">ru</NuxtLink>
       </div>
     </div>
 

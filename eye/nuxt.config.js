@@ -51,10 +51,15 @@ export default {
 
   i18n: {
     /* module options */
-    locales: ["en"],
-    defaultLocale: 'en',
-    strategy: 'no_prefix',
+    locales: ["en", "ru"],
+    defaultLocale: process.env.DEFAULT_LOCALE,
+    strategy: 'prefix',
     vueI18nLoader: true,
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root',  // recommended
+    },
     vueI18n: {
       fallbackLocale: 'en',
       messages: {

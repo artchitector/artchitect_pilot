@@ -1,23 +1,41 @@
+<i18n>
+{
+  "en": {
+    "heart": "Artchitect's heart",
+    "maintenance": "Artchitect is offline today. Maintenance. No new cards.",
+    "error": "Error",
+    "connecting": "connecting",
+    "connected": "connected. waiting for event"
+  },
+  "ru": {
+    "heart": "Сердце Архитектора",
+    "maintenance": "Artchitect сегодня не работает. Новые карточки не создаются, молитва не работает.",
+    "error": "Ошибка",
+    "connecting": "соединение",
+    "connected": "соединение установлено. ожидаю событий"
+  }
+}
+</i18n>
 <template>
   <section class="heart">
     <div v-if="maintenance" class="notification is-warning">
-      Artchitect is offline today. Maintenance. No new cards.
+      {{$t('maintenance')}}
     </div>
     <template v-else>
-      <h3 class="has-text-centered is-size-4">Artchitect's heart</h3>
+      <h3 class="has-text-centered is-size-4">{{$t('heart')}}</h3>
       <hr class="divider"/>
       <div v-if="status.error" class="notification is-danger has-text-centered">
-        Error: {{ status.error.message }}
+        {{$t('error')}}: {{ status.error.message }}
       </div>
       <div v-else-if="status.reconnecting" class="notification has-text-centered">
         <loader size="s"/>
         <br/>
-        connecting {{ status.reconnecting.attempt }}/{{ status.reconnecting.maxAttempts }}
+        {{$t('connecting')}} {{ status.reconnecting.attempt }}/{{ status.reconnecting.maxAttempts }}
       </div>
       <p v-else-if="!stateChannel" class="notification has-text-centered">
         <loader size="s"/>
         <br/>
-        connected. waiting for event
+        {{$t('connected')}}
       </p>
       <creation v-else-if="stateChannel === 'creation'" :state="state"/>
       <heart-lottery v-else-if="stateChannel === 'lottery'" :state="state"/>
