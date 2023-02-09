@@ -1,3 +1,13 @@
+<i18n>
+{
+  "en": {
+    "title": "Artchitect - digital prayer"
+  },
+  "ru": {
+    "title": "Artchitect - цифровая молитва"
+  }
+}
+</i18n>
 <template>
   <div>
     <section>
@@ -12,7 +22,7 @@ export default {
   components: {Prayer},
   head() {
     return {
-      title: this.$t('pray_title')
+      title: this.$t('title')
     }
   },
 }

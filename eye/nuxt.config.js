@@ -64,44 +64,9 @@ export default {
       fallbackLocale: 'en',
       messages: {
         en: {
-          // page titles
-          index_title: 'Artchitect - creative AI-art temple',
-          idea_title: 'Artchitect - common idea',
           lottery_title: 'Artchitect - daily lottery',
           selection_title: 'Artchitect - selection',
           pray_title: 'Artchitect - pray to Universe',
-
-          // menu
-          main: 'main',
-          lottery: 'lottery',
-          selection: 'selection',
-          pray: 'pray',
-
-          launched: ' launched 15th Jan 2023!',
-          to_pray: 'Go to pray',
-          loading: 'loading',
-          last: 'last',
-          cards: 'cards',
-          page: 'page',
-          lottery_description: 'Every day God chooses 10-100 cards out of ~1800 created in a day. He use lottery to chose.',
-          selection_description: 'Every day God chooses 10-100 cards out of ~1800 created in a day. They go to selection.',
-          card: 'Card',
-          textarea_placeholder: 'Type your pray message. Write carefully. Between you and God. Secure, data burns and not being send anywhere.',
-          pray_place: 'Pray place',
-          wish: 'Wish one personal card as God\'s reply',
-          amen: 'Amen! (clear text)',
-          good_time_for_pray: 'Your answer loading. Good time for pray!',
-          attempt: 'Attempt',
-          usually_time: 'Usually that takes 2 minutes, but if artchitect is very loaded now, you need try once later.',
-          something_wrong: 'Error',
-          answer: 'Answer',
-          to_cards: 'To cards',
-          email: 'email',
-
-          created: 'created',
-          seed: 'seed',
-          tags: 'tags',
-          idea: 'idea'
         }
       }
     }

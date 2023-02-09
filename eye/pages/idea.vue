@@ -1,3 +1,13 @@
+<i18n>
+{
+  "en": {
+    "title": "Artchitect - idea"
+  },
+  "ru": {
+    "title": "Artchitect - идея"
+  }
+}
+</i18n>
 <template>
   <idea-frame/>
 </template>
@@ -5,7 +15,7 @@
 export default {
   head() {
     return {
-      title: this.$t('idea_title')
+      title: this.$t('title')
     }
   },
   computed: {

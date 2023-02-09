@@ -1,3 +1,13 @@
+<i18n>
+{
+  "en": {
+    "title": "Artchitect - creative AI-art temple"
+  },
+  "ru": {
+    "title": "Artchitect - цифровой храм AI-искусств"
+  }
+}
+</i18n>
 <template>
   <div>
     <short/>
@@ -19,7 +29,7 @@ export default {
   layout: 'artchitect',
   head() {
     return {
-      title: this.$t('index_title')
+      title: this.$t('title')
     }
   }
 }

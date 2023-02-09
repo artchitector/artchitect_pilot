@@ -1,6 +1,7 @@
 <i18n>
 {
   "en": {
+    "title": "Artchitect - selection",
     "selection": "selection",
     "loading": "loading",
     "total": "total",
@@ -9,6 +10,7 @@
     "selection_description": "Every day God chooses 10-100 cards out of ~1400 created in a day. They go to selection."
   },
   "ru": {
+    "title": "Artchitect - отборное",
     "selection": "отборное",
     "loading": "загрузка",
     "total": "всего",
@@ -53,7 +55,7 @@ export default {
   components: {Cardlist, Viewer},
   head() {
     return {
-      title: this.$t('selection_title')
+      title: this.$t('title')
     }
   },
   data() {

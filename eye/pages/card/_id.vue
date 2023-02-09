@@ -1,6 +1,7 @@
 <i18n>
 {
   "en": {
+    "title": "Artchitect - card",
     "card": "Card",
     "loading": "loading...",
     "error": "error: ",
@@ -10,6 +11,7 @@
     "full_size": "view full size"
   },
   "ru": {
+    "title": "Artchitect - карточка",
     "card": "Карточка",
     "loading": "загрузка...",
     "error": "ошибка: ",
@@ -47,7 +49,7 @@ import moment from "moment"
 export default {
   head() {
     return {
-      title: `Artchitect - card #${this.$route.params.id}`
+      title: this.$t('title')+ ` #${this.$route.params.id}`
     }
   },
   data() {

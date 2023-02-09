@@ -1,3 +1,13 @@
+<i18n>
+{
+  "en": {
+    "title": "Artchitect - pray answer"
+  },
+  "ru": {
+    "title": "Artchitect - ответ на молитву"
+  }
+}
+</i18n>
 <template>
   <section>
     <answer v-if="this.$route.params.id" :id="this.$route.params.id"/>
@@ -13,9 +23,7 @@ export default {
   components: {Answer},
   head() {
     return {
-      title: this.$route.params.id ?
-        `Artchitect - pray answer #${this.$route.params.id}` :
-        'Artchitect - pray to Universe'
+      title: this.$t('title') + ` #${this.$route.params.id}`
     }
   },
   mounted() {
