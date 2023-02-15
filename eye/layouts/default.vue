@@ -5,14 +5,16 @@
     "idea": "idea",
     "lottery": "lottery",
     "selection": "selection",
-    "pray": "pray"
+    "pray": "pray",
+    "liked": "liked"
   },
   "ru": {
     "main": "главная",
     "idea": "идея",
     "lottery": "лотерея",
     "selection": "отборное",
-    "pray": "молитва"
+    "pray": "молитва",
+    "liked": "нравится"
   }
 }
 </i18n>
@@ -38,6 +40,10 @@
         <span> - </span>
         <NuxtLink :to="localePath('/pray')">{{$t('pray')}}</NuxtLink>
         <span> - </span>
+        <template v-if="loggedIn">
+          <NuxtLink :to="localePath('/liked')">{{$t('liked')}}</NuxtLink>
+          <span> - </span>
+        </template>
         <NuxtLink :to="switchLocalePath('en')">en</NuxtLink>
         <NuxtLink :to="switchLocalePath('ru')">ru</NuxtLink>
       </div>
@@ -67,10 +73,14 @@
   </div>
 </template>
 <script>
+import loggedIn from '@/utils/auth'
 export default {
   computed: {
     avatar() {
       return process.client ? localStorage.getItem("photo_url") : null;
+    },
+    loggedIn() {
+      return loggedIn()
     },
     yandexMetrica() {
       return `

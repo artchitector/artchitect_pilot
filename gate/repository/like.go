@@ -34,7 +34,10 @@ func (lr *LikeRepository) Like(ctx context.Context, userID uint, cardID uint) (m
 
 func (lr *LikeRepository) IsLiked(ctx context.Context, userID uint, cardID uint) (bool, error) {
 	var like model.Like
-	err := lr.db.Where("card_id = ?", cardID).Where("user_id = ?", userID).Limit(1).First(&like).Error
+	err := lr.db.Where("card_id = ?", cardID).
+		Where("user_id = ?", userID).
+		Limit(1).
+		First(&like).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return false, nil
 	} else if err != nil {
@@ -42,4 +45,15 @@ func (lr *LikeRepository) IsLiked(ctx context.Context, userID uint, cardID uint)
 	} else {
 		return like.Liked, nil
 	}
+}
+
+func (lr *LikeRepository) GetLikes(ctx context.Context, userID uint) ([]uint, error) {
+	var ids []uint
+	err := lr.db.Select("card_id").
+		Model(&model.Like{}).
+		Where("user_id = ?", userID).
+		Where("liked = true").
+		Order("created_at DESC").
+		Scan(&ids).Error
+	return ids, err
 }

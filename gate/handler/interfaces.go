@@ -42,4 +42,5 @@ type memory interface {
 type likeRepository interface {
 	Like(ctx context.Context, userID uint, cardID uint) (model.Like, error)
 	IsLiked(ctx context.Context, userID uint, cardID uint) (bool, error)
+	GetLikes(ctx context.Context, userID uint) ([]uint, error)
 }

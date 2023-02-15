@@ -36,3 +36,17 @@ func (lh *LikeHandler) Handle(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, like)
 }
+
+func (lh *LikeHandler) HandleList(c *gin.Context) {
+	userID := lh.authService.getUserID(c)
+	if userID == 0 {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	likes, err := lh.likeRepository.GetLikes(c, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, likes)
+}

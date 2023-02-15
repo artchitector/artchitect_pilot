@@ -87,6 +87,7 @@ func main() {
 		r.POST("/pray/answer", prayHandler.HandleAnswer)
 		r.GET("/login", lh.Handle)
 		r.POST("/like", llh.Handle)
+		r.GET("/liked", llh.HandleList)
 
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()
