@@ -47,7 +47,7 @@ func main() {
 	cardHandler := handler.NewCardHandler(cardsRepo, cache, mmr)
 	selectionHander := handler.NewSelectionHandler(selectionRepo)
 	prayHandler := handler.NewPrayHandler(prayRepo)
-	lh := handler.NewLoginHandler(res.GetEnv().TelegramABotToken)
+	lh := handler.NewLoginHandler(res.GetEnv().TelegramABotToken, res.GetEnv().JWTSecret, res.GetEnv().ArtchitectHost)
 
 	// listeners with websocket handler
 	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo, mmr)

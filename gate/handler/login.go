@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"net/http"
@@ -15,11 +16,13 @@ import (
 )
 
 type LoginHandler struct {
-	botToken string
+	botToken       string
+	secretKey      []byte
+	artchitectHost string
 }
 
-func NewLoginHandler(botToken string) *LoginHandler {
-	return &LoginHandler{botToken}
+func NewLoginHandler(botToken string, secretKey string, artchitectHost string) *LoginHandler {
+	return &LoginHandler{botToken, []byte(secretKey), artchitectHost}
 }
 
 func (lh *LoginHandler) Handle(c *gin.Context) {
@@ -29,7 +32,19 @@ func (lh *LoginHandler) Handle(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "failed telegram check. you're not from telegram"})
 		return
 	}
-	c.JSON(http.StatusOK, "you're from telegram")
+
+	j, err := lh.generateJWT(c.Request.URL.Query())
+	if err != nil {
+		log.Error().Err(err).Msgf("[login_handler] failed to generate jwt")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "jwt not generated"})
+		return
+	}
+
+	params := url.Values{}
+	params.Add("token", j)
+	params.Add("username", c.Request.URL.Query().Get("username"))
+	params.Add("photo_url", c.Request.URL.Query().Get("photo_url"))
+	c.Redirect(http.StatusFound, fmt.Sprintf("%s/login?%s", lh.artchitectHost, params.Encode()))
 }
 
 func (lh *LoginHandler) checkFromTelegram(values url.Values) error {
@@ -77,4 +92,21 @@ func makeHmacSha256(data []byte, key []byte) []byte {
 	sig := hmac.New(sha256.New, key)
 	sig.Write(data)
 	return sig.Sum(nil)
+}
+
+func (lh *LoginHandler) generateJWT(v url.Values) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = v.Get("id")
+	claims["first_name"] = v.Get("first_name")
+	claims["username"] = v.Get("username")
+	claims["photo_url"] = v.Get("photo_url")
+	claims["auth_date"] = v.Get("auth_date")
+
+	log.Info().Msgf("%s", lh.secretKey)
+	tokenStr, err := token.SignedString(lh.secretKey)
+	if err != nil {
+		return "", errors.Wrapf(err, "[login_handler] failed to sign JWT")
+	}
+	return tokenStr, nil
 }

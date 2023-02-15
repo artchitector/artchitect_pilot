@@ -13,6 +13,8 @@ type Env struct {
 	RedisPassword     string
 	MemoryHost        string
 	TelegramABotToken string
+	JWTSecret         string
+	ArtchitectHost    string
 }
 
 func initEnv() *Env {
@@ -28,5 +30,7 @@ func initEnv() *Env {
 		RedisPassword:     os.Getenv("REDIS_PASSWORD"),
 		MemoryHost:        os.Getenv("MEMORY_HOST"),
 		TelegramABotToken: os.Getenv("TELEGRAM_ABOT_TOKEN"),
+		JWTSecret:         os.Getenv("JWT_SECRET"),
+		ArtchitectHost:    os.Getenv("ARTCHITECT_HOST"),
 	}
 }

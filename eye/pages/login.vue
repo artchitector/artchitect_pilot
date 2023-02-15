@@ -13,7 +13,25 @@
 <template>
   <section class="content">
     <h3 class="is-size-5">{{ $t('title') }}</h3>
-    <script async src="https://telegram.org/js/telegram-widget.js?21" data-telegram-login="ArtchitectBot" data-size="large" data-auth-url="https://artchitect.space/api/login" data-request-access="write"></script>
+    <div v-if="loading" class="has-text-centered">
+      <loader/>
+      <br/>
+    </div>
+    <script v-else-if="!isServer && !isLoggedIn" async src="https://telegram.org/js/telegram-widget.js?21"
+            data-telegram-login="ArtchitectBot" data-size="large" data-auth-url="https://artchitect.space/api/login"
+            data-request-access="write"></script>
+    <div v-else-if="isLoggedIn">
+      <figure class="image is-128x128">
+        <img class="is-rounded" :src="photoUrl"/>
+      </figure>
+      <p>Вы вошли как @{{ username }}</p>
+      <button class="button" @click="logout()">Выйти</button>
+    </div>
+    <div v-else>
+      <div class="has-text-centered">
+        <loader/>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -25,19 +43,45 @@ export default {
       title: this.$t('title')
     }
   },
+  computed: {
+    isServer() {
+      return !process.client
+    },
+    isLoggedIn() {
+      return process.client ? !!localStorage.getItem("token") : false
+    },
+    username() {
+      return process.client ? localStorage.getItem("username") : null
+    },
+    photoUrl() {
+      return process.client ? localStorage.getItem("photo_url") : null
+    }
+  },
   data() {
     return {
-      code: ""
+      loading: false
+    }
+  },
+  mounted() {
+    if (this.$route.query.token) {
+      this.loading = true
+      localStorage.setItem("token", this.$route.query.token)
+      localStorage.setItem("username", this.$route.query.username)
+      localStorage.setItem("photo_url", this.$route.query.photo_url)
+      if (process.client) {
+        window.location.href = this.localePath(`/login`)
+      }
     }
   },
   methods: {
-    submit() {
-      alert(`Submited ${this.code}`)
+    logout() {
+      localStorage.removeItem("token")
+      localStorage.removeItem("username")
+      localStorage.removeItem("photo_url")
+      if (process.client) {
+        window.location.href = this.localePath(`/login`)
+      }
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>
