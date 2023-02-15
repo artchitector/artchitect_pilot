@@ -106,14 +106,14 @@ func main() {
 	)
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
 	artchitectBot := bot.NewBot(
-		res.GetEnv().TelegramBotToken,
+		res.GetEnv().Telegram10BotToken,
 		cardsRepo,
 		mmr,
-		res.GetEnv().ArtchitectorChatID,
-		res.GetEnv().TenMinChat,
-		res.GetEnv().InfiniteChat,
+		res.GetEnv().ChatIDArtchitector,
+		res.GetEnv().ChatID10,
+		res.GetEnv().ChatIDInfinite,
 	)
-	if res.GetEnv().TelegramBotEnabled {
+	if res.GetEnv().Telegram10BotEnabled {
 		go artchitectBot.Run(ctx)
 	}
 

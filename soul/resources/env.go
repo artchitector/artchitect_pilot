@@ -9,13 +9,14 @@ import (
 
 type Env struct {
 	// enabled internal services
-	LotteryEnabled      bool
-	CardCreationEnabled bool
-	MercifulEnabled     bool
-	GifterActive        bool
-	UseFakeArtist       bool
-	TelegramBotEnabled  bool
-	StorageEnabled      bool
+	LotteryEnabled       bool
+	CardCreationEnabled  bool
+	MercifulEnabled      bool
+	GifterActive         bool
+	UseFakeArtist        bool
+	Telegram10BotEnabled bool
+	TelegramABotEnabled  bool
+	StorageEnabled       bool
 
 	// external resources
 	DbDSN          string
@@ -36,11 +37,11 @@ type Env struct {
 	PrehotDelay   uint
 
 	// telegram constants
-
-	TelegramBotToken   string
-	TenMinChat         string
-	InfiniteChat       string
-	ArtchitectorChatID int64
+	Telegram10BotToken string // 10bot (is for maintenance and secure use to control artchitect.space). Secured with single account usage.
+	TelegramABotToken  string // ABot (is for everyone: login, prayer etc)
+	ChatID10           string
+	ChatIDInfinite     string
+	ChatIDArtchitector int64
 }
 
 func initEnv() *Env {
@@ -59,7 +60,7 @@ func initEnv() *Env {
 	if err != nil {
 		log.Fatal().Err(err)
 	}
-	artchitectorChatStr := os.Getenv("ARTCHITECTOR_CHAT_ID")
+	artchitectorChatStr := os.Getenv("CHAT_ID_ARTCHITECTOR")
 	artchitectorChatID, err := strconv.ParseInt(artchitectorChatStr, 10, 64)
 
 	if err != nil {
@@ -67,13 +68,14 @@ func initEnv() *Env {
 	}
 
 	return &Env{
-		LotteryEnabled:      os.Getenv("LOTTERY_ENABLED") == "true",
-		CardCreationEnabled: os.Getenv("CARDS_CREATION_ENABLED") == "true",
-		MercifulEnabled:     os.Getenv("MERCIFUL_ENABLED") == "true",
-		GifterActive:        os.Getenv("GIFTER_ACTIVE") == "true",
-		UseFakeArtist:       os.Getenv("USE_FAKE_ARTIST") == "true",
-		TelegramBotEnabled:  os.Getenv("TELEGRAM_BOT_ENABLE") == "true",
-		StorageEnabled:      os.Getenv("STORAGE_ENABLED") == "true",
+		LotteryEnabled:       os.Getenv("LOTTERY_ENABLED") == "true",
+		CardCreationEnabled:  os.Getenv("CARDS_CREATION_ENABLED") == "true",
+		MercifulEnabled:      os.Getenv("MERCIFUL_ENABLED") == "true",
+		GifterActive:         os.Getenv("GIFTER_ACTIVE") == "true",
+		UseFakeArtist:        os.Getenv("USE_FAKE_ARTIST") == "true",
+		Telegram10BotEnabled: os.Getenv("TELEGRAM_10BOT_ENABLE") == "true",
+		TelegramABotEnabled:  os.Getenv("TELEGRAM_ABOT_ENABLE") == "true",
+		StorageEnabled:       os.Getenv("STORAGE_ENABLED") == "true",
 
 		DbDSN:          os.Getenv("DB_DSN"),
 		RedisHostRU:    os.Getenv("REDIS_HOST_RU"),
@@ -91,9 +93,10 @@ func initEnv() *Env {
 		CardTotalTime: uint(cardTotalTime),
 		PrehotDelay:   uint(prehotDelay),
 
-		TelegramBotToken:   os.Getenv("TELEGRAM_BOT_TOKEN"),
-		TenMinChat:         os.Getenv("TEN_MIN_CHAT"),
-		InfiniteChat:       os.Getenv("INFINITE_CHAT"),
-		ArtchitectorChatID: artchitectorChatID,
+		Telegram10BotToken: os.Getenv("TELEGRAM_10BOT_TOKEN"),
+		TelegramABotToken:  os.Getenv("TELEGRAM_ABOT_TOKEN"),
+		ChatID10:           os.Getenv("CHAT_ID_10MIN"),
+		ChatIDInfinite:     os.Getenv("CHAT_ID_INFINITE"),
+		ChatIDArtchitector: artchitectorChatID,
 	}
 }
