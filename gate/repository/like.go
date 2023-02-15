@@ -53,7 +53,7 @@ func (lr *LikeRepository) GetLikes(ctx context.Context, userID uint) ([]uint, er
 		Model(&model.Like{}).
 		Where("user_id = ?", userID).
 		Where("liked = true").
-		Order("created_at DESC").
+		Order("updated_at DESC").
 		Scan(&ids).Error
 	return ids, err
 }

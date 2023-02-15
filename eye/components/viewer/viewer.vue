@@ -180,11 +180,11 @@ export default {
         let like = await this.$axios.$post("/like", {
           card_id: this.card_id,
         })
+        this.$emit('liked', like)
         this.liked = {
           id: like.ID,
           liked: like.Liked
         };
-        console.log(this.liked)
       } catch (e) {
         console.error(e)
         this.liked = {

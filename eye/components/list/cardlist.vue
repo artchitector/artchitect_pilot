@@ -1,6 +1,6 @@
 <template>
   <div>
-    <viewer ref="viewer"/>
+    <viewer ref="viewer" @liked="onLiked"/>
     <div class="columns" v-for="line in lines">
       <div class="column" v-for="card in line">
         <card-complex v-if="isComplex" :card="card" @select="select(card.ID)"/>
@@ -77,6 +77,9 @@ export default {
     },
     showMore() {
       this.currentVisible += parseInt(this.visibleCount)
+    },
+    onLiked(data) {
+      this.$emit("liked", data)
     }
   }
 }
