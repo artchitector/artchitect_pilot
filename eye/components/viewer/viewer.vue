@@ -33,6 +33,16 @@
     <div class="control-next" v-if="hasNext">
       <a href="#" @click.prevent="next()">></a>
     </div>
+    <div class="control-like">
+      <font-awesome-icon v-if="liked && liked.error"
+                         icon="fa-solid fa-triangle-exclamation"
+                         :title="liked.error.message"/>
+      <a v-else href="#" @click.prevent="like()">
+        <font-awesome-icon v-if="!liked || !liked.liked" icon="fa-solid fa-heart" class="has-color-base"/>
+        <font-awesome-icon v-else icon="fa-solid fa-heart" class="has-text-danger"/>
+      </a>
+
+    </div>
     <div class="header">
       <h1 class="is-size-4" v-if="card">
         <NuxtLink :to="localePath(`/card/${card.ID}`)">
@@ -83,6 +93,7 @@ export default {
       index: null, // current card index in list
       card: null, // current loaded card
       error: null,
+      liked: null, // {liked: false/true, error: null}
     }
   },
   computed: {
@@ -95,6 +106,7 @@ export default {
   },
   methods: {
     show (list, card_id) {
+      this.liked = null
       this.isVisible = true
       this.list = list
       this.card_id = card_id
@@ -109,6 +121,11 @@ export default {
       this.loading = true
       try {
         this.card = await this.$axios.$get(`/card/${this.card_id}`)
+        if (this.card.Liked) {
+          this.liked = {
+            liked: true,
+          }
+        }
       } catch (e) {
         this.error = e.message
       } finally {
@@ -146,13 +163,33 @@ export default {
         return
       }
       this.setIndex(this.index - 1)
+      this.liked = null
     },
     next () {
       if (!this.hasNext) {
         return
       }
       this.setIndex(this.index + 1)
+      this.liked = null
     },
+    async like() {
+      try {
+        let like = await this.$axios.$post("/like", {
+          card_id: this.card_id,
+        })
+        this.liked = {
+          id: like.ID,
+          liked: like.Liked
+        };
+        console.log(this.liked)
+      } catch (e) {
+        console.error(e)
+        this.liked = {
+          error: e
+        };
+      }
+
+    }
   }
 }
 </script>
@@ -195,6 +232,16 @@ export default {
     font-size: 50px;
     z-index: 3;
     font-weight: bolder;
+  }
+  .control-like {
+    position: fixed;
+    left: 50%;
+    bottom: 20%;
+    z-index: 3;
+    margin-left: -20px;
+    font-size: 48px;
+    opacity: 70%;
+    filter: drop-shadow(0px 0px 8px rgba(255, 0, 0, 0.6));
   }
   .control-close {
     position: fixed;

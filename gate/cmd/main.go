@@ -30,6 +30,7 @@ func main() {
 	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
 	prayRepo := repository.NewPrayRepository(res.GetDB())
 	selectionRepo := repository.NewSelectionRepository(res.GetDB())
+	likeRepo := repository.NewLikeRepository(res.GetDB())
 
 	// cache
 	cache := cache2.NewCache(res.GetRedis())
@@ -44,10 +45,12 @@ func main() {
 		log.With().Str("service", "lottery_handler").Logger(),
 		lotteryRepo,
 	)
-	cardHandler := handler.NewCardHandler(cardsRepo, cache, mmr)
+	authS := handler.NewAuthService(res.GetEnv().JWTSecret)
+	cardHandler := handler.NewCardHandler(cardsRepo, cache, mmr, likeRepo, authS)
 	selectionHander := handler.NewSelectionHandler(selectionRepo)
 	prayHandler := handler.NewPrayHandler(prayRepo)
 	lh := handler.NewLoginHandler(res.GetEnv().TelegramABotToken, res.GetEnv().JWTSecret, res.GetEnv().ArtchitectHost)
+	llh := handler.NewLikeHandler(likeRepo, authS)
 
 	// listeners with websocket handler
 	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo, mmr)
@@ -83,6 +86,7 @@ func main() {
 		r.POST("/pray", prayHandler.Handle)
 		r.POST("/pray/answer", prayHandler.HandleAnswer)
 		r.GET("/login", lh.Handle)
+		r.POST("/like", llh.Handle)
 
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()
