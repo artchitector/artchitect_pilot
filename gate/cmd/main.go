@@ -82,11 +82,11 @@ func main() {
 		})
 		r.POST("/pray", prayHandler.Handle)
 		r.POST("/pray/answer", prayHandler.HandleAnswer)
+		r.GET("/login", lh.Handle)
+
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()
 		}
-
-		r.POST("/login", lh.Handle)
 	}()
 
 	<-ctx.Done()

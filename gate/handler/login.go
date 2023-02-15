@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -13,5 +14,6 @@ func NewLoginHandler() *LoginHandler {
 }
 
 func (lh *LoginHandler) Handle(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"token": ""})
+	log.Info().Msgf("query: %+v", c.Request.URL.Query())
+	c.JSON(http.StatusOK, "ok")
 }
