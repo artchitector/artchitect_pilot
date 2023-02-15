@@ -7,11 +7,12 @@ import (
 )
 
 type Env struct {
-	DbDSN         string
-	HttpPort      string
-	RedisHost     string
-	RedisPassword string
-	MemoryHost    string
+	DbDSN             string
+	HttpPort          string
+	RedisHost         string
+	RedisPassword     string
+	MemoryHost        string
+	TelegramABotToken string
 }
 
 func initEnv() *Env {
@@ -21,10 +22,11 @@ func initEnv() *Env {
 	}
 
 	return &Env{
-		DbDSN:         os.Getenv("DB_DSN"),
-		HttpPort:      os.Getenv("HTTP_PORT"),
-		RedisHost:     os.Getenv("REDIS_HOST"),
-		RedisPassword: os.Getenv("REDIS_PASSWORD"),
-		MemoryHost:    os.Getenv("MEMORY_HOST"),
+		DbDSN:             os.Getenv("DB_DSN"),
+		HttpPort:          os.Getenv("HTTP_PORT"),
+		RedisHost:         os.Getenv("REDIS_HOST"),
+		RedisPassword:     os.Getenv("REDIS_PASSWORD"),
+		MemoryHost:        os.Getenv("MEMORY_HOST"),
+		TelegramABotToken: os.Getenv("TELEGRAM_ABOT_TOKEN"),
 	}
 }
