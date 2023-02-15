@@ -33,7 +33,7 @@
     <div class="control-next" v-if="hasNext">
       <a href="#" @click.prevent="next()">></a>
     </div>
-    <div class="control-like">
+    <div v-if="loggedIn" class="control-like">
       <font-awesome-icon v-if="liked && liked.error"
                          icon="fa-solid fa-triangle-exclamation"
                          :title="liked.error.message"/>
@@ -102,6 +102,9 @@ export default {
     },
     hasNext () {
       return this.list.length > 1 && this.index < this.list.length - 1
+    },
+    loggedIn() {
+      return !!localStorage.getItem("token")
     }
   },
   methods: {
@@ -240,7 +243,7 @@ export default {
     z-index: 3;
     margin-left: -20px;
     font-size: 48px;
-    opacity: 70%;
+    opacity: 0.7;
     filter: drop-shadow(0px 0px 8px rgba(255, 0, 0, 0.6));
   }
   .control-close {
