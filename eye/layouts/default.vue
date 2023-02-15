@@ -40,8 +40,14 @@
         <span> - </span>
         <NuxtLink :to="switchLocalePath('en')">en</NuxtLink>
         <NuxtLink :to="switchLocalePath('ru')">ru</NuxtLink>
-        <span> - </span>
-        <NuxtLink :to="localePath('login')">🔑</NuxtLink>
+      </div>
+      <div class="security-block">
+        <NuxtLink :to="localePath('login')">
+          <figure v-if="avatar" class="image is-32x32">
+            <img :src="avatar" class="is-rounded"/>
+          </figure>
+          <span v-else>🔑</span>
+        </NuxtLink>
       </div>
     </div>
 
@@ -63,6 +69,9 @@
 <script>
 export default {
   computed: {
+    avatar() {
+      return process.client ? localStorage.getItem("photo_url") : null;
+    },
     yandexMetrica() {
       return `
       <!-- Yandex.Metrika counter -->
@@ -89,6 +98,7 @@ export default {
 <style lang="scss">
 .is-header {
   background-color: #2d2d2d;
+  position: relative;
 
   h1 {
     color: #d4d1c3;
@@ -98,5 +108,15 @@ export default {
 footer.footer {
   background-color: #2d2d2d;
   color: hsl(0, 0%, 96%);
+}
+
+.security-block {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  img {
+    box-shadow: 0px 0px 5px #d4d1c3;
+  }
 }
 </style>
