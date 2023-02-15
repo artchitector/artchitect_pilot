@@ -40,6 +40,8 @@
         <span> - </span>
         <NuxtLink :to="switchLocalePath('en')">en</NuxtLink>
         <NuxtLink :to="switchLocalePath('ru')">ru</NuxtLink>
+        <span> - </span>
+        <NuxtLink :to="localePath('login')">🔑</NuxtLink>
       </div>
     </div>
 

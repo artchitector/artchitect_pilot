@@ -47,6 +47,7 @@ func main() {
 	cardHandler := handler.NewCardHandler(cardsRepo, cache, mmr)
 	selectionHander := handler.NewSelectionHandler(selectionRepo)
 	prayHandler := handler.NewPrayHandler(prayRepo)
+	lh := handler.NewLoginHandler()
 
 	// listeners with websocket handler
 	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo, mmr)
@@ -63,8 +64,7 @@ func main() {
 	go func() {
 		r := gin.Default()
 		r.Use(cors.New(cors.Config{
-			AllowAllOrigins: true,
-			//AllowOrigins:           nil,
+			AllowOrigins: []string{"http://localhost", "https://artchitect.space", "https://ru.artchitect.space", "https://eu.artchitect.space"},
 		}))
 		if err := r.SetTrustedProxies([]string{"127.0.0.1"}); err != nil {
 			log.Fatal().Err(err).Send()
@@ -85,6 +85,8 @@ func main() {
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()
 		}
+
+		r.POST("/login", lh.Handle)
 	}()
 
 	<-ctx.Done()
