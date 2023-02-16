@@ -107,7 +107,7 @@ func (h *UploadHandler) HandleHundred(c *gin.Context) {
 		c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	if err := h.saver.SaveImage(uint(rank), data); err != nil {
+	if err := h.saver.SaveHundredImage(uint(rank), uint(hundred), data); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 	}
 
