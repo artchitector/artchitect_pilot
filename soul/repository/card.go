@@ -139,3 +139,9 @@ func (pr *CardRepository) GetCard(ctx context.Context, ID uint) (model.Card, err
 		return card, nil
 	}
 }
+
+func (pr *CardRepository) GetMaxCardID(ctx context.Context) (uint, error) {
+	var id uint
+	err := pr.db.Select("max(id)").Model(&model.Card{}).Scan(&id).Error
+	return id, err
+}

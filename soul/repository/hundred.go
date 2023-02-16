@@ -30,8 +30,8 @@ func (hr *HundredRepository) SaveHundred(rank uint, hundred uint) (model.Hundred
 	return h, err
 }
 
-func (hr *HundredRepository) GetLastHundred() (model.Hundred, error) {
-	var hundred model.Hundred
-	err := hr.db.Order("id desc").First(&hundred).Error
-	return hundred, err
+func (hr *HundredRepository) GetHundred(rank uint, hundred uint) (model.Hundred, error) {
+	var h model.Hundred
+	err := hr.db.Where("rank = ?", rank).Where("hundred = ?", hundred).First(&hundred).Error
+	return h, err
 }
