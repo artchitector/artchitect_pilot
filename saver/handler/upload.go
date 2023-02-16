@@ -56,10 +56,12 @@ func (h *UploadHandler) Handle(c *gin.Context) {
 	data, err := io.ReadAll(f)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	if err := h.saver.SaveImage(uint(cardID), data); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
@@ -105,10 +107,12 @@ func (h *UploadHandler) HandleHundred(c *gin.Context) {
 	data, err := io.ReadAll(f)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	if err := h.saver.SaveHundredImage(uint(rank), uint(hundred), data); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
