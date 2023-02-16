@@ -56,6 +56,7 @@ func main() {
 	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
 	prayRepo := repository.NewPrayRepository(res.GetDB())
 	selectionRepo := repository.NewSelectionRepository(res.GetDB())
+	hundRepo := repository.NewHundredRepository(res.GetDB())
 
 	// notifier
 	notifier := notifier2.NewNotifier(res.GetRedises())
@@ -86,7 +87,7 @@ func main() {
 
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
 
-	cmbntr := combinator.NewCombinator(cardsRepo, mmr, sav)
+	cmbntr := combinator.NewCombinator(cardsRepo, mmr, sav, hundRepo)
 	creator := creator2.NewCreator(
 		artist,
 		speller,

@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	Width  = 3
+	Width  = 4
 	Height = 4
 )
 
@@ -29,17 +29,22 @@ type saver interface {
 	SaveHundred(rank uint, hundred uint, imgFile []byte) error
 }
 
+type hundredRepository interface {
+	SaveHundred(rank uint, hundred uint) (model.Hundred, error)
+}
+
 type Combinator struct {
-	cardRepository cardRepository
-	memory         memory
-	saver          saver
+	cardRepository    cardRepository
+	memory            memory
+	saver             saver
+	hundredRepository hundredRepository
 }
 
-func NewCombinator(cardRepository cardRepository, memory memory, saver saver) *Combinator {
-	return &Combinator{cardRepository, memory, saver}
+func NewCombinator(cardRepository cardRepository, memory memory, saver saver, hundredRepository hundredRepository) *Combinator {
+	return &Combinator{cardRepository, memory, saver, hundredRepository}
 }
 
-// CombineHundred - combines image matrix from all hundred (take 12 any images and make collage)
+// CombineHundred - combines image matrix from all hundred (take 16 any images and make collage)
 func (c *Combinator) CombineHundred(ctx context.Context, rank uint, hundred uint) error {
 	var imgs []image.Image
 	totalImages := Width * Height
@@ -48,6 +53,7 @@ func (c *Combinator) CombineHundred(ctx context.Context, rank uint, hundred uint
 		if err != nil {
 			return errors.Wrapf(err, "[combinator] failed to get card from r:%d h:%d", rank, hundred)
 		}
+		log.Info().Msgf("[combinator] selected card %d for r:%d h:%d", cardID, rank, hundred)
 		imageFile, err := c.memory.DownloadImage(ctx, cardID, model.SizeS)
 		if err != nil {
 			return errors.Wrapf(err, "[combinator] failed to get image %d %s", cardID, model.SizeM)
@@ -70,7 +76,15 @@ func (c *Combinator) CombineHundred(ctx context.Context, rank uint, hundred uint
 		return errors.Wrapf(err, "failed to encode total jpeg image r:%d h:%h")
 	}
 	err = c.saver.SaveHundred(rank, hundred, buf.Bytes())
-	return errors.Wrapf(err, "[combinator] failed to combine total card")
+	if err != nil {
+		return errors.Wrapf(err, "[combinator] failed to combine total card")
+	}
+	h, err := c.hundredRepository.SaveHundred(rank, hundred)
+	if err != nil {
+		return errors.Wrapf(err, "[combinator] failed to save hundred r:%d h:%d", rank, hundred)
+	}
+	log.Info().Msgf("[combinator] Saved hundred r:%d h:%d id=%d", rank, hundred, h.ID)
+	return nil
 }
 
 func (c *Combinator) combineTotal(imgs []image.Image) image.Image {
@@ -79,8 +93,9 @@ func (c *Combinator) combineTotal(imgs []image.Image) image.Image {
 	for y := 0; y < Height; y++ {
 		for x := 0; x < Width; x++ {
 			idx := y*Width + x
-			draw.Draw(total, imgs[idx].Bounds(), imgs[idx], image.Point{x * imgs[idx].Bounds().Dx(), y * imgs[idx].Bounds().Dy()}, draw.Over)
-			log.Info().Msgf("[combinator] draw over x:%d y:%d idx:%d", x, y, idx)
+			pnt := image.Point{-x * imgs[idx].Bounds().Dx(), -y * imgs[idx].Bounds().Dy()}
+			draw.Draw(total, total.Bounds(), imgs[idx], pnt, draw.Over)
+			log.Info().Msgf("[combinator] draw over x:%d y:%d idx:%d point:%+v", x, y, idx, pnt)
 		}
 	}
 	return total

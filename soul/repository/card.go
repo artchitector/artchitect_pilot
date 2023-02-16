@@ -82,16 +82,28 @@ func (pr *CardRepository) GetAnyCardIDFromHundred(ctx context.Context, rank uint
 	start := hundred
 	end := hundred + rank - 1
 	log.Info().Msgf("[card_repo] GetAnyCardIDFromHundred s:%d, e:%d", start, end)
-	var maxId uint
-	err := pr.db.Select("max(id)").Where("id between ? and ?", start, end).Model(&model.Card{}).Scan(&maxId).Error
+	var variants uint
+	err := pr.db.Select("count(id)").Where("id between ? and ?", start, end).Model(&model.Card{}).Scan(&variants).Error
 	if err != nil {
-		return 0, errors.Wrapf(err, "[card_repo] failed to get maxId from r:%d h:%d", rank, hundred)
+		return 0, errors.Wrapf(err, "[card_repo] failed to get variants from r:%d h:%d", rank, hundred)
 	}
-	log.Info().Msgf("[card_repo] selected max(id)=%d from r:%d h:%d", maxId, rank, hundred)
-	offset, err := pr.origin.Select(ctx, maxId-start)
-
+	log.Info().Msgf("[card_repo] selected max(id)=%d from r:%d h:%d", variants, rank, hundred)
+	offset, err := pr.origin.Select(ctx, variants)
+	if err != nil {
+		return 0, errors.Wrapf(err, "[card_repo] failed to get selection from origin. variants: %d", variants-start)
+	}
 	var targetID uint
-	err = pr.db.Select("id").Model(&model.Card{}).Where("id between ? and ?", start, end).Scan(&targetID).Limit(1).Offset(int(offset)).Error
+	log.Info().Msgf("[card_repo] selecting anyCard with id between %d and %d with offset %d", start, end, offset)
+	err = pr.db.
+		Select("id").
+		Model(&model.Card{}).
+		Where("id between ? and ?", start, end).
+		Order("id asc").
+		Limit(1).
+		Offset(int(offset)).
+		Scan(&targetID).
+		Error
+	log.Info().Msgf("[card_repo] selected targetID %d", targetID)
 	return targetID, errors.Wrapf(err, "[card_repo] failed to get targetId with start:%d,end:%d,offset:%d", start, end, offset)
 }
 

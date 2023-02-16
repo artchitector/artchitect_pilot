@@ -157,21 +157,29 @@ func (c *Creator) enjoy(ctx context.Context, state *model.CreationState, cardSta
 
 func (c *Creator) updateHundreds(ctx context.Context, id uint) error {
 	start := time.Now()
-	// if ID=54165, then
-	// rank=10000, hundred=50000
-	hundred := uint(math.Floor(float64(id/model.Rank10000))) * model.Rank10000
-	if err := c.combinator.CombineHundred(ctx, model.Rank10000, hundred); err != nil {
-		return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank10000, id)
+	// if ID=40000, then rank=10000, hundred=30000
+	if id%model.Rank10000 == 0 { // new 10000 started
+		hundred := uint(math.Floor(float64((id-1)/model.Rank10000))) * model.Rank10000
+		log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank10000, hundred)
+		if err := c.combinator.CombineHundred(ctx, model.Rank10000, hundred); err != nil {
+			return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank10000, id)
+		}
 	}
-	// rank=1000, hundred=54000
-	hundred = uint(math.Floor(float64(id/model.Rank1000))) * model.Rank1000
-	if err := c.combinator.CombineHundred(ctx, model.Rank1000, hundred); err != nil {
-		return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank1000, id)
+	//if ID=54 rank=1000, hundred=54000
+	if id%model.Rank1000 == 0 { // new 1000 started
+		hundred := uint(math.Floor(float64((id-1)/model.Rank1000))) * model.Rank1000
+		log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank1000, hundred)
+		if err := c.combinator.CombineHundred(ctx, model.Rank1000, hundred); err != nil {
+			return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank1000, id)
+		}
 	}
 	// rank=100, hundred=54100
-	hundred = uint(math.Floor(float64(id/model.Rank100))) * model.Rank100
-	if err := c.combinator.CombineHundred(ctx, model.Rank100, hundred); err != nil {
-		return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank1000, id)
+	if id%model.Rank100 == 0 { // new 1000 started
+		hundred := uint(math.Floor(float64((id-1)/model.Rank100))) * model.Rank100
+		log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank100, hundred)
+		if err := c.combinator.CombineHundred(ctx, model.Rank100, hundred); err != nil {
+			return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank100, id)
+		}
 	}
 	log.Info().Msgf("[creator] update hundreds %s", time.Now().Sub(start))
 	return nil
