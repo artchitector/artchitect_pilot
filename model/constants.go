@@ -27,6 +27,10 @@ const (
 	QualityM  = 80
 	QualityS  = 75
 	QualityXS = 75
+
+	Rank10000 = 10000
+	Rank1000  = 1000
+	Rank100   = 100
 )
 
 var PublicSizes = []string{SizeF, SizeM, SizeS, SizeXS}

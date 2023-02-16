@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"time"
 )
@@ -75,6 +76,23 @@ func (pr *CardRepository) GetOriginSelectedCardByPeriod(ctx context.Context, sta
 		return model.Card{}, errors.Wrapf(err, "[card_repository] failed to get card with offset %d", selection)
 	}
 	return card, nil
+}
+
+func (pr *CardRepository) GetAnyCardIDFromHundred(ctx context.Context, rank uint, hundred uint) (uint, error) {
+	start := hundred
+	end := hundred + rank - 1
+	log.Info().Msgf("[card_repo] GetAnyCardIDFromHundred s:%d, e:%d", start, end)
+	var maxId uint
+	err := pr.db.Select("max(id)").Where("id between ? and ?", start, end).Model(&model.Card{}).Scan(&maxId).Error
+	if err != nil {
+		return 0, errors.Wrapf(err, "[card_repo] failed to get maxId from r:%d h:%d", rank, hundred)
+	}
+	log.Info().Msgf("[card_repo] selected max(id)=%d from r:%d h:%d", maxId, rank, hundred)
+	offset, err := pr.origin.Select(ctx, maxId-start)
+
+	var targetID uint
+	err = pr.db.Select("id").Model(&model.Card{}).Where("id between ? and ?", start, end).Scan(&targetID).Limit(1).Offset(int(offset)).Error
+	return targetID, errors.Wrapf(err, "[card_repo] failed to get targetId with start:%d,end:%d,offset:%d", start, end, offset)
 }
 
 // TODO deprecated public use, need make internal and remove usage from gifter.

@@ -7,6 +7,7 @@ import (
 	artistService "github.com/artchitector/artchitect/soul/core/artist"
 	engine2 "github.com/artchitector/artchitect/soul/core/artist/engine"
 	"github.com/artchitector/artchitect/soul/core/bot"
+	"github.com/artchitector/artchitect/soul/core/combinator"
 	creator2 "github.com/artchitector/artchitect/soul/core/creator"
 	"github.com/artchitector/artchitect/soul/core/gifter"
 	"github.com/artchitector/artchitect/soul/core/lottery"
@@ -82,7 +83,18 @@ func main() {
 	sav := saver.NewSaver(res.GetEnv().SaverURL)
 	watermarkMaker := watermark.NewWatermark()
 	artist := artistService.NewArtist(engine, cardsRepo, notifier, watermarkMaker, strg, sav)
-	creator := creator2.NewCreator(artist, speller, notifier, res.GetEnv().CardTotalTime, res.GetEnv().PrehotDelay)
+
+	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
+
+	cmbntr := combinator.NewCombinator(cardsRepo, mmr, sav)
+	creator := creator2.NewCreator(
+		artist,
+		speller,
+		notifier,
+		cmbntr,
+		res.GetEnv().CardTotalTime,
+		res.GetEnv().PrehotDelay,
+	)
 
 	// lottery runner
 	runner := lottery.NewRunner(lotteryRepo, selectionRepo, cardsRepo, origin, notifier)
@@ -104,7 +116,7 @@ func main() {
 		merciful,
 		notifier,
 	)
-	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
+
 	artchitectBot := bot.NewBot(
 		res.GetEnv().Telegram10BotToken,
 		cardsRepo,

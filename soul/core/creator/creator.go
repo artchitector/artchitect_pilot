@@ -5,6 +5,7 @@ import (
 	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"math"
 	"sync"
 	"time"
 )
@@ -22,18 +23,23 @@ type notifier interface {
 	NotifyCreationState(ctx context.Context, state model.CreationState) error
 }
 
+type combinator interface {
+	CombineHundred(ctx context.Context, rank uint, hundred uint) error
+}
+
 // Creator used to make new Card with no input data. Used by Artchitect and Merciful
 type Creator struct {
 	mutex         sync.Mutex
 	artist        artist
 	speller       speller
 	notifier      notifier
+	combinator    combinator
 	cardTotalTime uint // in seconds
 	prehotDelay   uint // in seconds
 }
 
-func NewCreator(artist artist, speller speller, notifier notifier, cardTotalTime uint, prehotDelay uint) *Creator {
-	return &Creator{sync.Mutex{}, artist, speller, notifier, cardTotalTime, prehotDelay}
+func NewCreator(artist artist, speller speller, notifier notifier, combinator combinator, cardTotalTime uint, prehotDelay uint) *Creator {
+	return &Creator{sync.Mutex{}, artist, speller, notifier, combinator, cardTotalTime, prehotDelay}
 }
 
 func (c *Creator) CreateWithoutEnjoy(ctx context.Context) (model.Card, error) {
@@ -105,6 +111,10 @@ func (c *Creator) create(ctx context.Context, state *model.CreationState) (model
 		log.Error().Err(err).Msgf("[creator] failed to notify fresh created card")
 	}
 
+	if err := c.updateHundreds(ctx, card.ID); err != nil {
+		log.Error().Err(err).Msgf("[creator] failed to update hundreds")
+	}
+
 	return card, nil
 }
 
@@ -143,4 +153,26 @@ func (c *Creator) enjoy(ctx context.Context, state *model.CreationState, cardSta
 	case <-time.After(time.Duration(secondsLeft) * time.Second):
 		return nil // wait
 	}
+}
+
+func (c *Creator) updateHundreds(ctx context.Context, id uint) error {
+	start := time.Now()
+	// if ID=54165, then
+	// rank=10000, hundred=50000
+	hundred := uint(math.Floor(float64(id/model.Rank10000))) * model.Rank10000
+	if err := c.combinator.CombineHundred(ctx, model.Rank10000, hundred); err != nil {
+		return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank10000, id)
+	}
+	// rank=1000, hundred=54000
+	hundred = uint(math.Floor(float64(id/model.Rank1000))) * model.Rank1000
+	if err := c.combinator.CombineHundred(ctx, model.Rank1000, hundred); err != nil {
+		return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank1000, id)
+	}
+	// rank=100, hundred=54100
+	hundred = uint(math.Floor(float64(id/model.Rank100))) * model.Rank100
+	if err := c.combinator.CombineHundred(ctx, model.Rank100, hundred); err != nil {
+		return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank1000, id)
+	}
+	log.Info().Msgf("[creator] update hundreds %s", time.Now().Sub(start))
+	return nil
 }

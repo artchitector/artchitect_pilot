@@ -51,3 +51,25 @@ func (h *Saver) SaveImage(cardID uint, data []byte) error {
 	}
 	return nil
 }
+
+func (h *Saver) SaveHundredImage(rank uint, hundred uint, data []byte) error {
+	for _, size := range sizes {
+		resized, err := resizer.ResizeBytes(data, size)
+		if err != nil {
+			return errors.Wrapf(err, "[saver_upload] failed to resize r:%d h:%d s:%s", rankm hundred, size)
+		}
+
+		idFolder := fmt.Sprintf("%d", model.GetCardThousand(cardID))
+		folderPath := path.Join(h.cardsPath, idFolder)
+		if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
+			return errors.Wrapf(err, "[saver_upload] failed to create folder")
+		}
+
+		p := path.Join(folderPath, fmt.Sprintf("card-%d-%s.jpg", cardID, size))
+		err = os.WriteFile(p, resized, os.ModePerm)
+		if err != nil {
+			return errors.Wrapf(err, "[saver_upload] failed to save file %s", p)
+		}
+	}
+	return nil
+}
