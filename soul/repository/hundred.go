@@ -32,6 +32,6 @@ func (hr *HundredRepository) SaveHundred(rank uint, hundred uint) (model.Hundred
 
 func (hr *HundredRepository) GetHundred(rank uint, hundred uint) (model.Hundred, error) {
 	var h model.Hundred
-	err := hr.db.Where("rank = ?", rank).Where("hundred = ?", hundred).Model(&model.Hundred{}).First(&hundred).Error
+	err := hr.db.Where("rank = ?", rank).Where("hundred = ?", hundred).First(&h).Error
 	return h, err
 }
