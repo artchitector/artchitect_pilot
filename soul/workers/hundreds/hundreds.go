@@ -58,9 +58,10 @@ func (w *HundredsWorker) WorkOnce(ctx context.Context) (bool, error) {
 	}
 	ranks := []uint{model.Rank10000, model.Rank1000, model.Rank100}
 	for _, r := range ranks {
-		if w.lastWorkedRank < r {
+		if w.lastWorkedRank > 0 && w.lastWorkedRank < r {
 			continue
 		}
+		log.Info().Msgf("[hundreds_worker] start rank %d, maxCard: %d, lastWorkedHundred:%d", r, maxCardID, w.lastWorkedHundred)
 		for h := w.lastWorkedHundred; h < maxCardID; h += r {
 			log.Info().Msgf("[hundreds_worker] Starting work on r:%d h:%d", r, h)
 			_, err := w.hundredsRepo.GetHundred(r, h)
@@ -74,7 +75,9 @@ func (w *HundredsWorker) WorkOnce(ctx context.Context) (bool, error) {
 			if err != nil {
 				return false, errors.Wrapf(err, "[hundreds_worker] failed to combine r:%d h:%d", r, h)
 			}
+			return false, nil
 		}
+		w.lastWorkedHundred = 0
 	}
 	return true, nil
 }
