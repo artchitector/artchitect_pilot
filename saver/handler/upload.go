@@ -115,5 +115,7 @@ func (h *UploadHandler) HandleHundred(c *gin.Context) {
 		return
 	}
 
+	log.Info().Msgf("[upload:HandleHundred] finished save r:%d h:%d", rank, hundred)
+
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 }
