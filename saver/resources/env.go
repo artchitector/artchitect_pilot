@@ -7,9 +7,10 @@ import (
 )
 
 type Env struct {
-	HttpPort  string
-	DbDSN     string
-	CardsPath string
+	HttpPort     string
+	DbDSN        string
+	CardsPath    string
+	HundredsPath string
 }
 
 func initEnv() *Env {
@@ -19,8 +20,9 @@ func initEnv() *Env {
 	}
 
 	return &Env{
-		HttpPort:  os.Getenv("HTTP_PORT"),
-		DbDSN:     os.Getenv("DB_DSN"),
-		CardsPath: os.Getenv("CARDS_PATH"),
+		HttpPort:     os.Getenv("HTTP_PORT"),
+		DbDSN:        os.Getenv("DB_DSN"),
+		CardsPath:    os.Getenv("CARDS_PATH"),
+		HundredsPath: os.Getenv("HUNDREDS_PATH"),
 	}
 }

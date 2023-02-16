@@ -12,11 +12,12 @@ import (
 var sizes = []string{model.SizeF, model.SizeM, model.SizeS, model.SizeXS}
 
 type Saver struct {
-	cardsPath string
+	cardsPath    string
+	hundredsPath string
 }
 
-func NewSaver(cardsPath string) *Saver {
-	return &Saver{cardsPath}
+func NewSaver(cardsPath string, hundredsPath string) *Saver {
+	return &Saver{cardsPath, hundredsPath}
 }
 
 /*
@@ -56,16 +57,15 @@ func (h *Saver) SaveHundredImage(rank uint, hundred uint, data []byte) error {
 	for _, size := range sizes {
 		resized, err := resizer.ResizeBytes(data, size)
 		if err != nil {
-			return errors.Wrapf(err, "[saver_upload] failed to resize r:%d h:%d s:%s", rankm hundred, size)
+			return errors.Wrapf(err, "[saver_upload] failed to resize r:%d h:%d s:%s", rank, hundred, size)
 		}
 
-		idFolder := fmt.Sprintf("%d", model.GetCardThousand(cardID))
-		folderPath := path.Join(h.cardsPath, idFolder)
+		folderPath := path.Join(h.hundredsPath)
 		if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
 			return errors.Wrapf(err, "[saver_upload] failed to create folder")
 		}
 
-		p := path.Join(folderPath, fmt.Sprintf("card-%d-%s.jpg", cardID, size))
+		p := path.Join(folderPath, fmt.Sprintf("r-%d-h-%d-%s.jpg", rank, hundred, size))
 		err = os.WriteFile(p, resized, os.ModePerm)
 		if err != nil {
 			return errors.Wrapf(err, "[saver_upload] failed to save file %s", p)
