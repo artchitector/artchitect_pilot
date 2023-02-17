@@ -69,6 +69,7 @@ func (w *HundredsWorker) WorkOnce(ctx context.Context) (bool, error) {
 				return false, errors.Wrapf(err, "[hundreds_worker] failed to get hundred")
 			} else if err == nil {
 				// hundred already exists
+				w.lastWorkedHundred = h
 				continue
 			}
 			err = w.combinator.CombineHundred(ctx, r, h)

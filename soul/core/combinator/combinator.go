@@ -54,6 +54,10 @@ func (c *Combinator) CombineHundred(ctx context.Context, rank uint, hundred uint
 			return errors.Wrapf(err, "[combinator] failed to get card from r:%d h:%d", rank, hundred)
 		}
 		log.Info().Msgf("[combinator] selected card %d for r:%d h:%d", cardID, rank, hundred)
+		if cardID == 0 {
+			log.Info().Msgf("[combinator] empty cardlist r:%d h:%d", rank, hundred)
+			return nil
+		}
 		imageFile, err := c.memory.DownloadImage(ctx, cardID, model.SizeS)
 		if err != nil {
 			return errors.Wrapf(err, "[combinator] failed to get image %d %s", cardID, model.SizeM)
