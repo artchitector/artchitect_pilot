@@ -46,9 +46,15 @@ func (pr *CardRepository) GetCard(ctx context.Context, ID uint) (model.Card, err
 	}
 }
 
-func (pr *CardRepository) GetHundred(hundred uint) ([]model.Card, error) {
+func (pr *CardRepository) GetCardsByRange(start uint, end uint) ([]model.Card, error) {
 	var cards []model.Card
-	log.Info().Msgf("[card_repo] get cards between %d and %d", hundred, hundred+model.Rank100-1)
-	err := pr.db.Joins("Spell").Where("cards.id between ? and ?", hundred, hundred+model.Rank100-1).Find(&cards).Error
+	log.Info().Msgf("[card_repo] get cards between %d and %d", start, end)
+	err := pr.db.Joins("Spell").Where("cards.id between ? and ?", start, end).Find(&cards).Error
+	return cards, err
+}
+
+func (pr *CardRepository) GetCards(ctx context.Context, IDs []uint) ([]model.Card, error) {
+	var cards []model.Card
+	err := pr.db.Joins("Spell").Where("cards.id in (?)", IDs).Find(&cards).Error
 	return cards, err
 }

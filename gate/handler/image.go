@@ -2,9 +2,12 @@ package handler
 
 import (
 	"fmt"
+	mmrPkg "github.com/artchitector/artchitect/memory"
 	"github.com/artchitector/artchitect/model"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+
 	"net/http"
 	"os"
 )
@@ -73,6 +76,15 @@ func (ih *ImageHandler) HandleUnity(c *gin.Context) {
 
 	imgBytes, err := ih.memory.GetUnityImage(c, request.Mask, request.Size)
 	if err != nil {
+		if errors.Is(err, mmrPkg.ErrNotFound) {
+			if dt, err := os.ReadFile(fmt.Sprintf("./files/black-%s.jpg", request.Size)); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			} else {
+				c.Data(http.StatusOK, "image/jpeg", dt)
+				return
+			}
+		}
 		log.Error().Err(err).Msgf("[image_handler] failed to GetHundredImage %s %s", request.Mask, request.Size)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -1,20 +1,20 @@
 <template>
   <div>
     <div class="columns" v-for="line in lines">
-      <div class="column" v-for="hundred in line">
-        <hundred v-if="!!hundred" :hundred="hundred"/>
+      <div class="column" v-for="unity in line">
+        <unity v-if="!!unity" :unity="unity"/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Hundred from "@/components/search/hundred.vue";
+import Unity from "@/components/unity/unity.vue";
 
 export default {
-  name: "hundreds-list",
-  components: {Hundred},
-  props: ["hundreds", "cardsInColumn", "visibleCount"],
+  name: "unity-list",
+  components: {Unity},
+  props: ["unities", "cardsInColumn", "visibleCount"],
   data() {
     return {
       currentVisible: -1
@@ -22,18 +22,18 @@ export default {
   },
   computed: {
     lines() {
-      let hundreds = []
+      let unities = []
       if (this.currentVisible === -1) {
-        hundreds = []
+        unities = []
       } else if (this.currentVisible === 0) {
-        hundreds = this.hundreds
+        unities = this.unities
       } else {
-        hundreds = this.hundreds.slice(0, this.currentVisible)
+        unities = this.unities.slice(0, this.currentVisible)
       }
       const chunkSize = parseInt(this.cardsInColumn)
       const chunks = [];
-      for (let i = 0; i < hundreds.length; i += chunkSize) {
-        let chunk = hundreds.slice(i, i + chunkSize)
+      for (let i = 0; i < unities.length; i += chunkSize) {
+        let chunk = unities.slice(i, i + chunkSize)
         for (let j = chunk.length; j < this.cardsInColumn; j++) {
           chunk.push(null)
         }

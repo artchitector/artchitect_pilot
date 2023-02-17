@@ -96,7 +96,7 @@ type UnityStateUnification struct {
 
 func (uss *UnityStateUnification) SetUnity(unity Unity) {
 	uss.Unity = unity
-	uss.Rank = unity.Rank()
+	uss.Rank = unity.Rank
 }
 
 func (uss *UnityStateUnification) SetState(state string, currentProgress int, totalProgress int) {

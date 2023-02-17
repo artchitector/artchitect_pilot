@@ -1,16 +1,16 @@
 <template>
   <div class="image-container">
-    <NuxtLink :to="localePath(`/search/${hundred.Rank}/${hundred.Hundred}`)">
-      <img :src="`/api/image_hundred/m/${hundred.Rank}/${hundred.Hundred}`"/>
+    <NuxtLink :to="localePath(`/unity/${unity.Mask}`)">
+      <img :src="`/api/image/unity/${unity.Mask}/m`"/>
     </NuxtLink>
-    <p class="hundred-title">{{ hundred.Hundred }}-{{ hundred.Hundred + hundred.Rank - 1 }}</p>
+    <p class="unity-title">U{{ unity.Mask }}</p>
   </div>
 </template>
 
 <script>
 export default {
-  name: "hundred",
-  props: ['hundred']
+  name: "unity",
+  props: ['unity']
 }
 </script>
 
@@ -18,7 +18,7 @@ export default {
 .image-container {
   position: relative;
 
-  p.hundred-title {
+  p.unity-title {
     position: absolute;
     margin: auto;
     background-color: rgba(0, 0, 0, 0.6);

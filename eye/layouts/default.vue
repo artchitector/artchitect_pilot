@@ -7,7 +7,7 @@
     "selection": "selection",
     "pray": "pray",
     "liked": "liked",
-    "search": "search"
+    "unity": "unity"
   },
   "ru": {
     "main": "главная",
@@ -16,7 +16,7 @@
     "selection": "отборное",
     "pray": "молитва",
     "liked": "нравится",
-    "search": "поиск"
+    "unity": "единство"
   }
 }
 </i18n>
@@ -47,7 +47,7 @@
           <span> - </span>
         </template>
         <template>
-          <NuxtLink :to="localePath('/search')">{{$t('search')}}</NuxtLink>
+          <NuxtLink :to="localePath('/unity')">{{$t('unity')}}</NuxtLink>
           <span> - </span>
         </template>
         <NuxtLink :to="switchLocalePath('en')">en</NuxtLink>

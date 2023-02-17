@@ -9,6 +9,8 @@ import (
 type cardsRepository interface {
 	GetCard(ctx context.Context, ID uint) (model.Card, error)
 	GetLastCards(ctx context.Context, count uint) ([]model.Card, error)
+	GetCards(ctx context.Context, IDs []uint) ([]model.Card, error)
+	GetCardsByRange(start uint, end uint) ([]model.Card, error)
 }
 
 type lotteryRepository interface {
@@ -50,4 +52,10 @@ type hundredRepository interface {
 	FindAllTenK() ([]model.Hundred, error)
 	FindKList(tenKHundred uint) ([]model.Hundred, error)
 	FindHList(kHundred uint) ([]model.Hundred, error)
+}
+
+type unityRepository interface {
+	GetUnity(mask string) (model.Unity, error)
+	GetRootUnities() ([]model.Unity, error)
+	GetChildUnities(parentMask string) ([]model.Unity, error)
 }

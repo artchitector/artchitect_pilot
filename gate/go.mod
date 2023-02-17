@@ -3,7 +3,7 @@ module github.com/artchitector/artchitect/gate
 go 1.19
 
 require (
-	github.com/artchitector/artchitect/model v0.0.0-20230203133021-ba066d64422a
+	github.com/artchitector/artchitect/model v0.0.0-20230217185131-a4c60f83382d
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis/v8 v8.11.5
@@ -18,6 +18,7 @@ require (
 )
 
 require (
+	github.com/artchitector/artchitect/memory v0.0.0-20230217185131-a4c60f83382d // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
@@ -57,3 +58,4 @@ require (
 replace github.com/artchitector/artchitect/model => ../model
 
 replace github.com/artchitector/artchitect/resizer => ../resizer
+replace github.com/artchitector/artchitect/memory => ../memory

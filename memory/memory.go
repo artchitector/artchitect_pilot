@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+var ErrNotFound = errors.New("[memory] not found")
+
 type cache interface {
 	SaveImage(ctx context.Context, cardID uint, size string, data []byte) error
 	ExistsImage(ctx context.Context, ID uint, size string) (bool, error)
@@ -79,6 +81,37 @@ func (m *Memory) DownloadImage(ctx context.Context, cardID uint, size string) ([
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return []byte{}, errors.Wrapf(err, "[memory] not OK status code(%d) from memory-server %s", resp.StatusCode, url)
+	}
+	return io.ReadAll(resp.Body)
+}
+
+func (m *Memory) GetUnityImage(ctx context.Context, mask string, size string) ([]byte, error) {
+	start := time.Now()
+	defer log.Info().Msgf("[memory] get hundred image success m:%s s:%s, time: %s", mask, size, time.Now().Sub(start))
+	// TODO make cached unity image
+	img, err := m.downloadUnityImage(ctx, mask, size)
+	if err != nil {
+		return []byte{}, errors.Wrapf(err, "[memory] failed to download hundred image m:%s s:%s", mask, size)
+	}
+	return img, nil
+}
+
+func (m *Memory) downloadUnityImage(ctx context.Context, mask string, size string) ([]byte, error) {
+	// get image from remote memory server
+
+	url := fmt.Sprintf("%s/unity/%s-%s.jpg", m.memoryURL, mask, size)
+	log.Info().Msgf("[memory] get unity image from path %s", url)
+	resp, err := http.Get(url)
+	if err != nil {
+		return []byte{}, errors.Wrapf(err, "[memory] failed to get image from memory-server %s", url)
+	}
+	defer resp.Body.Close()
+	log.Info().Msgf("STATUS %d", resp.StatusCode)
+	if resp.StatusCode == http.StatusNotFound {
+		return []byte{}, ErrNotFound
+	}
+	if resp.StatusCode != http.StatusOK {
+		return []byte{}, errors.Errorf("[memory] not OK status code(%d) from memory-server %s", resp.StatusCode, url)
 	}
 	return io.ReadAll(resp.Body)
 }

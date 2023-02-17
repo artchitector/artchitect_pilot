@@ -1,12 +1,12 @@
 <i18n>
 {
   "en": {
-    "title": "Artchitect - search",
-    "subtitle": "search"
+    "title": "Artchitect - unity",
+    "subtitle": "unity"
   },
   "ru": {
-    "title": "Artchitect - поиск",
-    "subtitle": "поиск"
+    "title": "Artchitect - единство",
+    "subtitle": "единство"
   }
 }
 </i18n>
@@ -25,17 +25,17 @@
       </div>
     </template>
     <template v-else>
-      <hundreds-list :hundreds="hundreds" visible-count="50" cards-in-column="3"/>
+      <unity-list :unities="unities" visible-count="50" cards-in-column="3"/>
     </template>
   </section>
 </template>
 
 <script>
-import HundredsList from "@/components/search/hundreds-list.vue";
+import UnityList from "@/components/unity/unity-list.vue";
 
 export default {
-  name: "search",
-  components: {HundredsList},
+  name: "unity",
+  components: {UnityList},
   head() {
     return {
       title: this.$t('title')
@@ -43,11 +43,11 @@ export default {
   },
   data() {
     return {
-      hundreds: []
+      unities: []
     };
   },
   async fetch() {
-    this.hundreds = await this.$axios.$get("/search")
+    this.unities = await this.$axios.$get("/unity")
   }
 }
 </script>

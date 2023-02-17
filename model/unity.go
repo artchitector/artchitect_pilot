@@ -23,6 +23,7 @@ const (
 */
 type Unity struct {
 	Mask      string `gorm:"primaryKey"`
+	Rank      uint
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	State     string
@@ -32,19 +33,6 @@ type Unity struct {
 
 func (u *Unity) String() string {
 	return fmt.Sprintf("%s/%s", u.Mask, u.State)
-}
-
-func (u *Unity) Rank() uint {
-	cnt := strings.Count(u.Mask, "X")
-	switch cnt {
-	case 4:
-		return Rank10000
-	case 3:
-		return Rank1000
-	case 2:
-		return Rank100
-	}
-	return 0
 }
 
 func (u *Unity) Start() uint {

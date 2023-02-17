@@ -126,7 +126,7 @@ func (u *Unifier) Unify(ctx context.Context, unity model.Unity, state *model.Uni
 }
 
 func (u *Unifier) checkChildrenExists(ctx context.Context, unity model.Unity, state *model.UnityState) (model.Unity, error) {
-	if unity.Rank() == model.Rank100 { // chilren of 100 is just cards
+	if unity.Rank == model.Rank100 { // chilren of 100 is just cards
 		return unity, nil
 	}
 	var children []model.Unity
@@ -159,7 +159,7 @@ func (u *Unifier) checkChildrenExists(ctx context.Context, unity model.Unity, st
 }
 
 func (u *Unifier) fillChildren(ctx context.Context, unity model.Unity, state *model.UnityState) (model.Unity, error) {
-	if unity.Rank() == model.Rank100 { // children of 100 is just cards
+	if unity.Rank == model.Rank100 { // children of 100 is just cards
 		return unity, nil
 	}
 	for idx, child := range unity.Children {
@@ -189,7 +189,7 @@ func (u *Unifier) fillChildren(ctx context.Context, unity model.Unity, state *mo
 }
 
 func (u *Unifier) promoteLeads(ctx context.Context, unity model.Unity, state *model.UnityState) (model.Unity, error) {
-	if unity.Rank() == model.Rank100 {
+	if unity.Rank == model.Rank100 {
 		leadsCount := Thumb100Size * Thumb100Size
 		if unity.Leads != "" {
 			// load old saved leads
@@ -242,13 +242,13 @@ func (u *Unifier) promoteLeads(ctx context.Context, unity model.Unity, state *mo
 			allLeaders = append(allLeaders, subleaders...)
 		}
 		leadersCount := 0
-		if unity.Rank() == model.Rank1000 {
+		if unity.Rank == model.Rank1000 {
 			leadersCount = Thumb1000Size * Thumb1000Size
-		} else if unity.Rank() == model.Rank10000 {
+		} else if unity.Rank == model.Rank10000 {
 			leadersCount = Thumb10000Size * Thumb10000Size
 		}
 		if leadersCount == 0 {
-			return model.Unity{}, errors.Errorf("[unifier] wrong rank %d", unity.Rank())
+			return model.Unity{}, errors.Errorf("[unifier] wrong rank %d", unity.Rank)
 		}
 		for len(currentLeaders) < leadersCount {
 			selection, err := u.origin.Select(ctx, uint(len(allLeaders)))

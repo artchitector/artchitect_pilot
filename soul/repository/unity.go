@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/artchitector/artchitect/model"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type UnityRepository struct {
@@ -19,8 +20,20 @@ func (ur *UnityRepository) GetUnity(mask string) (model.Unity, error) {
 	return unity, err
 }
 func (ur *UnityRepository) CreateUnity(mask string) (model.Unity, error) {
+	cnt := strings.Count(mask, "X")
+	var rank uint
+	switch cnt {
+	case 4:
+		rank = model.Rank10000
+	case 3:
+		rank = model.Rank1000
+	case 2:
+		rank = model.Rank100
+	}
+
 	unity := model.Unity{
 		Mask:  mask,
+		Rank:  rank,
 		State: model.UnityStateEmpty,
 	}
 	err := ur.db.Save(&unity).Error
