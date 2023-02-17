@@ -47,12 +47,13 @@ func main() {
 		lotteryRepo,
 	)
 	authS := handler.NewAuthService(res.GetEnv().JWTSecret)
-	cardHandler := handler.NewCardHandler(cardsRepo, cache, mmr, likeRepo, authS)
+	cardHandler := handler.NewCardHandler(cardsRepo, cache, likeRepo, authS)
 	selectionHander := handler.NewSelectionHandler(selectionRepo)
 	prayHandler := handler.NewPrayHandler(prayRepo)
 	lh := handler.NewLoginHandler(res.GetEnv().TelegramABotToken, res.GetEnv().JWTSecret, res.GetEnv().ArtchitectHost)
 	llh := handler.NewLikeHandler(likeRepo, authS)
 	sh := handler.NewSearchHandler(hundRepo, cardsRepo)
+	ih := handler.NewImageHandler(mmr)
 
 	// listeners with websocket handler
 	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo, mmr)
@@ -81,7 +82,8 @@ func main() {
 		r.GET("/lottery/:lastN", lotteryHandler.HandleLast)
 		r.GET("/card/:id", cardHandler.Handle)
 		r.GET("/selection", selectionHander.Handle)
-		r.GET("/image/:size/:id", cardHandler.HandleImage)
+		r.GET("/image/:size/:id", ih.HandleImage)
+		r.GET("/image_hundred/:size/:rank/:hundred", ih.HandleHundred)
 		r.GET("/ws", func(c *gin.Context) {
 			websocketHandler.Handle(c.Writer, c.Request)
 		})

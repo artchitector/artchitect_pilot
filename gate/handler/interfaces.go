@@ -36,11 +36,18 @@ type listener interface {
 }
 
 type memory interface {
-	GetImage(ctx context.Context, cardID uint, size string) ([]byte, error)
+	GetCardImage(ctx context.Context, cardID uint, size string) ([]byte, error)
+	GetHundredImage(ctx context.Context, rank uint, hundred uint, size string) ([]byte, error)
 }
 
 type likeRepository interface {
 	Like(ctx context.Context, userID uint, cardID uint) (model.Like, error)
 	IsLiked(ctx context.Context, userID uint, cardID uint) (bool, error)
 	GetLikes(ctx context.Context, userID uint) ([]uint, error)
+}
+
+type hundredRepository interface {
+	FindAllTenK() ([]model.Hundred, error)
+	FindKList(tenKHundred uint) ([]model.Hundred, error)
+	FindHList(kHundred uint) ([]model.Hundred, error)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
 
@@ -47,6 +48,7 @@ func (pr *CardRepository) GetCard(ctx context.Context, ID uint) (model.Card, err
 
 func (pr *CardRepository) GetHundred(hundred uint) ([]model.Card, error) {
 	var cards []model.Card
-	err := pr.db.Where("id between ? and ?", hundred, hundred+model.Rank100-1).Find(&cards).Error
+	log.Info().Msgf("[card_repo] get cards between %d and %d", hundred, hundred+model.Rank100-1)
+	err := pr.db.Joins("Spell").Where("cards.id between ? and ?", hundred, hundred+model.Rank100-1).Find(&cards).Error
 	return cards, err
 }

@@ -14,7 +14,7 @@ import (
 type cache interface {
 	SaveImage(ctx context.Context, cardID uint, size string, data []byte) error
 	ExistsImage(ctx context.Context, ID uint, size string) (bool, error)
-	GetImage(ctx context.Context, ID uint, size string) ([]byte, error)
+	GetCardImage(ctx context.Context, ID uint, size string) ([]byte, error)
 }
 
 // Memory helps get images fast (downloads from memory-server and cache locally)
@@ -27,14 +27,14 @@ func NewMemory(memoryURL string, cache cache) *Memory {
 	return &Memory{memoryURL, cache}
 }
 
-func (m *Memory) GetImage(ctx context.Context, cardID uint, size string) ([]byte, error) {
+func (m *Memory) GetCardImage(ctx context.Context, cardID uint, size string) ([]byte, error) {
 	start := time.Now()
 
 	exists, err := m.cache.ExistsImage(ctx, cardID, size)
 	if err != nil {
 		log.Error().Err(err).Msgf("[memory] failed check image exists %d/%s", cardID, size)
 	} else if exists {
-		img, err := m.cache.GetImage(ctx, cardID, size)
+		img, err := m.cache.GetCardImage(ctx, cardID, size)
 		if err != nil {
 			log.Error().Err(err).Msgf("[memory] failed get image fro cache %d/%s", cardID, size)
 		} else {
@@ -42,9 +42,9 @@ func (m *Memory) GetImage(ctx context.Context, cardID uint, size string) ([]byte
 			return img, nil
 		}
 	}
-	img, err := m.downloadImage(ctx, cardID, size)
+	img, err := m.downloadCardImage(ctx, cardID, size)
 	if err != nil {
-		return []byte{}, errors.Wrapf(err, "[memory] failed to download image %d/%s", cardID, size)
+		return []byte{}, errors.Wrapf(err, "[memory] failed to download card image %d/%s", cardID, size)
 	}
 
 	go func() {
@@ -57,10 +57,37 @@ func (m *Memory) GetImage(ctx context.Context, cardID uint, size string) ([]byte
 	return img, nil
 }
 
-func (m *Memory) downloadImage(ctx context.Context, cardID uint, size string) ([]byte, error) {
+func (m *Memory) downloadCardImage(ctx context.Context, cardID uint, size string) ([]byte, error) {
 	// get image from remote memory server
 	thousand := model.GetCardThousand(cardID)
 	url := fmt.Sprintf("%s/cards/%d/card-%d-%s.jpg", m.memoryURL, thousand, cardID, size)
+	resp, err := http.Get(url)
+	if err != nil {
+		return []byte{}, errors.Wrapf(err, "[memory] failed to get image from memory-server %s", url)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return []byte{}, errors.Wrapf(err, "[memory] not OK status code(%d) from memory-server %s", resp.StatusCode, url)
+	}
+	return io.ReadAll(resp.Body)
+}
+
+func (m *Memory) GetHundredImage(ctx context.Context, rank uint, hundred uint, size string) ([]byte, error) {
+	start := time.Now()
+	defer log.Info().Msgf("[memory] get hundred image success r:%d h:%d s:%s, time: %s", rank, hundred, size, time.Now().Sub(start))
+	// TODO make cached hundred image
+	img, err := m.downloadHundredImage(ctx, rank, hundred, size)
+	if err != nil {
+		return []byte{}, errors.Wrapf(err, "[memory] failed to download hundred image r:%d h:%d s:%s", rank, hundred, size)
+	}
+	return img, nil
+}
+
+func (m *Memory) downloadHundredImage(ctx context.Context, rank uint, hundred uint, size string) ([]byte, error) {
+	// get image from remote memory server
+
+	url := fmt.Sprintf("%s/hundreds/r-%d-h-%d-%s.jpg", m.memoryURL, rank, hundred, size)
+	log.Info().Msgf("[memory] get hundred image from path %s", url)
 	resp, err := http.Get(url)
 	if err != nil {
 		return []byte{}, errors.Wrapf(err, "[memory] failed to get image from memory-server %s", url)

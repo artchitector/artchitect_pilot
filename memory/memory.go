@@ -14,7 +14,7 @@ import (
 type cache interface {
 	SaveImage(ctx context.Context, cardID uint, size string, data []byte) error
 	ExistsImage(ctx context.Context, ID uint, size string) (bool, error)
-	GetImage(ctx context.Context, ID uint, size string) ([]byte, error)
+	GetCardImage(ctx context.Context, ID uint, size string) ([]byte, error)
 }
 
 // Memory helps get images fast (downloads from memory-server and cache locally)
@@ -27,7 +27,7 @@ func NewMemory(memoryURL string, cache cache) *Memory {
 	return &Memory{memoryURL, cache}
 }
 
-func (m *Memory) GetImage(ctx context.Context, cardID uint, size string) ([]byte, error) {
+func (m *Memory) GetCardImage(ctx context.Context, cardID uint, size string) ([]byte, error) {
 	if m.cache == nil {
 		return nil, errors.Errorf("[memory] cache not initialized, use DownloadImage instead")
 	}
@@ -37,7 +37,7 @@ func (m *Memory) GetImage(ctx context.Context, cardID uint, size string) ([]byte
 	if err != nil {
 		log.Error().Err(err).Msgf("[memory] failed check image exists %d/%s", cardID, size)
 	} else if exists {
-		img, err := m.cache.GetImage(ctx, cardID, size)
+		img, err := m.cache.GetCardImage(ctx, cardID, size)
 		if err != nil {
 			log.Error().Err(err).Msgf("[memory] failed get image fro cache %d/%s", cardID, size)
 		} else {

@@ -22,7 +22,7 @@ type cardRepository interface {
 }
 
 type memory interface {
-	GetImage(ctx context.Context, cardID uint, size string) ([]byte, error)
+	GetCardImage(ctx context.Context, cardID uint, size string) ([]byte, error)
 }
 
 // Listener read incoming request from redis and do some actions
@@ -143,7 +143,7 @@ func (l *Listener) cacheCard(ctx context.Context, cardID uint) error {
 	}
 
 	for _, size := range model.PublicSizes {
-		if _, err := l.memory.GetImage(ctx, cardID, size); err != nil {
+		if _, err := l.memory.GetCardImage(ctx, cardID, size); err != nil {
 			log.Error().Err(err).Msgf("[listener] failed to get image from memory %d/%s", cardID, size)
 		}
 	}

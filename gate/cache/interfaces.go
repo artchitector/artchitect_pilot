@@ -15,5 +15,5 @@ type selectionRepository interface {
 }
 
 type memory interface {
-	GetImage(ctx context.Context, cardID uint, size string) ([]byte, error)
+	GetCardImage(ctx context.Context, cardID uint, size string) ([]byte, error)
 }

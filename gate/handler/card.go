@@ -13,21 +13,15 @@ type CardRequest struct {
 	ID uint `uri:"id" binding:"required,numeric"`
 }
 
-type ImageRequest struct {
-	ID   uint   `uri:"id" binding:"required,numeric"`
-	Size string `uri:"size" binding:"required"` // size f - full, size m - 2-times smaller dimensions, size s - 4-times smaller dimensions
-}
-
 type CardHandler struct {
 	cardsRepository cardsRepository
 	cache           cache
-	memory          memory
 	likeRepository  likeRepository
 	authService     *AuthService
 }
 
-func NewCardHandler(cardsRepository cardsRepository, cache cache, memory memory, likeRepository likeRepository, authService *AuthService) *CardHandler {
-	return &CardHandler{cardsRepository, cache, memory, likeRepository, authService}
+func NewCardHandler(cardsRepository cardsRepository, cache cache, likeRepository likeRepository, authService *AuthService) *CardHandler {
+	return &CardHandler{cardsRepository, cache, likeRepository, authService}
 }
 
 func (ch *CardHandler) Handle(c *gin.Context) {
@@ -66,25 +60,4 @@ func (ch *CardHandler) Handle(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, card)
-}
-
-func (ch *CardHandler) HandleImage(c *gin.Context) {
-	var request ImageRequest
-	if err := c.ShouldBindUri(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if request.Size == model.SizeXF {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "XF size is not supported in gate"})
-		return
-	}
-
-	imageBytes, err := ch.memory.GetImage(c, request.ID, request.Size)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.Data(http.StatusOK, "image/jpeg", imageBytes)
 }

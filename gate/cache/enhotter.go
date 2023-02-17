@@ -80,8 +80,8 @@ func (e *Enhotter) cacheCard(ctx context.Context, card model.Card) {
 	}
 	for _, size := range model.PublicSizes {
 		// memory automatically cache image on get
-		if _, err := e.memory.GetImage(ctx, card.ID, size); err != nil {
-			log.Error().Err(err).Msgf("[enhotter] failed to memory.GetImage %d/%s", card.ID, size)
+		if _, err := e.memory.GetCardImage(ctx, card.ID, size); err != nil {
+			log.Error().Err(err).Msgf("[enhotter] failed to memory.GetCardImage %d/%s", card.ID, size)
 		}
 	}
 }

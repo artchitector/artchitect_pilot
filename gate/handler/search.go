@@ -7,14 +7,9 @@ import (
 )
 
 type HundredRequest struct {
-	Hundred uint `uri:"hundred" binding:"required,numeric"`
+	Hundred uint `uri:"hundred" binding:"numeric"`
 }
 
-type hundredRepository interface {
-	FindAllTenK() ([]model.Hundred, error)
-	FindKList(tenKHundred uint) ([]model.Hundred, error)
-	FindHList(kHundred uint) ([]model.Hundred, error)
-}
 type cardRepository interface {
 	GetHundred(hundred uint) ([]model.Card, error)
 }

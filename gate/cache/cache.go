@@ -149,7 +149,7 @@ func (c *Cache) ExistsImage(ctx context.Context, ID uint, size string) (bool, er
 	return i > 0, err
 }
 
-func (c *Cache) GetImage(ctx context.Context, ID uint, size string) ([]byte, error) {
+func (c *Cache) GetCardImage(ctx context.Context, ID uint, size string) ([]byte, error) {
 	var b []byte
 	key := fmt.Sprintf(KeyCardImage, ID, size)
 	result := c.rdb.Get(ctx, key)
