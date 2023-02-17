@@ -72,22 +72,22 @@ func (m *Memory) downloadCardImage(ctx context.Context, cardID uint, size string
 	return io.ReadAll(resp.Body)
 }
 
-func (m *Memory) GetHundredImage(ctx context.Context, rank uint, hundred uint, size string) ([]byte, error) {
+func (m *Memory) GetUnityImage(ctx context.Context, mask string, size string) ([]byte, error) {
 	start := time.Now()
-	defer log.Info().Msgf("[memory] get hundred image success r:%d h:%d s:%s, time: %s", rank, hundred, size, time.Now().Sub(start))
+	defer log.Info().Msgf("[memory] get hundred image success m:%s s:%s, time: %s", mask, size, time.Now().Sub(start))
 	// TODO make cached hundred image
-	img, err := m.downloadHundredImage(ctx, rank, hundred, size)
+	img, err := m.downloadUnityImage(ctx, mask, size)
 	if err != nil {
-		return []byte{}, errors.Wrapf(err, "[memory] failed to download hundred image r:%d h:%d s:%s", rank, hundred, size)
+		return []byte{}, errors.Wrapf(err, "[memory] failed to download hundred image m:%s s:%s", mask, size)
 	}
 	return img, nil
 }
 
-func (m *Memory) downloadHundredImage(ctx context.Context, rank uint, hundred uint, size string) ([]byte, error) {
+func (m *Memory) downloadUnityImage(ctx context.Context, mask string, size string) ([]byte, error) {
 	// get image from remote memory server
 
-	url := fmt.Sprintf("%s/hundreds/r-%d-h-%d-%s.jpg", m.memoryURL, rank, hundred, size)
-	log.Info().Msgf("[memory] get hundred image from path %s", url)
+	url := fmt.Sprintf("%s/unity/%s-%s.jpg", m.memoryURL, mask, size)
+	log.Info().Msgf("[memory] get unity image from path %s", url)
 	resp, err := http.Get(url)
 	if err != nil {
 		return []byte{}, errors.Wrapf(err, "[memory] failed to get image from memory-server %s", url)

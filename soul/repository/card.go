@@ -78,16 +78,15 @@ func (pr *CardRepository) GetOriginSelectedCardByPeriod(ctx context.Context, sta
 	return card, nil
 }
 
-func (pr *CardRepository) GetAnyCardIDFromHundred(ctx context.Context, rank uint, hundred uint) (uint, error) {
-	start := hundred
-	end := hundred + rank - 1
+func (pr *CardRepository) GetAnyCardIDFromHundred(ctx context.Context, rank uint, start uint) (uint, error) {
+	end := start + rank - 1
 	log.Info().Msgf("[card_repo] GetAnyCardIDFromHundred s:%d, e:%d", start, end)
 	var variants uint
 	err := pr.db.Select("count(id)").Where("id between ? and ?", start, end).Model(&model.Card{}).Scan(&variants).Error
 	if err != nil {
-		return 0, errors.Wrapf(err, "[card_repo] failed to get variants from r:%d h:%d", rank, hundred)
+		return 0, errors.Wrapf(err, "[card_repo] failed to get variants from r:%d h:%d", rank, start)
 	}
-	log.Info().Msgf("[card_repo] selected max(id)=%d from r:%d h:%d", variants, rank, hundred)
+	log.Info().Msgf("[card_repo] selected max(id)=%d from r:%d h:%d", variants, rank, start)
 	offset, err := pr.origin.Select(ctx, variants)
 	if err != nil {
 		return 0, errors.Wrapf(err, "[card_repo] failed to get selection from origin. variants: %d", variants-start)

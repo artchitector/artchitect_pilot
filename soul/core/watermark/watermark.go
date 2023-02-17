@@ -27,8 +27,18 @@ func NewWatermark() *Watermark {
 
 // RU: Так как тут сложно, многие комментарии будут на русском
 
+func (w *Watermark) AddCardWatermark(originalImage image.Image, cardID uint) (image.Image, error) {
+	text := fmt.Sprintf("#%d", cardID) // RU: Все номера карточек начинаются с #, там исторически пошло
+	return w.addWatermark(originalImage, text)
+}
+
+func (w *Watermark) AddUnityWatermark(originalImage image.Image, mask string) (image.Image, error) {
+	text := fmt.Sprintf("U%s", mask) // RU: Unity начинается с буквы U
+	return w.addWatermark(originalImage, text)
+}
+
 // AddWatermark - adds watermark over the original image (with card number and cat icon)
-func (w *Watermark) AddWatermark(originalImage image.Image, cardID uint) (image.Image, error) {
+func (w *Watermark) addWatermark(originalImage image.Image, text string) (image.Image, error) {
 	// RU: прогружаем ресурсы (шрифт + иконка кота), если они еще не загружены
 	if err := w.loadResources(); err != nil {
 		return nil, errors.Wrap(err, "[watermark] failed to load resources")
@@ -38,7 +48,8 @@ func (w *Watermark) AddWatermark(originalImage image.Image, cardID uint) (image.
 	draw.Draw(finalImage, originalImage.Bounds(), originalImage, image.Point{}, draw.Src)
 
 	// RU: Вотермарка в виде image.Image, накладывается на холст в правый нижний угол с отступом
-	watermarkImg := w.makeWatermarkImage(originalImage.Bounds(), cardID)
+
+	watermarkImg := w.makeWatermarkImage(originalImage.Bounds(), text)
 	padding := fixed.I(finalImage.Bounds().Max.X / 30) // RU: Отступ = 1/30 от ширины холста
 	rightBottomPoint := image.Point{
 		// RU: Тут всё было подобрано наугад. Почему отрицательные - не знаю
@@ -51,7 +62,7 @@ func (w *Watermark) AddWatermark(originalImage image.Image, cardID uint) (image.
 
 // makeWatermarkImage - prepare watermark image (with transparent black background, number and cat)
 // we need bounds to select font-size for current image (there are old low-res images and new hi-res)
-func (w *Watermark) makeWatermarkImage(bounds image.Rectangle, cardID uint) image.Image {
+func (w *Watermark) makeWatermarkImage(bounds image.Rectangle, text string) image.Image {
 	var size float64
 	if bounds.Dx() < 1000 {
 		// very old
@@ -73,7 +84,6 @@ func (w *Watermark) makeWatermarkImage(bounds image.Rectangle, cardID uint) imag
 		}),
 	}
 
-	text := fmt.Sprintf("#%d", cardID)            // RU: Все номера карточек начинаются с #, там исторически пошло
 	textBounds, _ := fontDrawer.BoundString(text) // RU: Тут объект, из которого можно получить итоговые размеры надписи в пикселях
 	textWidth := fontDrawer.MeasureString(text)
 	textHeight := textBounds.Max.Y - textBounds.Min.Y // Это же является высотой и шириной кота

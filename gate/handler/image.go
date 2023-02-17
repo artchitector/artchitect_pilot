@@ -1,21 +1,22 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/artchitector/artchitect/model"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"net/http"
+	"os"
 )
 
 type ImageRequest struct {
-	ID   uint   `uri:"id" binding:"required,numeric"`
+	ID   uint   `uri:"id" binding:"numeric"`
 	Size string `uri:"size" binding:"required"` // size f - full, size m - 2-times smaller dimensions, size s - 4-times smaller dimensions
 }
 
-type ImageHundredRequest struct {
-	Rank    uint   `uri:"rank" binding:"required,numeric"`
-	Hundred uint   `uri:"hundred" binding:"numeric"`
-	Size    string `uri:"size" binding:"required"`
+type ImageUnityRequest struct {
+	Mask string `uri:"mask" binding:"required"`
+	Size string `uri:"size" binding:"required"`
 }
 
 type ImageHandler struct {
@@ -38,6 +39,16 @@ func (ih *ImageHandler) HandleImage(c *gin.Context) {
 		return
 	}
 
+	if request.ID == 0 {
+		if dt, err := os.ReadFile(fmt.Sprintf("./files/black-%s.jpg", request.Size)); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		} else {
+			c.Data(http.StatusOK, "image/jpeg", dt)
+			return
+		}
+	}
+
 	imageBytes, err := ih.memory.GetCardImage(c, request.ID, request.Size)
 	if err != nil {
 		log.Error().Err(err).Msgf("[image_handler] failed to GetCardImage")
@@ -48,8 +59,8 @@ func (ih *ImageHandler) HandleImage(c *gin.Context) {
 	c.Data(http.StatusOK, "image/jpeg", imageBytes)
 }
 
-func (ih *ImageHandler) HandleHundred(c *gin.Context) {
-	var request ImageHundredRequest
+func (ih *ImageHandler) HandleUnity(c *gin.Context) {
+	var request ImageUnityRequest
 	if err := c.ShouldBindUri(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -60,9 +71,9 @@ func (ih *ImageHandler) HandleHundred(c *gin.Context) {
 		return
 	}
 
-	imgBytes, err := ih.memory.GetHundredImage(c, request.Rank, request.Hundred, request.Size)
+	imgBytes, err := ih.memory.GetUnityImage(c, request.Mask, request.Size)
 	if err != nil {
-		log.Error().Err(err).Msgf("[image_handler] failed to GetHundredImage r:%d h:%d", request.Rank, request.Hundred)
+		log.Error().Err(err).Msgf("[image_handler] failed to GetHundredImage %s %s", request.Mask, request.Size)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

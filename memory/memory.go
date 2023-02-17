@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"io"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -61,6 +62,13 @@ func (m *Memory) GetCardImage(ctx context.Context, cardID uint, size string) ([]
 }
 
 func (m *Memory) DownloadImage(ctx context.Context, cardID uint, size string) ([]byte, error) {
+	if cardID == 0 {
+		if dt, err := os.ReadFile(fmt.Sprintf("./files/black-%s.jpg", size)); err != nil {
+			return []byte{}, errors.Wrapf(err, "[memory] failed to get black from filesystem %s", size)
+		} else {
+			return dt, nil
+		}
+	}
 	// get image from remote memory server
 	thousand := model.GetCardThousand(cardID)
 	url := fmt.Sprintf("%s/cards/%d/card-%d-%s.jpg", m.memoryURL, thousand, cardID, size)

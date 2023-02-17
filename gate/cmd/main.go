@@ -83,7 +83,7 @@ func main() {
 		r.GET("/card/:id", cardHandler.Handle)
 		r.GET("/selection", selectionHander.Handle)
 		r.GET("/image/:size/:id", ih.HandleImage)
-		r.GET("/image_hundred/:size/:rank/:hundred", ih.HandleHundred)
+		r.GET("/unity/:mask/:size", ih.HandleUnity)
 		r.GET("/ws", func(c *gin.Context) {
 			websocketHandler.Handle(c.Writer, c.Request)
 		})

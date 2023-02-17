@@ -5,7 +5,6 @@ import (
 	"github.com/artchitector/artchitect/model"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"math"
 	"sync"
 	"time"
 )
@@ -33,13 +32,12 @@ type Creator struct {
 	artist        artist
 	speller       speller
 	notifier      notifier
-	combinator    combinator
 	cardTotalTime uint // in seconds
 	prehotDelay   uint // in seconds
 }
 
-func NewCreator(artist artist, speller speller, notifier notifier, combinator combinator, cardTotalTime uint, prehotDelay uint) *Creator {
-	return &Creator{sync.Mutex{}, artist, speller, notifier, combinator, cardTotalTime, prehotDelay}
+func NewCreator(artist artist, speller speller, notifier notifier, cardTotalTime uint, prehotDelay uint) *Creator {
+	return &Creator{sync.Mutex{}, artist, speller, notifier, cardTotalTime, prehotDelay}
 }
 
 func (c *Creator) CreateWithoutEnjoy(ctx context.Context) (model.Card, error) {
@@ -111,7 +109,7 @@ func (c *Creator) create(ctx context.Context, state *model.CreationState) (model
 		log.Error().Err(err).Msgf("[creator] failed to notify fresh created card")
 	}
 
-	if err := c.updateHundreds(ctx, card.ID); err != nil {
+	if err := c.updateUnity(ctx, card.ID); err != nil {
 		log.Error().Err(err).Msgf("[creator] failed to update hundreds")
 	}
 
@@ -155,32 +153,34 @@ func (c *Creator) enjoy(ctx context.Context, state *model.CreationState, cardSta
 	}
 }
 
-func (c *Creator) updateHundreds(ctx context.Context, id uint) error {
-	start := time.Now()
-
-	if id%model.Rank100 != 0 {
-		// update thumbs only on new 100
-		return nil
-	}
-
-	hundred := uint(math.Floor(float64((id-1)/model.Rank10000))) * model.Rank10000
-	log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank10000, hundred)
-	if err := c.combinator.CombineHundred(ctx, model.Rank10000, hundred); err != nil {
-		return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank10000, id)
-	}
-
-	hundred = uint(math.Floor(float64((id-1)/model.Rank1000))) * model.Rank1000
-	log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank1000, hundred)
-	if err := c.combinator.CombineHundred(ctx, model.Rank1000, hundred); err != nil {
-		return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank1000, id)
-	}
-
-	hundred = uint(math.Floor(float64((id-1)/model.Rank100))) * model.Rank100
-	log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank100, hundred)
-	if err := c.combinator.CombineHundred(ctx, model.Rank100, hundred); err != nil {
-		return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank100, id)
-	}
-
-	log.Info().Msgf("[creator] update hundreds %s", time.Now().Sub(start))
+func (c *Creator) updateUnity(ctx context.Context, id uint) error {
+	log.Info().Msgf("[creator] unity update skipped")
 	return nil
+	//start := time.Now()
+	//
+	//if id%model.Rank100 != 0 {
+	//	// update thumbs only on new 100
+	//	return nil
+	//}
+	//
+	//hundred := uint(math.Floor(float64((id-1)/model.Rank10000))) * model.Rank10000
+	//log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank10000, hundred)
+	//if err := c.combinator.CombineHundred(ctx, model.Rank10000, hundred); err != nil {
+	//	return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank10000, id)
+	//}
+	//
+	//hundred = uint(math.Floor(float64((id-1)/model.Rank1000))) * model.Rank1000
+	//log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank1000, hundred)
+	//if err := c.combinator.CombineHundred(ctx, model.Rank1000, hundred); err != nil {
+	//	return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank1000, id)
+	//}
+	//
+	//hundred = uint(math.Floor(float64((id-1)/model.Rank100))) * model.Rank100
+	//log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank100, hundred)
+	//if err := c.combinator.CombineHundred(ctx, model.Rank100, hundred); err != nil {
+	//	return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank100, id)
+	//}
+	//
+	//log.Info().Msgf("[creator] update hundreds %s", time.Now().Sub(start))
+	//return nil
 }

@@ -26,11 +26,15 @@ type memory interface {
 }
 
 type saver interface {
-	SaveHundred(rank uint, hundred uint, imgFile []byte) error
+	SaveUnity(filename string, imgFile []byte) error
 }
 
 type hundredRepository interface {
 	SaveHundred(rank uint, hundred uint) (model.Hundred, error)
+}
+
+type watermark interface {
+	AddUnityWatermark(originalImage image.Image, mask string) (image.Image, error)
 }
 
 type Combinator struct {
@@ -38,29 +42,23 @@ type Combinator struct {
 	memory            memory
 	saver             saver
 	hundredRepository hundredRepository
+	watermark         watermark
 }
 
-func NewCombinator(cardRepository cardRepository, memory memory, saver saver, hundredRepository hundredRepository) *Combinator {
-	return &Combinator{cardRepository, memory, saver, hundredRepository}
+func NewCombinator(cardRepository cardRepository, memory memory, saver saver, hundredRepository hundredRepository, watermark watermark) *Combinator {
+	return &Combinator{cardRepository, memory, saver, hundredRepository, watermark}
 }
 
-// CombineHundred - combines image matrix from all hundred (take 16 any images and make collage)
-func (c *Combinator) CombineHundred(ctx context.Context, rank uint, hundred uint) error {
+func (c *Combinator) CombineThumb(ctx context.Context, cardIDs []uint, mask string) error {
 	var imgs []image.Image
-	totalImages := Width * Height
-	for i := 0; i < totalImages; i++ {
-		cardID, err := c.cardRepository.GetAnyCardIDFromHundred(ctx, rank, hundred)
+	size := model.SizeS
+	if len(cardIDs) > 16 {
+		size = model.SizeXS
+	}
+	for _, cardID := range cardIDs {
+		imageFile, err := c.memory.DownloadImage(ctx, cardID, size)
 		if err != nil {
-			return errors.Wrapf(err, "[combinator] failed to get card from r:%d h:%d", rank, hundred)
-		}
-		log.Info().Msgf("[combinator] selected card %d for r:%d h:%d", cardID, rank, hundred)
-		if cardID == 0 {
-			log.Info().Msgf("[combinator] empty cardlist r:%d h:%d", rank, hundred)
-			return nil
-		}
-		imageFile, err := c.memory.DownloadImage(ctx, cardID, model.SizeS)
-		if err != nil {
-			return errors.Wrapf(err, "[combinator] failed to get image %d %s", cardID, model.SizeM)
+			return errors.Wrapf(err, "[combinator] failed to get image %d %s", cardID, size)
 		}
 		r := bytes.NewReader(imageFile)
 		img, err := jpeg.Decode(r)
@@ -70,24 +68,26 @@ func (c *Combinator) CombineHundred(ctx context.Context, rank uint, hundred uint
 		imgs = append(imgs, img)
 	}
 
-	totalImg := c.combineTotal(imgs)
-	resizedTotal, err := resizer.ResizeImage(totalImg, model.SizeF)
+	thumb := c.combineTotal(imgs)
+	resizedThumb, err := resizer.ResizeImage(thumb, model.SizeF)
 	if err != nil {
-		return errors.Wrapf(err, "failed to resize total image r:%d h:%d", rank, hundred)
+		return errors.Wrapf(err, "failed to resize total image")
 	}
+
+	resizedThumb, err = c.watermark.AddUnityWatermark(resizedThumb, mask)
+	if err != nil {
+		return errors.Wrapf(err, "failed to resize add watermark")
+	}
+
 	buf := new(bytes.Buffer)
-	if err := jpeg.Encode(buf, resizedTotal, &jpeg.Options{Quality: model.QualityF}); err != nil {
-		return errors.Wrapf(err, "failed to encode total jpeg image r:%d h:%h")
+	if err := jpeg.Encode(buf, resizedThumb, &jpeg.Options{Quality: model.QualityF}); err != nil {
+		return errors.Wrapf(err, "failed to encode total jpeg image")
 	}
-	err = c.saver.SaveHundred(rank, hundred, buf.Bytes())
+	err = c.saver.SaveUnity(mask, buf.Bytes())
 	if err != nil {
 		return errors.Wrapf(err, "[combinator] failed to combine total card")
 	}
-	h, err := c.hundredRepository.SaveHundred(rank, hundred)
-	if err != nil {
-		return errors.Wrapf(err, "[combinator] failed to save hundred r:%d h:%d", rank, hundred)
-	}
-	log.Info().Msgf("[combinator] Saved hundred r:%d h:%d id=%d", rank, hundred, h.ID)
+	log.Info().Msgf("[combinator] combined thumb from %+v", cardIDs)
 	return nil
 }
 

@@ -12,6 +12,7 @@ type Env struct {
 	LotteryEnabled       bool
 	CardCreationEnabled  bool
 	MercifulEnabled      bool
+	UnifierEnabled       bool
 	GifterActive         bool
 	UseFakeArtist        bool
 	Telegram10BotEnabled bool
@@ -71,6 +72,7 @@ func initEnv() *Env {
 		LotteryEnabled:       os.Getenv("LOTTERY_ENABLED") == "true",
 		CardCreationEnabled:  os.Getenv("CARDS_CREATION_ENABLED") == "true",
 		MercifulEnabled:      os.Getenv("MERCIFUL_ENABLED") == "true",
+		UnifierEnabled:       os.Getenv("UNIFIER_ENABLED") == "true",
 		GifterActive:         os.Getenv("GIFTER_ACTIVE") == "true",
 		UseFakeArtist:        os.Getenv("USE_FAKE_ARTIST") == "true",
 		Telegram10BotEnabled: os.Getenv("TELEGRAM_10BOT_ENABLE") == "true",

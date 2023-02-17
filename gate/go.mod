@@ -7,9 +7,9 @@ require (
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/gorilla/websocket v1.5.0
 	github.com/joho/godotenv v1.4.0
-	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.0
 	github.com/stretchr/testify v1.8.1
@@ -18,7 +18,6 @@ require (
 )
 
 require (
-	github.com/artchitector/artchitect/resizer v0.0.0-20230203133021-ba066d64422a // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
@@ -27,7 +26,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
-	github.com/golang-jwt/jwt/v4 v4.4.3 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.13.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
@@ -49,7 +47,7 @@ require (
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	golang.org/x/crypto v0.4.0 // indirect
 	golang.org/x/net v0.4.0 // indirect
-	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

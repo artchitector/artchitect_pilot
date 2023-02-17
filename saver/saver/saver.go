@@ -5,6 +5,7 @@ import (
 	"github.com/artchitector/artchitect/model"
 	"github.com/artchitector/artchitect/resizer"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"os"
 	"path"
 )
@@ -66,6 +67,7 @@ func (h *Saver) SaveUnityImage(filename string, data []byte) error {
 		}
 
 		p := path.Join(folderPath, fmt.Sprintf("%s-%s.jpg", filename, size))
+		log.Info().Msgf("PATH: %s", p)
 		err = os.WriteFile(p, resized, os.ModePerm)
 		if err != nil {
 			return errors.Wrapf(err, "[saver_upload] failed to save file %s", p)

@@ -7,4 +7,5 @@ const (
 	ChannelCreation     = "creation"
 	ChannelNewSelection = "new_selection"
 	ChannelLottery      = "lottery"
+	ChannelUnity        = "unity"
 )

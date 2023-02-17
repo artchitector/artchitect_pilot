@@ -68,6 +68,15 @@ func (n *Notifier) NotifyLottery(ctx context.Context, state model.LotteryState) 
 	return errors.Wrap(err, "[notifier] failed to notify lottery")
 }
 
+func (n *Notifier) NotifyUnity(ctx context.Context, state model.UnityState) error {
+	jsn, err := json.Marshal(state)
+	if err != nil {
+		return errors.Wrap(err, "[notifier] failed to marshal unity state")
+	}
+	err = n.publish(ctx, model.ChannelUnity, jsn)
+	return errors.Wrap(err, "[notifier] failed to notify unity")
+}
+
 func (n *Notifier) publish(ctx context.Context, channel string, data interface{}) error {
 	for key, r := range n.redises {
 		if err := r.Publish(ctx, channel, data).Err(); err != nil {

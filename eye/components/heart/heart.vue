@@ -39,6 +39,7 @@
       </p>
       <creation v-else-if="stateChannel === 'creation'" :state="state"/>
       <heart-lottery v-else-if="stateChannel === 'lottery'" :state="state"/>
+      <unity v-else-if="stateChannel === 'unity'" :state="state"/>
       <p v-else>
         unknown state {{ stateChannel }}
       </p>
@@ -48,9 +49,10 @@
 <script>
 import WsConnection from '../../utils/ws_connection'
 import Creation from "@/components/heart/layout/creation.vue";
+import Unity from "@/components/heart/layout/unity.vue";
 
 export default {
-  components: {Creation},
+  components: {Unity, Creation},
   data() {
     return {
       status: {
@@ -68,7 +70,7 @@ export default {
       this.maintenance = true
       return
     }
-    this.connection = new WsConnection(process.env.WS_URL, '🧡', ['creation', 'lottery'], 10)
+    this.connection = new WsConnection(process.env.WS_URL, '🧡', ['creation', 'lottery', 'unity'], 10)
 
     this.connection.onmessage((channel, state) => {
       console.log('🧡: new message', channel, state)

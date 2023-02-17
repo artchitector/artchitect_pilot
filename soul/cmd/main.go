@@ -17,10 +17,12 @@ import (
 	"github.com/artchitector/artchitect/soul/core/saver"
 	spellerService "github.com/artchitector/artchitect/soul/core/speller"
 	"github.com/artchitector/artchitect/soul/core/storage"
+	"github.com/artchitector/artchitect/soul/core/unifier"
 	"github.com/artchitector/artchitect/soul/core/watermark"
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
 	"github.com/artchitector/artchitect/soul/repository"
 	"github.com/artchitector/artchitect/soul/resources"
+	"github.com/artchitector/artchitect/soul/workers/unity_worker"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -57,6 +59,7 @@ func main() {
 	prayRepo := repository.NewPrayRepository(res.GetDB())
 	selectionRepo := repository.NewSelectionRepository(res.GetDB())
 	hundRepo := repository.NewHundredRepository(res.GetDB())
+	unityRepo := repository.NewUnityRepository(res.GetDB())
 
 	// notifier
 	notifier := notifier2.NewNotifier(res.GetRedises())
@@ -87,12 +90,11 @@ func main() {
 
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
 
-	cmbntr := combinator.NewCombinator(cardsRepo, mmr, sav, hundRepo)
+	cmbntr := combinator.NewCombinator(cardsRepo, mmr, sav, hundRepo, watermarkMaker)
 	creator := creator2.NewCreator(
 		artist,
 		speller,
 		notifier,
-		cmbntr,
 		res.GetEnv().CardTotalTime,
 		res.GetEnv().PrehotDelay,
 	)
@@ -103,11 +105,14 @@ func main() {
 	// merciful
 	merciful := merciful2.NewMerciful(prayRepo, creator, notifier)
 
+	unfr := unifier.NewUnifier(unityRepo, cardsRepo, origin, cmbntr, notifier)
+
 	// Artchitect core scheduler
 	artchitectConfig := artchitectService.Config{
 		CardsCreationEnabled: res.GetEnv().CardCreationEnabled,
 		LotteryEnabled:       res.GetEnv().LotteryEnabled,
 		MercifulEnabled:      res.GetEnv().MercifulEnabled,
+		UnifierEnabled:       res.GetEnv().UnifierEnabled,
 	}
 	artchitect := artchitectService.NewArtchitect(
 		artchitectConfig,
@@ -115,6 +120,7 @@ func main() {
 		lotteryRepo,
 		runner,
 		merciful,
+		unfr,
 		notifier,
 	)
 
@@ -140,10 +146,8 @@ func main() {
 		}()
 	}
 
-	//hw := hundreds.NewHundredsWorker(cardsRepo, hundRepo, cmbntr)
-	//go func() {
-	//	hw.Work(ctx)
-	//}()
+	uw := unity_worker.NewUnityWorker(cardsRepo, unityRepo)
+	uw.Work(ctx)
 
 	// main loop to make artworks
 	var tick int

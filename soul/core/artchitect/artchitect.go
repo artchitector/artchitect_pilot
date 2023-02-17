@@ -19,6 +19,9 @@ type creator interface {
 type merciful interface {
 	AnswerPray(ctx context.Context) (bool, error)
 }
+type unifier interface {
+	WorkOnce(ctx context.Context) (bool, error)
+}
 
 type lotteryRepository interface {
 	GetActiveLottery(ctx context.Context) (model.Lottery, error)
@@ -33,6 +36,7 @@ type Config struct {
 	CardsCreationEnabled bool
 	LotteryEnabled       bool
 	MercifulEnabled      bool
+	UnifierEnabled       bool
 }
 
 type Artchitect struct {
@@ -41,6 +45,7 @@ type Artchitect struct {
 	lotteryRepository lotteryRepository
 	lotteryRunner     lotteryRunner
 	merciful          merciful
+	unifier           unifier
 	notifier          notifier
 }
 
@@ -50,6 +55,7 @@ func NewArtchitect(
 	lotteryRepository lotteryRepository,
 	lotteryRunner lotteryRunner,
 	merciful merciful,
+	unifier unifier,
 	notifier notifier,
 ) *Artchitect {
 	return &Artchitect{
@@ -58,6 +64,7 @@ func NewArtchitect(
 		lotteryRepository,
 		lotteryRunner,
 		merciful,
+		unifier,
 		notifier,
 	}
 }
@@ -76,6 +83,15 @@ func (a *Artchitect) Run(ctx context.Context, tick int) error {
 			return errors.Wrap(err, "failed to get active lottery")
 		} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return a.runLottery(ctx, activeLottery)
+		}
+	}
+	if a.config.UnifierEnabled {
+		worked, err := a.unifierWork(ctx)
+		if err != nil {
+			return errors.Wrap(err, "[artchitect] failed to work with unifier")
+		} else if worked {
+			log.Info().Msgf("[artchitect] made unity")
+			return nil
 		}
 	}
 	if a.config.MercifulEnabled {
@@ -106,6 +122,10 @@ func (a *Artchitect) runCardCreation(ctx context.Context) error {
 
 func (a *Artchitect) runLottery(ctx context.Context, lottery model.Lottery) error {
 	return a.lotteryRunner.RunLottery(ctx, lottery)
+}
+
+func (a *Artchitect) unifierWork(ctx context.Context) (bool, error) {
+	return a.unifier.WorkOnce(ctx)
 }
 
 func (a *Artchitect) maintenance(ctx context.Context) error {

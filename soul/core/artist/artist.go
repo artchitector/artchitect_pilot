@@ -22,7 +22,7 @@ type notifier interface {
 }
 
 type watermark interface {
-	AddWatermark(originalImage image.Image, cardID uint) (image.Image, error)
+	AddCardWatermark(originalImage image.Image, cardID uint) (image.Image, error)
 }
 
 type cardRepository interface {
@@ -145,7 +145,7 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 // add watermark
 func (a *Artist) prepareImage(img image.Image, cardID uint) (image.Image, error) {
 	var err error
-	img, err = a.watermark.AddWatermark(img, cardID)
+	img, err = a.watermark.AddCardWatermark(img, cardID)
 	if err != nil {
 		return nil, errors.Wrap(err, "[artist] failed to add watermark")
 	}
