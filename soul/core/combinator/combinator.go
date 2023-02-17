@@ -10,11 +10,7 @@ import (
 	"golang.org/x/image/draw"
 	"image"
 	"image/jpeg"
-)
-
-const (
-	Width  = 4
-	Height = 4
+	"math"
 )
 
 type cardRepository interface {
@@ -92,11 +88,12 @@ func (c *Combinator) CombineThumb(ctx context.Context, cardIDs []uint, mask stri
 }
 
 func (c *Combinator) combineTotal(imgs []image.Image) image.Image {
+	size := int(math.Sqrt(float64(len(imgs))))
 	first := imgs[0]
-	total := image.NewRGBA(image.Rect(0, 0, first.Bounds().Dx()*Width, first.Bounds().Dy()*Height))
-	for y := 0; y < Height; y++ {
-		for x := 0; x < Width; x++ {
-			idx := y*Width + x
+	total := image.NewRGBA(image.Rect(0, 0, first.Bounds().Dx()*size, first.Bounds().Dy()*size))
+	for y := 0; y < size; y++ {
+		for x := 0; x < size; x++ {
+			idx := y*size + x
 			pnt := image.Point{-x * imgs[idx].Bounds().Dx(), -y * imgs[idx].Bounds().Dy()}
 			draw.Draw(total, total.Bounds(), imgs[idx], pnt, draw.Over)
 			log.Info().Msgf("[combinator] draw over x:%d y:%d idx:%d point:%+v", x, y, idx, pnt)
