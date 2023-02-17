@@ -1,6 +1,7 @@
 <i18n>
 {
   "en": {
+    "subtitle": "unification",
     "unity": "Unity",
     "state": "State",
     "collecting_children": "collect children unities",
@@ -12,6 +13,7 @@
     "thumb": "Collage"
   },
   "ru": {
+    "subtitle": "объединение единств",
     "unity": "Единство",
     "state": "Статус",
     "collecting_children": "собираем дочерние единства",
@@ -26,7 +28,7 @@
 </i18n>
 <template>
   <div>
-    <h3 class="is-size-5 has-text-centered mb-2">объединение единств</h3>
+    <h3 class="is-size-5 has-text-centered mb-2">{{$t('subtitle')}}</h3>
     <div v-for="unification in state.Unifications" class="box" :class="getBoxClass(unification)">
       <div>
         <b>{{ $t('unity') }}</b>: {{ unification.Unity.Mask }}, <b>{{ $t('state') }}</b>: {{ $t(unification.State) }}

@@ -25,7 +25,7 @@
       </div>
     </template>
     <template v-else>
-      <unity-list :unities="unities" visible-count="50" cards-in-column="3"/>
+      <unity-list :unities="unities" visible-count="50" cards-in-column="2"/>
     </template>
   </section>
 </template>

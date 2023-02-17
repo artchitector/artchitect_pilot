@@ -25,7 +25,7 @@
       </div>
     </template>
     <template v-else-if="data.Type === 'unity'">
-      <unity-list :unities="data.Unities" visible-count="10" cards-in-column="5"/>
+      <unity-list :unities="data.Unities" visible-count="10" cards-in-column="2"/>
     </template>
     <template v-else-if="data.Type === 'cards'">
       <p class="has-text-centered">total: {{data.Cards.length}}</p>
