@@ -2,7 +2,7 @@
   <div>
     <div class="columns" v-for="line in lines">
       <div class="column" v-for="hundred in line">
-        <hundred :hundred="hundred"/>
+        <hundred v-if="!!hundred" :hundred="hundred"/>
       </div>
     </div>
   </div>
@@ -33,10 +33,12 @@ export default {
       const chunkSize = parseInt(this.cardsInColumn)
       const chunks = [];
       for (let i = 0; i < hundreds.length; i += chunkSize) {
-        console.log(`i: ${i}, hl: ${hundreds.length} cs: ${chunkSize}`)
-        chunks.push(hundreds.slice(i, i + chunkSize))
+        let chunk = hundreds.slice(i, i + chunkSize)
+        for (let j = chunk.length; j < this.cardsInColumn; j++) {
+          chunk.push(null)
+        }
+        chunks.push(chunk)
       }
-      console.log(chunks)
       return chunks
     }
   },
