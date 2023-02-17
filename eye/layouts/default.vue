@@ -6,7 +6,8 @@
     "lottery": "lottery",
     "selection": "selection",
     "pray": "pray",
-    "liked": "liked"
+    "liked": "liked",
+    "search": "search"
   },
   "ru": {
     "main": "главная",
@@ -14,7 +15,8 @@
     "lottery": "лотерея",
     "selection": "отборное",
     "pray": "молитва",
-    "liked": "нравится"
+    "liked": "нравится",
+    "search": "поиск"
   }
 }
 </i18n>
@@ -42,6 +44,10 @@
         <span> - </span>
         <template v-if="loggedIn">
           <NuxtLink :to="localePath('/liked')">{{$t('liked')}}</NuxtLink>
+          <span> - </span>
+        </template>
+        <template>
+          <NuxtLink :to="localePath('/search')">{{$t('search')}}</NuxtLink>
           <span> - </span>
         </template>
         <NuxtLink :to="switchLocalePath('en')">en</NuxtLink>

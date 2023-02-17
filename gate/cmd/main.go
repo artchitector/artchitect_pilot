@@ -31,6 +31,7 @@ func main() {
 	prayRepo := repository.NewPrayRepository(res.GetDB())
 	selectionRepo := repository.NewSelectionRepository(res.GetDB())
 	likeRepo := repository.NewLikeRepository(res.GetDB())
+	hundRepo := repository.NewHundredRepository(res.GetDB())
 
 	// cache
 	cache := cache2.NewCache(res.GetRedis())
@@ -51,6 +52,7 @@ func main() {
 	prayHandler := handler.NewPrayHandler(prayRepo)
 	lh := handler.NewLoginHandler(res.GetEnv().TelegramABotToken, res.GetEnv().JWTSecret, res.GetEnv().ArtchitectHost)
 	llh := handler.NewLikeHandler(likeRepo, authS)
+	sh := handler.NewSearchHandler(hundRepo, cardsRepo)
 
 	// listeners with websocket handler
 	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo, mmr)
@@ -88,6 +90,10 @@ func main() {
 		r.GET("/login", lh.Handle)
 		r.POST("/like", llh.Handle)
 		r.GET("/liked", llh.HandleList)
+		r.GET("/search", sh.HandleTenKList)
+		r.GET("/search/10000/:hundred", sh.HandleKList)
+		r.GET("/search/1000/:hundred", sh.HandleHList)
+		r.GET("/search/100/:hundred", sh.HandleH)
 
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()

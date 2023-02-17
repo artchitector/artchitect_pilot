@@ -44,3 +44,9 @@ func (pr *CardRepository) GetCard(ctx context.Context, ID uint) (model.Card, err
 		return card, nil
 	}
 }
+
+func (pr *CardRepository) GetHundred(hundred uint) ([]model.Card, error) {
+	var cards []model.Card
+	err := pr.db.Where("id between ? and ?", hundred, hundred+model.Rank100-1).Find(&cards).Error
+	return cards, err
+}
