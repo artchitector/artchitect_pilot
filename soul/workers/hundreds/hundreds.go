@@ -64,6 +64,9 @@ func (w *HundredsWorker) WorkOnce(ctx context.Context) (bool, error) {
 		log.Info().Msgf("[hundreds_worker] start rank %d, maxCard: %d, lastWorkedHundred:%d", r, maxCardID, w.lastWorkedHundred)
 		for h := w.lastWorkedHundred; h < maxCardID; h += r {
 			log.Info().Msgf("[hundreds_worker] Starting work on r:%d h:%d", r, h)
+			if r == model.Rank100 && h == 0 {
+				continue // first 100 elements is empty
+			}
 			_, err := w.hundredsRepo.GetHundred(r, h)
 			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 				return false, errors.Wrapf(err, "[hundreds_worker] failed to get hundred")
