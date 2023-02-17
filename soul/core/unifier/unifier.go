@@ -312,7 +312,7 @@ func (u *Unifier) finishUnification(ctx context.Context, unity model.Unity, stat
 	if err != nil {
 		return model.Unity{}, errors.Wrapf(err, "[unifier] failed finish unity %s", unity.Mask)
 	}
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 2; i++ {
 		select {
 		case <-ctx.Done():
 			return model.Unity{}, nil
