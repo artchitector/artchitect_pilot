@@ -16,7 +16,7 @@ type UploadRequest struct {
 
 type saver interface {
 	SaveImage(cardID uint, data []byte) error
-	SaveHundredImage(rank uint, hundred uint, data []byte) error
+	SaveUnityImage(filename string, data []byte) error
 }
 
 type UploadHandler struct {
@@ -73,63 +73,44 @@ func (h *UploadHandler) Handle(c *gin.Context) {
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 }
 
-func (h *UploadHandler) HandleHundred(c *gin.Context) {
+func (h *UploadHandler) HandleUnity(c *gin.Context) {
 	// single file
 	file, err := c.FormFile("file")
 	if err != nil {
-		log.Error().Err(err).Msgf("[upload:hundred] failed to get file")
+		log.Error().Err(err).Msgf("[upload:unity] failed to get file")
 		c.String(http.StatusBadRequest, errors.Wrap(err, "[saver_upload] failed to get file from form").Error())
 		return
 	}
-	rankStr := c.PostForm("rank")
-	if rankStr == "" {
-		log.Error().Msgf("[upload:hundred] rank must be integer")
-		c.String(http.StatusBadRequest, "rank must be integer")
-		return
-	}
-	rank, err := strconv.Atoi(rankStr)
-	if err != nil {
-		log.Error().Msgf("[upload:hundred] rank must be integer")
-		c.String(http.StatusBadRequest, err.Error())
+	filename := c.PostForm("filename")
+	if filename == "" {
+		log.Error().Msgf("[upload:unity] filename must be")
+		c.String(http.StatusBadRequest, "filename must be")
 		return
 	}
 
-	hundredStr := c.PostForm("hundred")
-	if hundredStr == "" {
-		log.Error().Msgf("[upload:hundred] hundred must be integer")
-		c.String(http.StatusBadRequest, "hundred must be integer")
-		return
-	}
-	hundred, err := strconv.Atoi(hundredStr)
-	if err != nil {
-		log.Error().Msgf("[upload:hundred] hundred must be integer")
-		c.String(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	log.Info().Msgf("[saver_upload] incoming transmission for r:%d h:%d", rank, hundred)
+	log.Info().Msgf("[saver_upload] incoming unity transmission %s", filename)
 
 	f, err := file.Open()
 	if err != nil {
-		log.Error().Err(err).Msgf("[upload:hundred] failed to open file")
+		log.Error().Err(err).Msgf("[upload:unity] failed to open file")
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	data, err := io.ReadAll(f)
 	if err != nil {
-		log.Error().Err(err).Msgf("[upload:hundred] failed to io.ReadAll")
+		log.Error().Err(err).Msgf("[upload:unity] failed to io.ReadAll")
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	if err := h.saver.SaveHundredImage(uint(rank), uint(hundred), data); err != nil {
-		log.Error().Err(err).Msgf("[upload:hundred] failed to SaveHundredImage r:%d h:%d", rank, hundred)
+	if err := h.saver.SaveUnityImage(filename, data); err != nil {
+		log.Error().Err(err).Msgf("[upload:hundred] failed to SaveHundredImage %s", filename)
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	log.Info().Msgf("[upload:HandleHundred] finished save r:%d h:%d", rank, hundred)
+	log.Info().Msgf("[upload:HandleHundred] finished save %s", filename)
 
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 }

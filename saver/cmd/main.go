@@ -39,7 +39,7 @@ func main() {
 
 	res := resources.InitResources()
 	log.Info().Msg("service gate started")
-	svr := saver.NewSaver(res.GetEnv().CardsPath, res.GetEnv().HundredsPath)
+	svr := saver.NewSaver(res.GetEnv().CardsPath, res.GetEnv().UnityPath)
 	uploadHandler := handler.NewUploadHandler(svr)
 
 	go func() {
@@ -52,7 +52,7 @@ func main() {
 			log.Fatal().Err(err).Send()
 		}
 		r.POST("/upload", uploadHandler.Handle)
-		r.POST("/upload_hundred", uploadHandler.HandleHundred)
+		r.POST("/upload_unity", uploadHandler.HandleUnity)
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()
 		}
