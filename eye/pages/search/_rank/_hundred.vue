@@ -25,11 +25,11 @@
       </div>
     </template>
     <template v-else-if="hundreds.length">
-      <hundreds-list :hundreds="hundreds" visible-count="50" cards-in-column="3"/>
+      <hundreds-list :hundreds="hundreds" visible-count="10" cards-in-column="2"/>
     </template>
     <template v-else-if="cards.length">
       <p class="has-text-centered">total: {{cards.length}}</p>
-      <cardlist :cards="cards" cards-in-column="3" card-size="s" visible-count="33"/>
+      <cardlist :cards="cards" cards-in-column="5" card-size="s" visible-count="50" no-tags="true"/>
     </template>
   </section>
 </template>

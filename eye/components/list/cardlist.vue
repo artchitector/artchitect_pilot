@@ -4,7 +4,7 @@
     <div class="columns" v-for="line in lines">
       <div class="column" v-for="card in line">
         <div v-if="!card"></div>
-        <card-complex v-else-if="isComplex" :card="card" @select="select(card.ID)"/>
+        <card-complex v-else-if="isComplex" :card="card" @select="select(card.ID)" :no-tags="noTags"/>
         <card-simple v-else :card-id="card" @select="select(card)"/>
       </div>
     </div>
@@ -26,6 +26,7 @@ export default {
     'cardsInColumn',
     'cardSize',
     'visibleCount', // how many cards show at start of component
+    'noTags'
   ],
   data() {
     return {

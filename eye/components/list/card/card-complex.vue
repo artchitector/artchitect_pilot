@@ -6,7 +6,7 @@
     <div class="version">
       <span class="tag is-primary is-light">{{ card.Version }}</span>
     </div>
-    <p class="is-size-7 tags">{{ card.Spell.Tags }}</p>
+    <p v-if="!noTags" class="is-size-7 tags">{{ card.Spell.Tags }}</p>
     <p class="is-size-7 info">id={{ card.ID }}, <b>seed: {{ card.Spell.Seed }}</b></p>
   </div>
 </template>
@@ -14,7 +14,7 @@
 <script>
 export default {
   name: "card-complex",
-  props: ['card'],
+  props: ['card', 'noTags'],
   methods: {
     select() {
       this.$emit('select')
