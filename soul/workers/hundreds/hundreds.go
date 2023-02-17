@@ -59,6 +59,8 @@ func (w *HundredsWorker) WorkOnce(ctx context.Context) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	maxCardID -= maxCardID % model.Rank100
+	log.Info().Msgf("[hundreds_worker] used maxCardID=%d", maxCardID)
 
 	allDone, err := w.WorkOnceWithRank(ctx, model.Rank10000, maxCardID)
 	if err != nil {

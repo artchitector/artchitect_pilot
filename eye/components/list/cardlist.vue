@@ -3,7 +3,8 @@
     <viewer ref="viewer" @liked="onLiked"/>
     <div class="columns" v-for="line in lines">
       <div class="column" v-for="card in line">
-        <card-complex v-if="isComplex" :card="card" @select="select(card.ID)"/>
+        <div v-if="!card"></div>
+        <card-complex v-else-if="isComplex" :card="card" @select="select(card.ID)"/>
         <card-simple v-else :card-id="card" @select="select(card)"/>
       </div>
     </div>
@@ -41,12 +42,16 @@ export default {
       } else {
         cards = this.cards.slice(0, this.currentVisible)
       }
-      const chunkSize = parseInt(this.cardsInColumn);
-      const chunks = [];
+      const chunkSize = parseInt(this.cardsInColumn)
+      const chunks = []
       for (let i = 0; i < cards.length; i += chunkSize) {
-        chunks.push(cards.slice(i, i + chunkSize));
+        let chunk = cards.slice(i, i + chunkSize)
+        for (let j = chunk.length; j < this.cardsInColumn; j++) {
+          chunk.push(null)
+        }
+        chunks.push(chunk)
       }
-      return chunks;
+      return chunks
     },
     isComplex() {
       return typeof this.cards[0] === 'object';

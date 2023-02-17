@@ -25,7 +25,6 @@
       </div>
     </template>
     <template v-else>
-      <p class="has-text-centered">total: {{hundreds.length}}</p>
       <hundreds-list :hundreds="hundreds" visible-count="50" cards-in-column="3"/>
     </template>
   </section>
