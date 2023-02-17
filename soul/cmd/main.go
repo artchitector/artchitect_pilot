@@ -21,7 +21,6 @@ import (
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
 	"github.com/artchitector/artchitect/soul/repository"
 	"github.com/artchitector/artchitect/soul/resources"
-	"github.com/artchitector/artchitect/soul/workers/hundreds"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -141,10 +140,10 @@ func main() {
 		}()
 	}
 
-	hw := hundreds.NewHundredsWorker(cardsRepo, hundRepo, cmbntr)
-	go func() {
-		hw.Work(ctx)
-	}()
+	//hw := hundreds.NewHundredsWorker(cardsRepo, hundRepo, cmbntr)
+	//go func() {
+	//	hw.Work(ctx)
+	//}()
 
 	// main loop to make artworks
 	var tick int
