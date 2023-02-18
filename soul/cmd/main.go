@@ -146,19 +146,6 @@ func main() {
 		}()
 	}
 
-	//uw := unity_worker.NewUnityWorker(cardsRepo, unityRepo)
-	//uw.Work(ctx)
-
-	ids := []uint{79200}
-	for _, id := range ids {
-		_, err = unfr.UpdateUnitiesByNewCard(ctx, id) // will update U7XXXX, U73XXX, U739XX
-		if err != nil {
-			log.Fatal().Err(err).Send()
-		}
-	}
-
-	//return
-
 	// main loop to make artworks
 	var tick int
 mainFor:
