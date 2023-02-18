@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -41,12 +42,16 @@ func (lh *LikeHandler) Handle(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	log.Info().Msgf("userID is %d, artchitector is %d")
 	if like.Liked && userID == lh.artchitector {
 		// send this card to infinite
-		if err := lh.bot.SendCardToInfinite(c, r.CardID, ""); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+		go func() {
+			if err := lh.bot.SendCardToInfinite(c, r.CardID, ""); err != nil {
+				log.Error().Err(err).Msgf("[like_handler] failed send card %d to infite after like of %d", r.CardID, userID)
+			} else {
+				log.Info().Msgf("[like_handler] sent card %d to infinite after like of %d", r.CardID, userID)
+			}
+		}()
 	}
 
 	c.JSON(http.StatusOK, like)
