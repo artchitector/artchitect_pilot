@@ -272,7 +272,8 @@ func (u *Unifier) fillChildren(ctx context.Context, unity model.Unity, state *mo
 		state.SetState(model.UnityStateUnifyChildren, idx+1, len(unity.Children))
 		u.notify(ctx, state)
 
-		if child.State == model.UnityStateUnified {
+		if child.State == model.UnityStateUnified || child.State == model.UnityStateSkipped {
+			// skipped unity will only rebuild on reunification
 			continue
 		}
 		log.Info().Msgf("[unifier] unify child %s", child.Mask)
