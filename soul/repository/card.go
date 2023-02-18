@@ -144,3 +144,14 @@ func (pr *CardRepository) GetMaxCardID(ctx context.Context) (uint, error) {
 	err := pr.db.Select("max(id)").Model(&model.Card{}).Scan(&id).Error
 	return id, err
 }
+
+func (pr *CardRepository) GetPreviousCardID(ctx context.Context, cardID uint) (uint, error) {
+	var id uint
+	err := pr.db.Select("id").
+		Model(&model.Card{}).
+		Where("id < ?", cardID).
+		Order("id desc").
+		Limit(1).
+		Scan(&id).Error
+	return id, err
+}

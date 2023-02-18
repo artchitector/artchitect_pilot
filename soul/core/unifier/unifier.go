@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
+	"math"
 	"strings"
 	"time"
 )
@@ -15,16 +16,23 @@ import (
 const Thumb100Size = 4
 const Thumb1000Size = 6
 const Thumb10000Size = 8
+const UpdatePeriod10000 = 100 // Единство 10к обновляется каждые 100 карточек
+const UpdatePeriod1000 = 50   // Единство 1к обновляется каждые 50 карточек
+const UpdatePeriod100 = 10    // Единство 100 обновляется каждые 10 карточек
 
 type unityRepository interface {
 	GetUnity(mask string) (model.Unity, error)
 	CreateUnity(mask string) (model.Unity, error)
+	CreateUnityByCard(cardID uint, rank uint) (model.Unity, error)
 	SaveUnity(unity model.Unity) (model.Unity, error)
 	GetNextUnityForWork() (model.Unity, error)
+	GetUnityByCard(cardID uint, rank uint) (model.Unity, error)
 }
 
 type cardRepository interface {
 	GetAnyCardIDFromHundred(ctx context.Context, rank uint, start uint) (uint, error)
+	GetPreviousCardID(ctx context.Context, cardID uint) (uint, error)
+	GetCard(ctx context.Context, ID uint) (model.Card, error)
 }
 
 type origin interface {
@@ -64,6 +72,98 @@ func (u *Unifier) WorkOnce(ctx context.Context) (bool, error) {
 		return false, errors.Wrapf(err, "[unifier] failed to Unify %s", un.Mask)
 	}
 	return true, nil
+}
+
+func (u *Unifier) UpdateUnitiesByNewCard(ctx context.Context, cardID uint) (bool, error) {
+	// Когда создаётся новая картина, то в это время нужно обновить единства, в которых она состоит.
+	// Каждая картина входит в единство сотня, тысяча, десятитысяча (а в будущем и для 100к тоже будет единство).
+	// Процесс обновления единств тяжелый, поэтому обновление не каждую карточку
+	// Для десятитысячного единства каждые 100 карточек, для тысячного единства 50 карточек, а для сотни каждые 10 карточек
+	// Для понимания перехода через 100, 50 и 10 карточек берётся ID предыдущей карточки.
+	// Это для неё перестраивается единство, а не для текущей
+	prevCardID, err := u.cardRepository.GetPreviousCardID(ctx, cardID)
+	if err != nil {
+		return false, errors.Wrapf(err, "[unifier] failed to GetPreviousCardID for %d", cardID)
+	}
+
+	worked := false
+
+	// working with update of 10k unity
+	if int(math.Floor(float64(prevCardID/UpdatePeriod10000))) != int(math.Floor(float64(cardID/UpdatePeriod10000))) {
+		log.Info().Msgf("[unifier] there is %d-class change between cards prev:%d and new:%d", model.Rank10000, prevCardID, cardID)
+		// need update 10k unity
+		if un, err := u.unityRepository.GetUnityByCard(prevCardID, model.Rank10000); err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.Wrapf(err, "[unifier] failed to find unity-%d for card %d", model.Rank10000, cardID)
+		} else if errors.Is(err, gorm.ErrRecordNotFound) {
+			// just create new unity
+			un, err = u.unityRepository.CreateUnityByCard(prevCardID, model.Rank10000)
+			if err != nil {
+				return false, errors.Wrapf(err, "[unifier] failed to find unity-%d for card %d", model.Rank10000, cardID)
+			}
+			log.Info().Msgf("[unifier] created unity %s/%d for card %d", un.Mask, un.Rank, prevCardID)
+			worked = true
+		} else {
+			// unity already exists
+			un.State = model.UnityStateReunification
+			if _, err := u.unityRepository.SaveUnity(un); err != nil {
+				return false, errors.Wrapf(err, "[unifier] failed to update unity-%s for card %d", un.Mask, cardID)
+			}
+			log.Info().Msgf("[unifier] reunify unity %s/%d for card %d", un.Mask, un.Rank, prevCardID)
+			worked = true
+		}
+	}
+
+	// working with update of 1k unity
+	if int(math.Floor(float64(prevCardID/UpdatePeriod1000))) != int(math.Floor(float64(cardID/UpdatePeriod1000))) {
+		log.Info().Msgf("[unifier] there is %d-class change between cards prev:%d and new:%d", model.Rank1000, prevCardID, cardID)
+		// need update 1k unity
+		if un, err := u.unityRepository.GetUnityByCard(prevCardID, model.Rank1000); err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.Wrapf(err, "[unifier] failed to find unity-%d for card %d", model.Rank1000, cardID)
+		} else if errors.Is(err, gorm.ErrRecordNotFound) {
+			// just create new unity
+			un, err = u.unityRepository.CreateUnityByCard(prevCardID, model.Rank1000)
+			if err != nil {
+				return false, errors.Wrapf(err, "[unifier] failed to find unity-%d for card %d", model.Rank1000, cardID)
+			}
+			log.Info().Msgf("[unifier] created unity %s/%d for card %d", un.Mask, un.Rank, prevCardID)
+			worked = true
+		} else {
+			// unity already exists
+			un.State = model.UnityStateReunification
+			if _, err := u.unityRepository.SaveUnity(un); err != nil {
+				return false, errors.Wrapf(err, "[unifier] failed to update unity-%s for card %d", un.Mask, cardID)
+			}
+			log.Info().Msgf("[unifier] reunify unity %s/%d for card %d", un.Mask, un.Rank, prevCardID)
+			worked = true
+		}
+	}
+
+	// working with update of 100 unity
+	if int(math.Floor(float64(prevCardID/UpdatePeriod100))) != int(math.Floor(float64(cardID/UpdatePeriod100))) {
+		log.Info().Msgf("[unifier] there is %d-class change between cards prev:%d and new:%d", model.Rank100, prevCardID, cardID)
+		// need update 1k unity
+		if un, err := u.unityRepository.GetUnityByCard(prevCardID, model.Rank100); err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.Wrapf(err, "[unifier] failed to find unity-%d for card %d", model.Rank100, cardID)
+		} else if errors.Is(err, gorm.ErrRecordNotFound) {
+			// just create new unity
+			un, err = u.unityRepository.CreateUnityByCard(prevCardID, model.Rank100)
+			if err != nil {
+				return false, errors.Wrapf(err, "[unifier] failed to find unity-%d for card %d", model.Rank100, cardID)
+			}
+			log.Info().Msgf("[unifier] created unity %s/%d for card %d", un.Mask, un.Rank, prevCardID)
+			worked = true
+		} else {
+			// unity already exists
+			un.State = model.UnityStateReunification
+			if _, err := u.unityRepository.SaveUnity(un); err != nil {
+				return false, errors.Wrapf(err, "[unifier] failed to update unity-%s for card %d", un.Mask, cardID)
+			}
+			log.Info().Msgf("[unifier] reunify unity %s/%d for card %d", un.Mask, un.Rank, prevCardID)
+			worked = true
+		}
+	}
+
+	return worked, nil
 }
 
 /*
@@ -189,6 +289,9 @@ func (u *Unifier) fillChildren(ctx context.Context, unity model.Unity, state *mo
 }
 
 func (u *Unifier) promoteLeads(ctx context.Context, unity model.Unity, state *model.UnityState) (model.Unity, error) {
+	if unity.State == model.UnityStateReunification || unity.State == model.UnityStateSkipped {
+		unity.Leads = ""
+	}
 	if unity.Rank == model.Rank100 {
 		leadsCount := Thumb100Size * Thumb100Size
 		if unity.Leads != "" {
@@ -216,10 +319,19 @@ func (u *Unifier) promoteLeads(ctx context.Context, unity model.Unity, state *mo
 				return model.Unity{}, nil
 			default:
 			}
-			lead, err := u.cardRepository.GetAnyCardIDFromHundred(ctx, model.Rank100, unity.Start())
+
+			selection, err := u.origin.Select(ctx, model.Rank100)
 			if err != nil {
-				return model.Unity{}, errors.Wrapf(err, "[unifier] failed to get card for lead. i=%d", i)
+				return model.Unity{}, errors.Wrapf(err, "[unifier] failed to get data from origin")
 			}
+			lead := unity.Start() + selection // Выбираем даже несуществующие карточки. Они будут заполняться чёрным цветом.
+			if _, err := u.cardRepository.GetCard(ctx, lead); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+				log.Info().Msgf("[unifier] not found lead card %d, use 0", lead)
+				lead = 0
+			} else if err != nil {
+				return model.Unity{}, errors.Wrapf(err, "[unifier] failed to check card %d existence", lead)
+			}
+
 			log.Info().Msgf("[unifier] selected lead %d for %s", lead, unity.Mask)
 			leads = append(leads, lead)
 			state.AddLead(lead)
@@ -307,7 +419,24 @@ func (u *Unifier) saveThumb(ctx context.Context, unity model.Unity, state *model
 }
 
 func (u *Unifier) finishUnification(ctx context.Context, unity model.Unity, state *model.UnityState) (model.Unity, error) {
-	unity.State = model.UnityStateUnified
+	unityState := model.UnityStateSkipped
+
+	if unity.Leads == "" {
+		log.Info().Msgf("[unifier] unity %s have no leads", unity)
+		unity.State = model.UnityStateSkipped
+	} else {
+		var leads []uint
+		if err := json.Unmarshal([]byte(unity.Leads), &leads); err != nil {
+			return model.Unity{}, errors.Wrapf(err, "[unifier] failed to unmarshal leads")
+		}
+		for _, lead := range leads {
+			if lead > 0 {
+				unityState = model.UnityStateUnified
+			}
+		}
+	}
+
+	unity.State = unityState
 	saved, err := u.unityRepository.SaveUnity(unity)
 	if err != nil {
 		return model.Unity{}, errors.Wrapf(err, "[unifier] failed finish unity %s", unity.Mask)
@@ -323,7 +452,7 @@ func (u *Unifier) finishUnification(ctx context.Context, unity model.Unity, stat
 		u.notify(ctx, state)
 		time.Sleep(time.Second)
 	}
-	log.Info().Msgf("[unifier] finished unity %s", unity.Mask)
+	log.Info().Msgf("[unifier] finished unity %s with state %s", unity, unity.State)
 	return saved, nil
 }
 

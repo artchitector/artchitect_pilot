@@ -22,7 +22,6 @@ import (
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
 	"github.com/artchitector/artchitect/soul/repository"
 	"github.com/artchitector/artchitect/soul/resources"
-	"github.com/artchitector/artchitect/soul/workers/unity_worker"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -91,10 +90,13 @@ func main() {
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
 
 	cmbntr := combinator.NewCombinator(cardsRepo, mmr, sav, hundRepo, watermarkMaker)
+	unfr := unifier.NewUnifier(unityRepo, cardsRepo, origin, cmbntr, notifier)
+
 	creator := creator2.NewCreator(
 		artist,
 		speller,
 		notifier,
+		unfr,
 		res.GetEnv().CardTotalTime,
 		res.GetEnv().PrehotDelay,
 	)
@@ -104,8 +106,6 @@ func main() {
 
 	// merciful
 	merciful := merciful2.NewMerciful(prayRepo, creator, notifier)
-
-	unfr := unifier.NewUnifier(unityRepo, cardsRepo, origin, cmbntr, notifier)
 
 	// Artchitect core scheduler
 	artchitectConfig := artchitectService.Config{
@@ -146,8 +146,18 @@ func main() {
 		}()
 	}
 
-	uw := unity_worker.NewUnityWorker(cardsRepo, unityRepo)
-	uw.Work(ctx)
+	//uw := unity_worker.NewUnityWorker(cardsRepo, unityRepo)
+	//uw.Work(ctx)
+
+	ids := []uint{79200}
+	for _, id := range ids {
+		_, err = unfr.UpdateUnitiesByNewCard(ctx, id) // will update U7XXXX, U73XXX, U739XX
+		if err != nil {
+			log.Fatal().Err(err).Send()
+		}
+	}
+
+	//return
 
 	// main loop to make artworks
 	var tick int

@@ -55,13 +55,14 @@ func (c *Combinator) CombineThumb(ctx context.Context, cardIDs []uint, mask stri
 		imageFile, err := c.memory.DownloadImage(ctx, cardID, size)
 		if err != nil {
 			return errors.Wrapf(err, "[combinator] failed to get image %d %s", cardID, size)
+		} else {
+			r := bytes.NewReader(imageFile)
+			img, err := jpeg.Decode(r)
+			if err != nil {
+				return errors.Wrapf(err, "[combinator] failed to decode jpeg %d %s", cardID, model.SizeM)
+			}
+			imgs = append(imgs, img)
 		}
-		r := bytes.NewReader(imageFile)
-		img, err := jpeg.Decode(r)
-		if err != nil {
-			return errors.Wrapf(err, "[combinator] failed to decode jpeg %d %s", cardID, model.SizeM)
-		}
-		imgs = append(imgs, img)
 	}
 
 	thumb := c.combineTotal(imgs)

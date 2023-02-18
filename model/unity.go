@@ -10,6 +10,7 @@ import (
 
 const (
 	UnityStateEmpty         = "empty"
+	UnityStateSkipped       = "skipped"
 	UnityStateUnified       = "unified"
 	UnityStateReunification = "reunification"
 )

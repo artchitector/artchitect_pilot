@@ -42,6 +42,7 @@
           <span v-if="child.State === 'empty'" class="tag is-light mr-2">{{ child.Mask }}</span>
           <span v-else-if="child.State === 'unified'" class="tag is-success mr-2">{{ child.Mask }}</span>
           <span v-else-if="child.State === 'reunification'" class="tag is-danger mr-2">{{ child.Mask }}</span>
+          <span v-else-if="child.State === 'skipped'" class="tag is-dark mr-2">{{ child.Mask }}</span>
         </template>
       </div>
       <div v-if="!!unification.Thumb" class="has-text-centered">

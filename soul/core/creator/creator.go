@@ -22,8 +22,8 @@ type notifier interface {
 	NotifyCreationState(ctx context.Context, state model.CreationState) error
 }
 
-type combinator interface {
-	CombineHundred(ctx context.Context, rank uint, hundred uint) error
+type unifier interface {
+	UpdateUnitiesByNewCard(ctx context.Context, cardID uint) (bool, error)
 }
 
 // Creator used to make new Card with no input data. Used by Artchitect and Merciful
@@ -32,12 +32,13 @@ type Creator struct {
 	artist        artist
 	speller       speller
 	notifier      notifier
+	unifier       unifier
 	cardTotalTime uint // in seconds
 	prehotDelay   uint // in seconds
 }
 
-func NewCreator(artist artist, speller speller, notifier notifier, cardTotalTime uint, prehotDelay uint) *Creator {
-	return &Creator{sync.Mutex{}, artist, speller, notifier, cardTotalTime, prehotDelay}
+func NewCreator(artist artist, speller speller, notifier notifier, unifier unifier, cardTotalTime uint, prehotDelay uint) *Creator {
+	return &Creator{sync.Mutex{}, artist, speller, notifier, unifier, cardTotalTime, prehotDelay}
 }
 
 func (c *Creator) CreateWithoutEnjoy(ctx context.Context) (model.Card, error) {
@@ -154,33 +155,10 @@ func (c *Creator) enjoy(ctx context.Context, state *model.CreationState, cardSta
 }
 
 func (c *Creator) updateUnity(ctx context.Context, id uint) error {
-	log.Info().Msgf("[creator] unity update skipped")
+	worked, err := c.unifier.UpdateUnitiesByNewCard(ctx, id)
+	if err != nil {
+		return errors.Wrapf(err, "[creator] failed to updateUnities for card %d", id)
+	}
+	log.Info().Msgf("[creator] unifier worked=%t for card %d", worked, id)
 	return nil
-	//start := time.Now()
-	//
-	//if id%model.Rank100 != 0 {
-	//	// update thumbs only on new 100
-	//	return nil
-	//}
-	//
-	//hundred := uint(math.Floor(float64((id-1)/model.Rank10000))) * model.Rank10000
-	//log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank10000, hundred)
-	//if err := c.combinator.CombineHundred(ctx, model.Rank10000, hundred); err != nil {
-	//	return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank10000, id)
-	//}
-	//
-	//hundred = uint(math.Floor(float64((id-1)/model.Rank1000))) * model.Rank1000
-	//log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank1000, hundred)
-	//if err := c.combinator.CombineHundred(ctx, model.Rank1000, hundred); err != nil {
-	//	return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank1000, id)
-	//}
-	//
-	//hundred = uint(math.Floor(float64((id-1)/model.Rank100))) * model.Rank100
-	//log.Info().Msgf("[creator] combine rank for previous %d - %d", model.Rank100, hundred)
-	//if err := c.combinator.CombineHundred(ctx, model.Rank100, hundred); err != nil {
-	//	return errors.Wrapf(err, "[creator] failed call combinator for rank %d and card ID=%d", model.Rank100, id)
-	//}
-	//
-	//log.Info().Msgf("[creator] update hundreds %s", time.Now().Sub(start))
-	//return nil
 }

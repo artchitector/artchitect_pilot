@@ -73,7 +73,7 @@ func (uh *UnityHandler) HandleUnity(c *gin.Context) {
 	}
 
 	// else model.Rank1000 or model.Rank10000 - get subunities
-	unities, err := uh.unityRepository.GetChildUnities(unity.Mask)
+	unities, err := uh.unityRepository.GetChildUnifiedUnities(unity.Mask)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

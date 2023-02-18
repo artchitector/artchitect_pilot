@@ -57,5 +57,5 @@ type hundredRepository interface {
 type unityRepository interface {
 	GetUnity(mask string) (model.Unity, error)
 	GetRootUnities() ([]model.Unity, error)
-	GetChildUnities(parentMask string) ([]model.Unity, error)
+	GetChildUnifiedUnities(parentMask string) ([]model.Unity, error)
 }

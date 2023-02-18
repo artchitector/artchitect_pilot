@@ -27,12 +27,12 @@ func (ur *UnityRepository) GetRootUnities() ([]model.Unity, error) {
 	return unities, err
 }
 
-func (ur *UnityRepository) GetChildUnities(parentMask string) ([]model.Unity, error) {
+func (ur *UnityRepository) GetChildUnifiedUnities(parentMask string) ([]model.Unity, error) {
 	submasks := make([]string, 0, 10)
 	for i := 0; i < 10; i++ {
 		submasks = append(submasks, strings.Replace(parentMask, "X", fmt.Sprintf("%d", i), 1))
 	}
 	var unities []model.Unity
-	err := ur.db.Where("mask in (?)", submasks).Order("mask desc").Find(&unities).Error
+	err := ur.db.Where("mask in (?)", submasks).Where("state = ?", model.UnityStateUnified).Order("mask desc").Find(&unities).Error
 	return unities, err
 }

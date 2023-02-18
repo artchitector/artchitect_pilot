@@ -1,8 +1,11 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/artchitector/artchitect/model"
 	"gorm.io/gorm"
+	"log"
+	"math"
 	"strings"
 )
 
@@ -52,4 +55,38 @@ func (ur *UnityRepository) GetNextUnityForWork() (model.Unity, error) {
 		Order("created_at asc").
 		First(&unity).Error
 	return unity, err
+}
+
+func (ur *UnityRepository) CreateUnityByCard(cardID uint, rank uint) (model.Unity, error) {
+	mask := calculateMask(cardID, rank)
+	un := model.Unity{
+		Mask:  mask,
+		Rank:  rank,
+		State: model.UnityStateEmpty,
+	}
+	err := ur.db.Save(&un).Error
+	return un, err
+}
+
+func (ur *UnityRepository) GetUnityByCard(cardID uint, rank uint) (model.Unity, error) {
+	mask := calculateMask(cardID, rank)
+	var un model.Unity
+	err := ur.db.Where("mask = ?", mask).First(&un).Error
+	return un, err
+}
+
+func calculateMask(cardID uint, rank uint) string {
+	normalized := int(math.Floor(float64(cardID) / float64(rank)))
+	var mask string
+	switch rank {
+	case model.Rank10000:
+		mask = fmt.Sprintf("%dXXXX", normalized)
+	case model.Rank1000:
+		mask = fmt.Sprintf("%dXXX", normalized)
+	case model.Rank100:
+		mask = fmt.Sprintf("%dXX", normalized)
+	default:
+		log.Fatalf("[unity_repo] unknown rank %d", rank)
+	}
+	return mask
 }
