@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"github.com/artchitector/artchitect/bot"
 	cache2 "github.com/artchitector/artchitect/gate/cache"
+	"github.com/artchitector/artchitect/gate/fake"
 	"github.com/artchitector/artchitect/gate/handler"
 	"github.com/artchitector/artchitect/gate/listener"
-	"github.com/artchitector/artchitect/gate/repository"
 	"github.com/artchitector/artchitect/gate/resources"
 	"github.com/artchitector/artchitect/memory"
+	repository2 "github.com/artchitector/artchitect/model/repository"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -26,12 +28,12 @@ func main() {
 	log.Info().Msg("service gate started")
 
 	// repos
-	cardsRepo := repository.NewCardRepository(res.GetDB())
-	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
-	prayRepo := repository.NewPrayRepository(res.GetDB())
-	selectionRepo := repository.NewSelectionRepository(res.GetDB())
-	likeRepo := repository.NewLikeRepository(res.GetDB())
-	unityRepo := repository.NewUnityRepository(res.GetDB())
+	cardsRepo := repository2.NewCardRepository(res.GetDB(), &fake.FakeOrigin{})
+	lotteryRepo := repository2.NewLotteryRepository(res.GetDB())
+	prayRepo := repository2.NewPrayRepository(res.GetDB())
+	selectionRepo := repository2.NewSelectionRepository(res.GetDB())
+	likeRepo := repository2.NewLikeRepository(res.GetDB())
+	unityRepo := repository2.NewUnityRepository(res.GetDB())
 
 	// cache
 	cache := cache2.NewCache(res.GetRedis())
@@ -39,6 +41,15 @@ func main() {
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, cache)
 	enhotter := cache2.NewEnhotter(cardsRepo, selectionRepo, cache, mmr)
 	enhotter.Run(ctx)
+
+	artchitectBot := bot.NewBot(
+		res.GetEnv().Telegram10BotToken,
+		cardsRepo,
+		mmr,
+		res.GetEnv().ChatIDArtchitector,
+		res.GetEnv().ChatID10,
+		res.GetEnv().ChatIDInfinite,
+	)
 
 	// handlers
 	lastCardsHandler := handler.NewLastCardsHandler(cardsRepo, cache)
@@ -51,7 +62,7 @@ func main() {
 	selectionHander := handler.NewSelectionHandler(selectionRepo)
 	prayHandler := handler.NewPrayHandler(prayRepo)
 	lh := handler.NewLoginHandler(res.GetEnv().TelegramABotToken, res.GetEnv().JWTSecret, res.GetEnv().ArtchitectHost)
-	llh := handler.NewLikeHandler(likeRepo, authS)
+	llh := handler.NewLikeHandler(likeRepo, authS, artchitectBot, uint(res.GetEnv().ChatIDArtchitector))
 	uh := handler.NewUnityHandler(unityRepo, cardsRepo)
 	ih := handler.NewImageHandler(mmr)
 
@@ -101,5 +112,5 @@ func main() {
 	}()
 
 	<-ctx.Done()
-	log.Info().Msg("gate.Run finished")
+	log.Info().Msg("gate.Setup finished")
 }

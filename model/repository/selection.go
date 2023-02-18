@@ -30,3 +30,8 @@ func (r *SelectionRepository) GetSelectionLimit(ctx context.Context, limit int) 
 		Find(&ids).Error
 	return ids, err
 }
+
+func (r *SelectionRepository) SaveSelection(ctx context.Context, selected model.Selection) (model.Selection, error) {
+	err := r.db.Save(&selected).Error
+	return selected, err
+}

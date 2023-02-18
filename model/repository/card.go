@@ -22,6 +22,49 @@ func NewCardRepository(db *gorm.DB, origin origin) *CardRepository {
 	return &CardRepository{db, origin}
 }
 
+func (pr *CardRepository) GetLastCards(ctx context.Context, count uint) ([]model.Card, error) {
+	cards := make([]model.Card, 0, count)
+	err := pr.db.
+		Joins("Spell").
+		Limit(int(count)).
+		Order("cards.id desc").
+		Limit(int(count)).
+		Find(&cards).
+		Error
+	if err != nil {
+		return []model.Card{}, errors.Wrapf(err, "failed to get cards count=%d", count)
+	}
+
+	return cards, err
+}
+
+func (pr *CardRepository) GetCard(ctx context.Context, ID uint) (model.Card, error) {
+	card := model.Card{}
+	err := pr.db.
+		Joins("Spell").
+		Where("cards.id = ?", ID).
+		Last(&card).
+		Error
+	if err != nil {
+		return card, errors.Wrapf(err, "[card_repository] failed to find card %d", ID)
+	} else {
+		return card, nil
+	}
+}
+
+func (pr *CardRepository) GetCardsByRange(start uint, end uint) ([]model.Card, error) {
+	var cards []model.Card
+	log.Info().Msgf("[card_repo] get cards between %d and %d", start, end)
+	err := pr.db.Joins("Spell").Where("cards.id between ? and ?", start, end).Find(&cards).Error
+	return cards, err
+}
+
+func (pr *CardRepository) GetCards(ctx context.Context, IDs []uint) ([]model.Card, error) {
+	var cards []model.Card
+	err := pr.db.Joins("Spell").Where("cards.id in (?)", IDs).Find(&cards).Error
+	return cards, err
+}
+
 func (pr *CardRepository) SaveCard(ctx context.Context, painting model.Card) (model.Card, error) {
 	err := pr.db.Save(&painting).Error
 	return painting, err
@@ -123,20 +166,6 @@ func (pr *CardRepository) GetLastCardPaintTime(ctx context.Context) (uint, error
 	var paintTime uint
 	err := pr.db.Select("paint_time").Model(&model.Card{}).Order("id desc").Limit(1).Scan(&paintTime).Error
 	return paintTime, err
-}
-
-func (pr *CardRepository) GetCard(ctx context.Context, ID uint) (model.Card, error) {
-	card := model.Card{}
-	err := pr.db.
-		Joins("Spell").
-		Where("cards.id = ?", ID).
-		Last(&card).
-		Error
-	if err != nil {
-		return card, errors.Wrapf(err, "[card_repository] failed to find card %d", ID)
-	} else {
-		return card, nil
-	}
 }
 
 func (pr *CardRepository) GetMaxCardID(ctx context.Context) (uint, error) {

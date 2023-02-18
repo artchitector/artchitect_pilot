@@ -19,3 +19,8 @@ func (dr *SpellRepository) GetLastSpell(ctx context.Context) (model.Spell, error
 	err := dr.db.Last(&spell).Error
 	return spell, err
 }
+
+func (sr *SpellRepository) Save(ctx context.Context, spell model.Spell) (model.Spell, error) {
+	err := sr.db.Save(&spell).Error
+	return spell, err
+}

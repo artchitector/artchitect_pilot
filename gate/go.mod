@@ -3,7 +3,7 @@ module github.com/artchitector/artchitect/gate
 go 1.19
 
 require (
-	github.com/artchitector/artchitect/model v0.0.0-20230217185131-a4c60f83382d
+	github.com/artchitector/artchitect/model v0.0.0-20230218165646-d26ddb6213b8
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis/v8 v8.11.5
@@ -18,6 +18,7 @@ require (
 )
 
 require (
+	github.com/artchitector/artchitect/bot v0.0.0-20230218165646-d26ddb6213b8 // indirect
 	github.com/artchitector/artchitect/memory v0.0.0-20230217185131-a4c60f83382d // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -26,6 +27,7 @@ require (
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
+	github.com/go-telegram/bot v0.5.1 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.13.0 // indirect
@@ -58,4 +60,6 @@ require (
 replace github.com/artchitector/artchitect/model => ../model
 
 replace github.com/artchitector/artchitect/resizer => ../resizer
+
 replace github.com/artchitector/artchitect/memory => ../memory
+replace github.com/artchitector/artchitect/bot => ../bot

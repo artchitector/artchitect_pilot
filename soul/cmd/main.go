@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
+	"github.com/artchitector/artchitect/bot"
 	"github.com/artchitector/artchitect/memory"
+	"github.com/artchitector/artchitect/model/repository"
 	artchitectService "github.com/artchitector/artchitect/soul/core/artchitect"
 	artistService "github.com/artchitector/artchitect/soul/core/artist"
 	engine2 "github.com/artchitector/artchitect/soul/core/artist/engine"
-	"github.com/artchitector/artchitect/soul/core/bot"
 	"github.com/artchitector/artchitect/soul/core/combinator"
 	creator2 "github.com/artchitector/artchitect/soul/core/creator"
 	"github.com/artchitector/artchitect/soul/core/gifter"
@@ -20,7 +21,6 @@ import (
 	"github.com/artchitector/artchitect/soul/core/unifier"
 	"github.com/artchitector/artchitect/soul/core/watermark"
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
-	"github.com/artchitector/artchitect/soul/repository"
 	"github.com/artchitector/artchitect/soul/resources"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -57,7 +57,6 @@ func main() {
 	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
 	prayRepo := repository.NewPrayRepository(res.GetDB())
 	selectionRepo := repository.NewSelectionRepository(res.GetDB())
-	hundRepo := repository.NewHundredRepository(res.GetDB())
 	unityRepo := repository.NewUnityRepository(res.GetDB())
 
 	// notifier
@@ -89,7 +88,7 @@ func main() {
 
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
 
-	cmbntr := combinator.NewCombinator(cardsRepo, mmr, sav, hundRepo, watermarkMaker)
+	cmbntr := combinator.NewCombinator(cardsRepo, mmr, sav, watermarkMaker)
 	unfr := unifier.NewUnifier(unityRepo, cardsRepo, origin, cmbntr, notifier)
 
 	creator := creator2.NewCreator(
@@ -133,7 +132,7 @@ func main() {
 		res.GetEnv().ChatIDInfinite,
 	)
 	if res.GetEnv().Telegram10BotEnabled {
-		go artchitectBot.Run(ctx)
+		go artchitectBot.Start(ctx)
 	}
 
 	// gifter
@@ -162,5 +161,5 @@ mainFor:
 		}
 	}
 
-	log.Info().Msg("[main] soul.Run finished")
+	log.Info().Msg("[main] soul.Setup finished")
 }

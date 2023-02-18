@@ -1,6 +1,8 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/Masterminds/semver/v3 v3.1.1 h1:hLg3sBzpNErnxhQtUy/mmLR2I9foDujNK030IGemrRc=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
+github.com/artchitector/artchitect/bot v0.0.0-20230218165646-d26ddb6213b8 h1:e501XhFmHPf/DtnVCSd7lOTszPkSmFdCenGVAs4SJ4U=
+github.com/artchitector/artchitect/bot v0.0.0-20230218165646-d26ddb6213b8/go.mod h1:31Opy3hbpIRMZtTsASRPhsnOEFIdTaF4PyYtvj9SLCQ=
 github.com/artchitector/artchitect/memory v0.0.0-20230217185131-a4c60f83382d h1:HZ6UAcORFUUl/JN6dSiQZMyTj+7Mpt1vtmiUeD4b6ms=
 github.com/artchitector/artchitect/memory v0.0.0-20230217185131-a4c60f83382d/go.mod h1:0C6IEmUzhDFtD3fnrMEnN22eYBB2KCHju4PDLtXWb1k=
 github.com/cespare/xxhash/v2 v2.1.2 h1:YRXhKfTDauu4ajMg1TPgFO5jnlC2HCbmLXMcTG5cbYE=
@@ -38,6 +40,8 @@ github.com/go-playground/validator/v10 v10.11.1/go.mod h1:i+3WkQ1FvaUjjxh1kSvIA4
 github.com/go-redis/redis/v8 v8.11.5 h1:AcZZR7igkdvfVmQTPnu9WE37LRrO/YrBH5zWyjDC0oI=
 github.com/go-redis/redis/v8 v8.11.5/go.mod h1:gREzHqY1hg6oD9ngVRbLStwAWKhA0FEgq8Jd4h5lpwo=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
+github.com/go-telegram/bot v0.5.1 h1:xy/TK5XGOwX5PeQOHmIxLRL9m12F57u0O/kB+URMQfM=
+github.com/go-telegram/bot v0.5.1/go.mod h1:i2TRs7fXWIeaceF3z7KzsMt/he0TwkVC680mvdTFYeM=
 github.com/goccy/go-json v0.9.7/go.mod h1:6MelG93GURQebXPDq3khkgXZkazVtN9CRI+MGFi0w8I=
 github.com/goccy/go-json v0.10.0 h1:mXKd9Qw4NuzShiRlOXKews24ufknHO7gx30lsDyokKA=
 github.com/goccy/go-json v0.10.0/go.mod h1:6MelG93GURQebXPDq3khkgXZkazVtN9CRI+MGFi0w8I=

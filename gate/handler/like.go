@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -9,13 +10,19 @@ type LikeRequest struct {
 	CardID uint `json:"card_id" binding:"required"`
 }
 
+type bot interface {
+	SendCardToInfinite(ctx context.Context, cardID uint, caption string) error
+}
+
 type LikeHandler struct {
 	likeRepository likeRepository
 	authService    *AuthService
+	artchitector   uint
+	bot            bot
 }
 
-func NewLikeHandler(likeRepository likeRepository, authService *AuthService) *LikeHandler {
-	return &LikeHandler{likeRepository, authService}
+func NewLikeHandler(likeRepository likeRepository, authService *AuthService, bot bot, artchitector uint) *LikeHandler {
+	return &LikeHandler{likeRepository, authService, artchitector, bot}
 }
 
 func (lh *LikeHandler) Handle(c *gin.Context) {
@@ -34,6 +41,14 @@ func (lh *LikeHandler) Handle(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	if like.Liked && userID == lh.artchitector {
+		// send this card to infinite
+		if err := lh.bot.SendCardToInfinite(c, r.CardID, ""); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
 	c.JSON(http.StatusOK, like)
 }
 

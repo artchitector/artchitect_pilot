@@ -4,10 +4,10 @@ go 1.19
 
 require (
 	github.com/artchitector/artchitect/memory v0.0.0-20230206141224-ef4d2c479ec6
-	github.com/artchitector/artchitect/model v0.0.0-20230206140145-9401fffc0575
+	github.com/artchitector/artchitect/model v0.0.0-20230218112449-15e526fcb934
 	github.com/artchitector/artchitect/resizer v0.0.0-20230203133021-ba066d64422a
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/go-telegram/bot v0.4.0
+	github.com/go-telegram/bot v0.5.1
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/joho/godotenv v1.4.0
 	github.com/minio/minio-go/v7 v7.0.47
@@ -20,6 +20,7 @@ require (
 )
 
 require (
+	github.com/artchitector/artchitect/bot v0.0.0-20230218165646-d26ddb6213b8 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
@@ -59,3 +60,4 @@ replace github.com/artchitector/artchitect/model => ../model
 replace github.com/artchitector/artchitect/resizer => ../resizer
 
 replace github.com/artchitector/artchitect/memory => ../memory
+replace github.com/artchitector/artchitect/bot => ../bot

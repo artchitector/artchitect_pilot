@@ -18,6 +18,14 @@ func NewLotteryRepository(db *gorm.DB) *LotteryRepository {
 	return &LotteryRepository{db}
 }
 
+func (lr *LotteryRepository) GetLastLotteries(ctx context.Context, lastN uint) ([]model.Lottery, error) {
+	var lotteries []model.Lottery
+	err := lr.db.
+		Order("id desc").Limit(int(lastN)).Find(&lotteries).
+		Error
+	return lotteries, err
+}
+
 func (lr *LotteryRepository) GetActiveLottery(ctx context.Context) (model.Lottery, error) {
 	var lottery model.Lottery
 	err := lr.db.

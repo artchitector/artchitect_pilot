@@ -52,3 +52,26 @@ func encrypt(pass string) string {
 	hash := md5.Sum([]byte(pass))
 	return hex.EncodeToString(hash[:])
 }
+
+func (pr *PrayRepository) GetNextPray(ctx context.Context) (model.Pray, error) {
+	var pray model.Pray
+	err := pr.db.
+		Where("state = ? or state = ?", model.PrayStateWaiting, model.PrayStateRunning).
+		Order("id asc").
+		Limit(1).
+		First(&pray).Error
+	return pray, err
+}
+
+func (pr *PrayRepository) AnswerPray(ctx context.Context, pray model.Pray, answer uint) error {
+	pray.Answer = answer
+	pray.State = model.PrayStateAnswered
+	err := pr.db.Save(&pray).Error
+	return err
+}
+
+func (pr *PrayRepository) SetPrayRunning(ctx context.Context, pray model.Pray) (model.Pray, error) {
+	pray.State = model.PrayStateRunning
+	err := pr.db.Save(&pray).Error
+	return pray, err
+}

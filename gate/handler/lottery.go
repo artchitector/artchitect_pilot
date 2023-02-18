@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"github.com/artchitector/artchitect/model"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
-	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -21,18 +19,6 @@ type LotteryRequest struct {
 
 func NewLotteryHandler(logger zerolog.Logger, lotteryRepository lotteryRepository) *LotteryHandler {
 	return &LotteryHandler{logger, lotteryRepository}
-}
-
-func (lh *LotteryHandler) Handle(c *gin.Context) {
-	lottery, err := lh.lotteryRepository.GetActiveLottery(c)
-	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusNotFound, gin.H{"error": "no active lottery"})
-		return
-	} else if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, lottery)
 }
 
 func (lh *LotteryHandler) HandleLast(c *gin.Context) {

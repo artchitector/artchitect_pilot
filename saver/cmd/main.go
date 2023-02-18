@@ -59,5 +59,5 @@ func main() {
 	}()
 
 	<-ctx.Done()
-	log.Info().Msg("saver.Run finished")
+	log.Info().Msg("saver.Setup finished")
 }

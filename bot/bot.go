@@ -39,25 +39,30 @@ type Bot struct {
 }
 
 func NewBot(token string, cardRepository cardRepository, memory memory, artchitectorChat int64, chat10Min string, chatInfinite string) *Bot {
-	return &Bot{token, nil, cardRepository, memory, artchitectorChat, chat10Min, chatInfinite}
+	b := &Bot{token, nil, cardRepository, memory, artchitectorChat, chat10Min, chatInfinite}
+	b.setup()
+	return b
 }
 
-func (t *Bot) Run(ctx context.Context) {
+func (t *Bot) setup() {
 	opts := []bot.Option{
 		bot.WithDefaultHandler(t.handler),
 	}
 	if b, err := bot.New(t.token, opts...); err != nil {
 		log.Error().Err(err).Msgf("[bot] failed to create new bot with token %s", t.token)
 	} else {
-		// handlers
-		b.RegisterHandler(bot.HandlerTypeMessageText, CommandSendInfinite, bot.MatchTypePrefix, t.infiniteHandler)
-		b.RegisterHandler(bot.HandlerTypeMessageText, CommandGive, bot.MatchTypePrefix, t.giveHandler)
 		// start bot to listen all messages
-		log.Info().Msgf("[bot] starting bot")
+		log.Info().Msgf("[bot] setup bot")
 		t.bot = b
-		b.Start(ctx)
-		log.Info().Msgf("[bot] bot finished")
 	}
+}
+
+func (t *Bot) Start(ctx context.Context) {
+	log.Info().Msgf("[bot] start bot listening")
+	t.bot.RegisterHandler(bot.HandlerTypeMessageText, CommandSendInfinite, bot.MatchTypePrefix, t.infiniteHandler)
+	t.bot.RegisterHandler(bot.HandlerTypeMessageText, CommandGive, bot.MatchTypePrefix, t.giveHandler)
+	t.bot.Start(ctx)
+	log.Info().Msgf("[bot] bot finished")
 }
 
 func (t *Bot) SendCardTo10Min(ctx context.Context, cardID uint) error {
@@ -69,7 +74,7 @@ func (t *Bot) SendCardTo10Min(ctx context.Context, cardID uint) error {
 	return t.sendCard(ctx, card, img, text, t.chat10Min)
 }
 
-func (t *Bot) sendCardToInfinite(ctx context.Context, cardID uint, caption string) error {
+func (t *Bot) SendCardToInfinite(ctx context.Context, cardID uint, caption string) error {
 	card, img, err := t.getCard(ctx, cardID)
 	if err != nil {
 		return errors.Wrapf(err, "[bot] failed to get card by ID=%d", cardID)
@@ -153,7 +158,7 @@ func (t *Bot) infiniteHandler(ctx context.Context, b *bot.Bot, update *models.Up
 	}
 
 	log.Info().Msgf("[bot_infinite] got infinite command with cardID", cardID)
-	err = t.sendCardToInfinite(ctx, uint(cardID), caption)
+	err = t.SendCardToInfinite(ctx, uint(cardID), caption)
 	if err != nil {
 		t.replyError(ctx, update.Message, err)
 	}

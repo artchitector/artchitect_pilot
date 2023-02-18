@@ -25,24 +25,19 @@ type saver interface {
 	SaveUnity(filename string, imgFile []byte) error
 }
 
-type hundredRepository interface {
-	SaveHundred(rank uint, hundred uint) (model.Hundred, error)
-}
-
 type watermark interface {
 	AddUnityWatermark(originalImage image.Image, mask string) (image.Image, error)
 }
 
 type Combinator struct {
-	cardRepository    cardRepository
-	memory            memory
-	saver             saver
-	hundredRepository hundredRepository
-	watermark         watermark
+	cardRepository cardRepository
+	memory         memory
+	saver          saver
+	watermark      watermark
 }
 
-func NewCombinator(cardRepository cardRepository, memory memory, saver saver, hundredRepository hundredRepository, watermark watermark) *Combinator {
-	return &Combinator{cardRepository, memory, saver, hundredRepository, watermark}
+func NewCombinator(cardRepository cardRepository, memory memory, saver saver, watermark watermark) *Combinator {
+	return &Combinator{cardRepository, memory, saver, watermark}
 }
 
 func (c *Combinator) CombineThumb(ctx context.Context, cardIDs []uint, mask string) error {
