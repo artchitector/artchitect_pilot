@@ -1,5 +1,5 @@
 <template>
-    <img class="loader-image" :class="`loader-image-size-${size}`" src="/loader.png"/>
+    <img class="loader-image" :class="`loader-image-size-${size}`" src="/loader2.png"/>
 </template>
 <script>
 export default {
@@ -12,8 +12,8 @@ export default {
 }
 
 .loader-image-size-undefined {
-  height: 120px;
-  width: 120px;
+  height: 256px;
+  width: 256px;
 }
 
 .loader-image-size-s {
