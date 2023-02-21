@@ -123,20 +123,21 @@ func main() {
 		notifier,
 	)
 
-	artchitectBot := bot.NewBot(
-		res.GetEnv().Telegram10BotToken,
-		cardsRepo,
-		mmr,
-		res.GetEnv().ChatIDArtchitector,
-		res.GetEnv().ChatID10,
-		res.GetEnv().ChatIDInfinite,
-	)
+	var artchitectBot *bot.Bot
 	if res.GetEnv().Telegram10BotEnabled {
+		artchitectBot = bot.NewBot(
+			res.GetEnv().Telegram10BotToken,
+			cardsRepo,
+			mmr,
+			res.GetEnv().ChatIDArtchitector,
+			res.GetEnv().ChatID10,
+			res.GetEnv().ChatIDInfinite,
+		)
 		go artchitectBot.Start(ctx)
 	}
 
 	// gifter
-	if res.GetEnv().GifterActive {
+	if res.GetEnv().GifterActive && artchitectBot != nil {
 		gift := gifter.NewGifter(cardsRepo, origin, artchitectBot)
 		go func() {
 			if err := gift.Run(ctx); err != nil {

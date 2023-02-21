@@ -62,7 +62,7 @@ func main() {
 	selectionHander := handler.NewSelectionHandler(selectionRepo)
 	prayHandler := handler.NewPrayHandler(prayRepo)
 	lh := handler.NewLoginHandler(res.GetEnv().TelegramABotToken, res.GetEnv().JWTSecret, res.GetEnv().ArtchitectHost)
-	llh := handler.NewLikeHandler(likeRepo, authS, artchitectBot, uint(res.GetEnv().ChatIDArtchitector))
+	llh := handler.NewLikeHandler(likeRepo, cardsRepo, authS, artchitectBot, uint(res.GetEnv().ChatIDArtchitector), res.GetEnv().SendToInfiniteOnLike)
 	uh := handler.NewUnityHandler(unityRepo, cardsRepo)
 	ih := handler.NewImageHandler(mmr)
 

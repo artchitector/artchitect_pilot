@@ -16,14 +16,23 @@ type bot interface {
 }
 
 type LikeHandler struct {
-	likeRepository likeRepository
-	authService    *AuthService
-	artchitector   uint
-	bot            bot
+	likeRepository       likeRepository
+	cardsRepository      cardsRepository
+	authService          *AuthService
+	artchitector         uint
+	bot                  bot
+	sendToInfiniteOnLike bool
 }
 
-func NewLikeHandler(likeRepository likeRepository, authService *AuthService, bot bot, artchitector uint) *LikeHandler {
-	return &LikeHandler{likeRepository, authService, artchitector, bot}
+func NewLikeHandler(
+	likeRepository likeRepository,
+	cardsRepository cardsRepository,
+	authService *AuthService,
+	bot bot,
+	artchitector uint,
+	sendToInfiniteOnLike bool,
+) *LikeHandler {
+	return &LikeHandler{likeRepository, cardsRepository, authService, artchitector, bot, sendToInfiniteOnLike}
 }
 
 func (lh *LikeHandler) Handle(c *gin.Context) {
@@ -43,7 +52,18 @@ func (lh *LikeHandler) Handle(c *gin.Context) {
 		return
 	}
 	log.Info().Msgf("userID is %d, artchitector is %d")
-	if like.Liked && userID == lh.artchitector {
+	go func(liked bool) {
+		if liked {
+			if err := lh.cardsRepository.Like(c, r.CardID); err != nil {
+				log.Error().Err(err).Msgf("[like_handler] failed to like %d", r.CardID)
+			}
+		} else {
+			if err := lh.cardsRepository.Unlike(c, r.CardID); err != nil {
+				log.Error().Err(err).Msgf("[like_handler] failed to unlike %d", r.CardID)
+			}
+		}
+	}(like.Liked)
+	if lh.sendToInfiniteOnLike && like.Liked && userID == lh.artchitector {
 		// send this card to infinite
 		go func() {
 			if err := lh.bot.SendCardToInfinite(c, r.CardID, ""); err != nil {

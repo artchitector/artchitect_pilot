@@ -11,6 +11,8 @@ type cardsRepository interface {
 	GetLastCards(ctx context.Context, count uint) ([]model.Card, error)
 	GetCards(ctx context.Context, IDs []uint) ([]model.Card, error)
 	GetCardsByRange(start uint, end uint) ([]model.Card, error)
+	Like(ctx context.Context, cardID uint) error
+	Unlike(ctx context.Context, cardID uint) error
 }
 
 type lotteryRepository interface {

@@ -17,11 +17,12 @@ type Env struct {
 	ArtchitectHost string
 
 	// telegram constants
-	Telegram10BotToken string // 10bot (is for maintenance and secure use to control artchitect.space). Secured with single account usage.
-	TelegramABotToken  string // ABot (is for everyone: login, prayer etc)
-	ChatID10           string
-	ChatIDInfinite     string
-	ChatIDArtchitector int64
+	Telegram10BotToken   string // 10bot (is for maintenance and secure use to control artchitect.space). Secured with single account usage.
+	TelegramABotToken    string // ABot (is for everyone: login, prayer etc)
+	ChatID10             string
+	ChatIDInfinite       string
+	ChatIDArtchitector   int64
+	SendToInfiniteOnLike bool
 }
 
 func initEnv() *Env {
@@ -42,10 +43,11 @@ func initEnv() *Env {
 		JWTSecret:      os.Getenv("JWT_SECRET"),
 		ArtchitectHost: os.Getenv("ARTCHITECT_HOST"),
 
-		Telegram10BotToken: os.Getenv("TELEGRAM_10BOT_TOKEN"),
-		TelegramABotToken:  os.Getenv("TELEGRAM_ABOT_TOKEN"),
-		ChatID10:           os.Getenv("CHAT_ID_10MIN"),
-		ChatIDInfinite:     os.Getenv("CHAT_ID_INFINITE"),
-		ChatIDArtchitector: artchitectorChatID,
+		Telegram10BotToken:   os.Getenv("TELEGRAM_10BOT_TOKEN"),
+		TelegramABotToken:    os.Getenv("TELEGRAM_ABOT_TOKEN"),
+		ChatID10:             os.Getenv("CHAT_ID_10MIN"),
+		ChatIDInfinite:       os.Getenv("CHAT_ID_INFINITE"),
+		ChatIDArtchitector:   artchitectorChatID,
+		SendToInfiniteOnLike: os.Getenv("SEND2INFINITE_ON_LIKE") == "true",
 	}
 }

@@ -184,3 +184,17 @@ func (pr *CardRepository) GetPreviousCardID(ctx context.Context, cardID uint) (u
 		Scan(&id).Error
 	return id, err
 }
+
+func (pr *CardRepository) Like(ctx context.Context, cardID uint) error {
+	err := pr.db.Model(model.Card{}).
+		Where("id=?", cardID).
+		Update("likes", gorm.Expr("likes + 1")).Error
+	return err
+}
+
+func (pr *CardRepository) Unlike(ctx context.Context, cardID uint) error {
+	err := pr.db.Model(model.Card{}).
+		Where("id=?", cardID).
+		Update("likes", gorm.Expr("case when likes > 0 then likes - 1 else 0 end")).Error
+	return err
+}

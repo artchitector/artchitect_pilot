@@ -13,5 +13,6 @@ type Card struct {
 	PaintTime         uint   // seconds, how much paint took
 	UploadedToStorage bool   `gorm:"not null;default:false"` // full-size file uploaded to s3-storage
 	UploadedToMemory  bool   `gorm:"not null;default:false"` // file was uploaded to storage in all sizes as files
-	Liked             bool   `gorm:"-"`
+	Likes             uint   `gorm:"not null;default:0"`     // total number of likes
+	Liked             bool   `gorm:"-"`                      // runtime flag, means that current user liked this image
 }
