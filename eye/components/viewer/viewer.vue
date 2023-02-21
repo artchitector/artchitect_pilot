@@ -33,7 +33,7 @@
     <div class="control-next" v-if="hasNext">
       <a href="#" @click.prevent="next()">></a>
     </div>
-    <div v-if="loggedIn" class="control-like">
+    <div class="control-like">
       <font-awesome-icon v-if="liked && liked.error"
                          icon="fa-solid fa-triangle-exclamation"
                          :title="liked.error.message"/>
@@ -41,7 +41,9 @@
         <font-awesome-icon v-if="!liked || !liked.liked" icon="fa-solid fa-heart" class="has-color-base"/>
         <font-awesome-icon v-else icon="fa-solid fa-heart" class="has-text-danger"/>
       </a>
-
+    </div>
+    <div v-if="card" class="info-like" @click.prevent="like()" :class="{'liked': card.Liked || (liked && liked.liked)}">
+      <a href="#" @click.prevent="">{{likes}}</a>
     </div>
     <div class="header">
       <h1 class="is-size-4" v-if="card">
@@ -93,7 +95,7 @@ export default {
       index: null, // current card index in list
       card: null, // current loaded card
       error: null,
-      liked: null, // {liked: false/true, error: null}
+      liked: null, // {liked: false/true, error: null, loadedFromServer: true/false}
     }
   },
   computed: {
@@ -105,6 +107,12 @@ export default {
     },
     loggedIn() {
       return !!localStorage.getItem("token")
+    },
+    likes() {
+      if (!this.card) {
+        return 0
+      }
+      return this.card.Likes
     }
   },
   methods: {
@@ -127,6 +135,7 @@ export default {
         if (this.card.Liked) {
           this.liked = {
             liked: true,
+            loadedFromServer: true,
           }
         }
       } catch (e) {
@@ -183,8 +192,13 @@ export default {
         this.$emit('liked', like)
         this.liked = {
           id: like.ID,
-          liked: like.Liked
+          liked: like.Liked,
         };
+        if (like.Liked) {
+          this.card.Likes += 1
+        } else {
+          this.card.Likes -= 1
+        }
       } catch (e) {
         console.error(e)
         this.liked = {
@@ -245,6 +259,25 @@ export default {
     font-size: 48px;
     opacity: 0.7;
     filter: drop-shadow(0px 0px 8px rgba(255, 0, 0, 0.6));
+  }
+  .info-like {
+    width: 48px;
+    height: 48px;
+    margin-left: -20px;
+    position: fixed;
+    left: 50%;
+    bottom: 20%;
+    z-index: 4;
+    text-align: center;
+    cursor: pointer;
+    a {
+      color: #5f5f5f;
+    }
+    &.liked {
+      a {
+        color: #eee;
+      }
+    }
   }
   .control-close {
     position: fixed;

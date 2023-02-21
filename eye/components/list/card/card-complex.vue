@@ -3,6 +3,13 @@
     <a :href="`/card/${card.ID}`" @click.prevent="select()">
       <img :src="'/api/image/m/' + card.ID"/>
     </a>
+    <div class="likes">
+      <span>
+        <font-awesome-icon v-if="!card.Liked" icon="fa-solid fa-heart" class="has-color-base"/>
+        <font-awesome-icon v-else icon="fa-solid fa-heart" class="has-text-danger"/>
+        {{card.Likes}}
+      </span>
+    </div>
     <div class="version">
       <span class="tag is-primary is-light">{{ card.Version }}</span>
     </div>
@@ -32,6 +39,17 @@ export default {
     right: 5px;
     bottom: 10px;
     opacity: 0.7;
+  }
+
+  .likes {
+    position: absolute;
+    left: 5px;
+    bottom: 10px;
+    opacity: 0.7;
+    color: #d4d1c3;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 0 2px 0 4px;
+    border-radius: 3px;
   }
 
   a {

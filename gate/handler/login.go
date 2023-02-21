@@ -75,6 +75,7 @@ func (lh *LoginHandler) checkFromTelegram(values url.Values) error {
 	}
 	dataCheckString := strings.Join(stringPieces, "\n")
 	secretKey := makeSha256(lh.botToken)
+	log.Info().Msgf("token: %s", lh.botToken)
 	encryptedDataCheckString := makeHmacSha256([]byte(dataCheckString), secretKey)
 	if hash != hex.EncodeToString(encryptedDataCheckString) {
 		return errors.Errorf("[login_handler] hash not valid")

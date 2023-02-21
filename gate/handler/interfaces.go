@@ -50,14 +50,11 @@ type likeRepository interface {
 	GetLikes(ctx context.Context, userID uint) ([]uint, error)
 }
 
-type hundredRepository interface {
-	FindAllTenK() ([]model.Hundred, error)
-	FindKList(tenKHundred uint) ([]model.Hundred, error)
-	FindHList(kHundred uint) ([]model.Hundred, error)
-}
-
 type unityRepository interface {
 	GetUnity(mask string) (model.Unity, error)
 	GetRootUnities() ([]model.Unity, error)
 	GetChildUnifiedUnities(parentMask string) ([]model.Unity, error)
+}
+type enhotter interface {
+	ReloadCardWithoutImage(ctx context.Context, cardID uint)
 }

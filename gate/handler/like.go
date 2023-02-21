@@ -19,6 +19,7 @@ type LikeHandler struct {
 	likeRepository       likeRepository
 	cardsRepository      cardsRepository
 	authService          *AuthService
+	enhotter             enhotter
 	artchitector         uint
 	bot                  bot
 	sendToInfiniteOnLike bool
@@ -28,11 +29,12 @@ func NewLikeHandler(
 	likeRepository likeRepository,
 	cardsRepository cardsRepository,
 	authService *AuthService,
+	enhotter enhotter,
 	bot bot,
 	artchitector uint,
 	sendToInfiniteOnLike bool,
 ) *LikeHandler {
-	return &LikeHandler{likeRepository, cardsRepository, authService, artchitector, bot, sendToInfiniteOnLike}
+	return &LikeHandler{likeRepository, cardsRepository, authService, enhotter, artchitector, bot, sendToInfiniteOnLike}
 }
 
 func (lh *LikeHandler) Handle(c *gin.Context) {
@@ -62,6 +64,9 @@ func (lh *LikeHandler) Handle(c *gin.Context) {
 				log.Error().Err(err).Msgf("[like_handler] failed to unlike %d", r.CardID)
 			}
 		}
+		// update card cache
+		log.Info().Msgf("GOROTINE#1")
+		lh.enhotter.ReloadCardWithoutImage(c, r.CardID)
 	}(like.Liked)
 	if lh.sendToInfiniteOnLike && like.Liked && userID == lh.artchitector {
 		// send this card to infinite

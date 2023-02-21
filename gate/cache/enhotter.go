@@ -74,6 +74,18 @@ func (e *Enhotter) EnhotSelection(ctx context.Context) error {
 	return nil
 }
 
+func (e *Enhotter) ReloadCardWithoutImage(ctx context.Context, cardID uint) {
+	card, err := e.cardRepository.GetCard(ctx, cardID)
+	if err != nil {
+		log.Error().Msgf("[enhotter] failed to reload card %d", card.ID)
+		return
+	}
+	if err := e.cache.SaveCard(ctx, card); err != nil {
+		log.Error().Msgf("[enhotter] failed to saveCard %d", card.ID)
+	}
+	log.Info().Msgf("[enhotter] reloaded card %d", card.ID)
+}
+
 func (e *Enhotter) cacheCard(ctx context.Context, card model.Card) {
 	if err := e.cache.SaveCard(ctx, card); err != nil {
 		log.Error().Msgf("[enhotter] failed to saveCard %d", card.ID)
