@@ -1,10 +1,10 @@
 <i18n>
 {
   "en": {
-    "title": "Artchitect - digital prayer"
+    "title": "Artchitect - request"
   },
   "ru": {
-    "title": "Artchitect - цифровая молитва"
+    "title": "Artchitect - запрос"
   }
 }
 </i18n>

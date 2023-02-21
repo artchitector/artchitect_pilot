@@ -5,7 +5,7 @@
     "idea": "idea",
     "lottery": "lottery",
     "selection": "selection",
-    "pray": "pray",
+    "request": "request",
     "liked": "liked",
     "unity": "unity"
   },
@@ -14,7 +14,7 @@
     "idea": "идея",
     "lottery": "лотерея",
     "selection": "отборное",
-    "pray": "молитва",
+    "request": "запрос",
     "liked": "нравится",
     "unity": "единство"
   }
@@ -42,7 +42,7 @@
         <span> - </span>
         <NuxtLink :to="localePath('selection')">{{$t('selection')}}</NuxtLink>
         <span> - </span>
-        <NuxtLink :to="localePath('/pray')">{{$t('pray')}}</NuxtLink>
+        <NuxtLink :to="localePath('/pray')">{{$t('request')}}</NuxtLink>
         <span> - </span>
         <template v-if="loggedIn">
           <NuxtLink :to="localePath('/liked')">{{$t('liked')}}</NuxtLink>
