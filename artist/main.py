@@ -36,7 +36,7 @@ def getPaintingFromInvokeAIFilename():
     filename = None
 
     ret = os.popen(
-        '/home/artchitector/invokeai/.venv/bin/python /home/artchitector/invokeai/.venv/bin/invoke.py --from_file "/home/artchitector/invokeai/list.txt"'
+        '/home/artchitector/invoke-ai/invokeai_v2.2.5/.venv/bin/python /home/artchitector/invoke-ai/invokeai_v2.2.5/.venv/bin/invoke.py --from_file "/home/artchitector/invoke-ai/invokeai_v2.2.5/list.txt"'
         )
     lines = ret.readlines()
     for line in lines:
@@ -61,7 +61,7 @@ def prepareFileForInvokeAI():
 
     lines = []
     lines.append(f'{tags} -S{seed} -W{width} -H{height} -s{steps} -U{upscale}')
-    with open("/home/artchitector/invokeai/list.txt", "w") as text_file:
+    with open("/home/artchitector/invoke-ai/invokeai_v2.2.5/list.txt", "w") as text_file:
         for line in lines:
             text_file.write(line)
     text_file.close()
