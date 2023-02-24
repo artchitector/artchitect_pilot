@@ -33,6 +33,7 @@ func (e *ArtistEngine) GetImage(ctx context.Context, spell model.Spell) (image.I
 		"height":  {"960"},
 		"steps":   {"50"},
 		"upscale": {"4"},
+		"version": {spell.Version},
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to make request to artist")

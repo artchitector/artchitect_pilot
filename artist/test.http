@@ -1,4 +1,4 @@
 POST http://localhost:8083/painting
 Content-Type: application/x-www-form-urlencoded
 
-tags=pleased,shining,fantasy concept art,skin,surreal,golem&seed=3482751183&width=768&height=960&upscale=4&steps=50
+tags=pleased,shining,fantasy concept art,skin,surreal,golem&seed=3482751183&width=768&height=960&upscale=4&steps=50&version=v2.0
