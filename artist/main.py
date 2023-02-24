@@ -32,11 +32,13 @@ def painting():
 def getPaintingFromInvokeAIFilename():
     prepareFileForInvokeAI()
 
-    pattern = re.compile(".*(\/home\/artchitector\/invokeai\/outputs\/[0-9\.]+png).*")
+    pattern = re.compile(".*(\/home\/artchitector\/invoke-ai\/invokeai_v2.2.5\/invokeai\/outputs\/[0-9\.]+png).*")
     filename = None
 
+    cmd = '/home/artchitector/invoke-ai/invokeai_v2.2.5/invokeai/.venv/bin/python /home/artchitector/invoke-ai/invokeai_v2.2.5/invokeai/.venv/bin/invoke.py --from_file "/home/artchitector/invoke-ai/invokeai_v2.2.5/invokeai/list.txt"'
+    print(cmd)
     ret = os.popen(
-        '/home/artchitector/invoke-ai/invokeai_v2.2.5/.venv/bin/python /home/artchitector/invoke-ai/invokeai_v2.2.5/.venv/bin/invoke.py --from_file "/home/artchitector/invoke-ai/invokeai_v2.2.5/list.txt"'
+        cmd
         )
     lines = ret.readlines()
     for line in lines:
@@ -61,7 +63,7 @@ def prepareFileForInvokeAI():
 
     lines = []
     lines.append(f'{tags} -S{seed} -W{width} -H{height} -s{steps} -U{upscale}')
-    with open("/home/artchitector/invoke-ai/invokeai_v2.2.5/list.txt", "w") as text_file:
+    with open("/home/artchitector/invoke-ai/invokeai_v2.2.5/invokeai/list.txt", "w") as text_file:
         for line in lines:
             text_file.write(line)
     text_file.close()
