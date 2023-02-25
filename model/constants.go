@@ -12,7 +12,7 @@ const (
 	Version20 = "v2.0" // StableDiffusion v2.1-768
 )
 
-var AvailableVersions = []string{Version1, Version11, Version12}
+var AvailableVersions = []string{Version1, Version11, Version12, Version20}
 
 const (
 	MaxSeed = uint(4294967295)
