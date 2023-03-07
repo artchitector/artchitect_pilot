@@ -31,22 +31,11 @@ def painting():
 def getPaintingFromInvokeAIFilename(version):
     prepareFileForInvokeAI(version)
 
-
     filename = None
-
-    if version.find("v1") == 0:
-        cmd = '/home/artchitector/invoke-ai/invokeai_v2.2.5/invokeai/.venv/bin/python ' \
-              + '/home/artchitector/invoke-ai/invokeai_v2.2.5/invokeai/.venv/bin/invoke.py ' \
-            + '--from_file "/home/artchitector/invoke-ai/invokeai_v2.2.5/invokeai/list.txt"'
-        pattern = re.compile(".*(\/home\/artchitector\/invoke-ai\/invokeai_v2.2.5\/invokeai\/outputs\/[0-9\.]+png).*")
-    elif version.find("v2") == 0:
-        cmd = 'INVOKEAI_ROOT=/home/artchitector/invoke-ai/invokeai_v2.3.0/ ' \
-              + '/home/artchitector/invoke-ai/invokeai_v2.3.0/.venv/bin/python /home/artchitector/invoke-ai/invokeai_v2.3.0/.venv/bin/invoke.py ' \
-              + '--from_file "/home/artchitector/invoke-ai/invokeai_v2.3.0/list.txt"'
-        pattern = re.compile(".*(\/home\/artchitector\/invoke-ai\/invokeai_v2.3.0\/outputs\/[0-9\.]+png).*")
-    else:
-        print("unknown version")
-        exit(1)
+    cmd = 'INVOKEAI_ROOT=/home/artchitector/invoke-ai/invokeai_v2.3.0/ ' \
+          + '/home/artchitector/invoke-ai/invokeai_v2.3.0/.venv/bin/python /home/artchitector/invoke-ai/invokeai_v2.3.0/.venv/bin/invoke.py ' \
+          + '--from_file "/home/artchitector/invoke-ai/invokeai_v2.3.0/list.txt"'
+    pattern = re.compile(".*(\/home\/artchitector\/invoke-ai\/invokeai_v2.3.0\/outputs\/[0-9\.]+png).*")
 
     ret = os.popen(cmd)
     lines = ret.readlines()
@@ -72,13 +61,7 @@ def prepareFileForInvokeAI(version):
 
     lines = []
     lines.append(f'{tags} -S{seed} -W{width} -H{height} -s{steps} -U{upscale}')
-    if version.find("v1") == 0:
-        filename = "/home/artchitector/invoke-ai/invokeai_v2.2.5/invokeai/list.txt"
-    elif version.find("v2") == 0:
-        filename = "/home/artchitector/invoke-ai/invokeai_v2.3.0/list.txt"
-    else:
-        print("unknown version")
-        exit(1)
+    filename = "/home/artchitector/invoke-ai/invokeai_v2.3.0/list.txt"
     with open(filename, "w") as text_file:
         for line in lines:
             text_file.write(line)
