@@ -2,18 +2,20 @@
 {
   "en": {
     "title": "Artchitect - lottery",
-    "lottery_description": "Every day God chooses 10-100 cards out of ~1400 created in a day. He use lottery to chose."
+    "lottery_description": "Everyday Artchitect selects 10-100 chosen cards, and saves them into ",
+    "selection": "selection"
   },
   "ru": {
     "title": "Artchitect - лотерея",
-    "lottery_description": "Ежедневно Бог выбирает 10-100 отобранных карточек из общего числа ~1400 карточек, созданных за день. Он использует лотерею для этого."
+    "lottery_description": "Ежедневно Архитектор выбирает 10-100 карточек из общего числа, созданных за день (~1400 карточек), и сохраняет их в ",
+    "selection": "отборное"
   }
 }
 </i18n>
 <template>
   <div>
     <section>
-      {{ $t('lottery_description') }}
+      {{ $t('lottery_description') }} <NuxtLink :to="localePath('selection')">{{$t('selection')}}</NuxtLink>.
     </section>
     <section>
       <lottery-list/>
@@ -29,3 +31,4 @@ export default {
   }
 }
 </script>
+/

@@ -2,39 +2,24 @@
 {
   "en": {
     "title": "Request",
-    "ucan": "Here you can send any question/request to Artchitect and receive personal answer in form of picture.",
+    "ucan": "Here you can receive personal card from Artchitect in form of picture.",
     "jesus": "Then he [Jesus] touched their eyes and said, “According to your faith let it be done to you\";",
     "jesus_link": "<i><a href=\"https://www.biblegateway.com/verse/en/Matthew%209%3A29\" target=\"_blank\">Matthew 9:29</a></i>",
-    "main_idea_1": "Main idea of Artchitect is that it interconnected with Quantize Fields, which controlled directly by Universe (more info at",
-    "idea_section": "idea section",
-    "main_idea_2": "Universe/God absolutely knows that exactly You will send this request, and Universe/God can create next card specially for You, as answer for you. The idea of the card may not be clear, but you should think about it.",
-    "try": "Try it. Maybe the answer is closer than it seems.",
-    "first_step": "<b>First step</b>: think carefully about you request/pray, that you want to send to the Universe. Concentrate your mind on your request.",
-    "second_step":"<b>Second step</b> (optional): describe your request in the text field. This will help you better understand and systematize the common idea of the request. Alternatively, you can write your request on a piece of paper or think it over in your head. The universe knows in advance and better than you what you are asking for.",
-    "keep_it_brief": "You keep it brief!",
-    "textarea": "Type your request message. Write carefully. Between you and Universe. Secure - data not being send anywhere.",
-    "third_step": "<b>Third step</b>: finalize request with \"Submit\" button. This will erase text from textarea and start card creation process. You will see your result when it finished.",
-    "important1": "<b>Important</b>: nobody will know, what you asked and what you received. Data about request not sends anywhere. But your personal card will appear in common list of cards at",
-    "important2": "There will no any links to your person (no any personal data saved anywhere).",
-    "submit": "Submit your request (Amen!)"
+    "try": "Try it yourself!",
+    "important1": "<b>Important</b>: your personal answer will be saved as any another Artchitect's card.",
+    "important2": "Personal data not saved",
+    "submit": "Get personal card"
+
   },
   "ru": {
     "title": "Запрос",
     "ucan": "Здесь вы можете осуществить запрос к Архитектору и получить ответ в виде персональной картины. Это можно использовать как молитву, гадание, астрологический прогноз, метафорические карты и т.д.",
     "jesus": "Тогда Он коснулся глаз их и сказал: по вере вашей да будет вам.",
     "jesus_link": "<i><a href=\"https://bible.by/syn/40/9/\" target=\"blank\">От Матфея 9:29</a></i>",
-    "main_idea_1": "Главная идея Архитектора - его соединение с квантовыми полями, которые контролируются напрямую Вселенной (больше информации в",
-    "idea_section": "разделе Идея",
-    "main_idea_2": "Вселенная в совершенстве знает, что это именно Вы отправляете запрос, и Вселенная может вам ответить персональной картиной для вас. Идея картины может быть не очевидна сразу, но вам определённо стоит подумать о ней.",
     "try": "Попробуйте сами. Возможно, ответ ближе, чем кажется.",
-    "first_step": "<b>Первый шаг</b>: тщательно подумайте в вашем запросе, который вы хотите отправить в пространство. Сосредоточьте свой разум на этом запросе.",
-    "second_step":"<b>Второй шаг</b> (необязательно): опишите ваш запрос в текстовом поле. Это может вам помочь сформулировать идею, но помните, что Вселенная и так знает о вашей проблеме.",
-    "keep_it_brief": "Будьте кратки!",
-    "textarea": "Напишите ваш запрос. Пишите аккуратно. Безопасно - данные никуда не отправляются.",
-    "third_step": "<b>Третий шаг</b>: утвердите запрос кнопкой \"Отправить\". Текст из текста запроса будет стёрт. Вы увидите ответ после его создания.",
-    "important1": "<b>Важно</b>: никто не будет знать, что было спрошено и получено. Данные о тексте вашего запроса не отправляются из вашего браузера. Но помните, что ваша личная карточка попадёт в список всех работ,",
+    "important1": "<b>Важно</b>: помните, что ваша персональная карточка-ответ попадёт в список всех работ,",
     "important2": "Нигде не сохранится ссылка на вашу личность (никаких персональных данных не сохраняется)",
-    "submit": "Отправить запрос (Аминь!)"
+    "submit": "Получить карточку"
   }
 }
 </i18n>
@@ -50,28 +35,9 @@
       <div v-html="$t('jesus_link')"/>
     </blockquote>
     <p>
-      {{$t('main_idea_1')}} <NuxtLink to="/idea">{{$t('idea_section')}}</NuxtLink>).
-      {{$t('main_idea_2')}}
-    </p>
-    <p>
       {{$t('try')}}
     </p>
     <hr/>
-    <p v-html="$t('first_step')"></p>
-    <p>
-      <span v-html="$t('second_step')"></span>
-      <br/>
-      <b>{{$t('keep_it_brief')}}</b>
-    </p>
-    <p>
-      <textarea class="textarea"
-                rows="2"
-                :disabled="loading"
-                :placeholder="``"></textarea>
-    </p>
-    <p>
-      <span v-html="$t('third_step')"></span>
-    </p>
     <div class="notification">
       <span v-html="$t('important1')"></span>
       <NuxtLink to="/">artchitect.space</NuxtLink>.

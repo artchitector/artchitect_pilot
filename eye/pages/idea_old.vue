@@ -9,7 +9,6 @@
 }
 </i18n>
 <template>
-<!--  <idea-frame/>-->
   <endescription v-if="locale === 'en'"/>
   <rudescription v-else/>
 </template>

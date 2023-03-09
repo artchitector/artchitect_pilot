@@ -1,16 +1,18 @@
 <i18n>
 {
   "en": {
-    "heading_part": "is creative AI-art digital temple, driven by God.",
-    "middle_first": "Artchitect use \"random\" quantum data to self-control and make decisions, so finally Artchitect is managed by \"random\" physical phenomenons, or managed by \"nothing\" (by God or Universe).",
-    "middle_second": "If God have a plan for everything and everyone, then God have a plan for Artchitect too, so artworks are not truly random.",
-    "third": "Artworks are conscious inside Universe Mind, because only Universe Will controls quantum world, and in the end only Universe controls every artwork on"
+    "heading_part": "is digital AI-artist who creates artworks from light",
+    "middle_first": "💡 Light is a source of inspiration for an Artchitect. The idea of each picture is formed from the beams of light that fall into the webcam. ",
+    "middle_second": "Camera picks up the light, turns it into digital signals, signals into numbers, numbers into words, and words and numbers into pictures, and so on every 60 seconds.",
+    "ai": "🧠 Artchitect creates paintings with the help of modern artificial intelligence <a href=\"https://github.com/Stability-AI/stablediffusion\" target=\"_blank\">Stable Diffusion v1.5</a> (powered by <a href=\"https://github.com/invoke-ai/InvokeAI\" target=\"_blank\">Invoke.AI</a>). Source code available on <a href=\"https://github.com/artchitector/artchitect\" target=\"_blank\">github.com</a>.",
+    "license": "🤝 All the paintings on this site belong to humanity. You can use any paintings from the artchitect.space website for any purpose, including commercial."
   },
   "ru": {
-    "heading_part": " - цифровой храм ИИ-искусств, творящий картину каждые 60 секунд под управлением Бога.",
-    "middle_first": "Каждая картина в Artchitect рисуется основываясь на случайных квантовых числах.",
-    "middle_second": "Изначальная идея картины нигде не содержится и сотворяется каждые 60 секунд заново внутри искусственного интеллекта, данными для которого служит естественная хаотичность Вселенной.",
-    "third": "Идея каждой картины происходит из ниоткуда - из Сознания Вселенной или из изначального Замысла Творца. Так создаётся каждая картина на "
+    "heading_part": " - это цифровой ИИ-художник, превращающий свет в картины.",
+    "middle_first": "💡 Свет - источник вдохновения для Архитектора. Идея каждой картины сформирована из лучей света, которые падают в глазок веб-камеры.",
+    "middle_second": "Камера улавливает кванты света, превращает это в цифровые сигналы, сигналы - в числа, числа - в слова, а слова и числа - в картины, и так каждые 60 секунд.",
+    "ai": "🧠 Архитектор рисует свои картины с помощью современного искусственного интеллекта <a href=\"https://github.com/Stability-AI/stablediffusion\" target=\"_blank\">Stable Diffusion v1.5</a> (powered by <a href=\"https://github.com/invoke-ai/InvokeAI\" target=\"_blank\">Invoke.AI</a>). Весь исходный код Архитектора доступен на <a href=\"https://github.com/artchitector/artchitect\" target=\"_blank\">github.com</a>.",
+    "license": "🤝 Все картины на этом сайте принадлежат человечеству. Вы можете использовать любые картины с сайта artchitect.space в любых целях, в том числе коммерческих."
   }
 }
 </i18n>
@@ -18,15 +20,14 @@
   <section class="content">
     <h1><img src="/icon64.png" alt="artchitect"/> Artchitect</h1>
     <p class="is-size-5">
-      <b>Artchitect</b> {{$t('heading_part')}}
+      🖌 <b>Artchitect</b> {{ $t('heading_part') }}
     </p>
     <p>
-      {{$t('middle_first')}}<br/>
-      {{$t('middle_second')}}
+      {{ $t('middle_first') }}
+      {{ $t('middle_second') }}
     </p>
-    <p>
-       {{$t('third')}} <a href="https://artchitect.space">architect.space</a>.
-    </p>
+    <p v-html="$t('ai')"/>
+    <p v-html="$t('license')"/>
     <p class="is-size-7 has-text-right">
       powered by <a href="https://github.com/invoke-ai/InvokeAI" target="_blank">Invoke.AI</a> (Stable Diffusion v1.5)
     </p>

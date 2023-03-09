@@ -33,8 +33,8 @@
       </div>
       <div>
         <NuxtLink :to="localePath('index')">{{$t('main')}}</NuxtLink>
-        <span> - </span>
-        <NuxtLink :to="localePath('idea')">{{$t('idea')}}</NuxtLink>
+<!--        <span> - </span>-->
+<!--        <NuxtLink :to="localePath('idea')">{{$t('idea')}}</NuxtLink>-->
         <span> - </span>
         <NuxtLink :to="localePath('/unity')">{{$t('unity')}}</NuxtLink>
         <span> - </span>
