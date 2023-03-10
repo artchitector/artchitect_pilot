@@ -17,3 +17,5 @@ require (
 	golang.org/x/sys v0.5.0 // indirect
 	gorm.io/gorm v1.24.3 // indirect
 )
+
+replace github.com/artchitector/artchitect/model => ../model

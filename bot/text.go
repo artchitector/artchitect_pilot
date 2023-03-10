@@ -34,3 +34,12 @@ func getTextWithCaption(card model.Card, caption string) string {
 		card.Spell.Tags,
 	)
 }
+
+func getUnityText(unity model.Unity) string {
+	return fmt.Sprintf(
+		"Unity %s unified. Version %d\n https://artchitect.space/unity/%s",
+		unity.Mask,
+		unity.Version,
+		unity.Mask,
+	)
+}

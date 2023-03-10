@@ -47,16 +47,21 @@ type notifier interface {
 	NotifyUnity(ctx context.Context, state model.UnityState) error
 }
 
+type artchitectBot interface {
+	SendUnityTo10Min(ctx context.Context, unity model.Unity) error
+}
+
 type Unifier struct {
 	unityRepository unityRepository
 	cardRepository  cardRepository
 	origin          origin
 	combinator      combinator
 	notifier        notifier
+	artchitectBot   artchitectBot
 }
 
-func NewUnifier(unityRepository unityRepository, cardRepository cardRepository, origin origin, combinator combinator, notifier notifier) *Unifier {
-	return &Unifier{unityRepository, cardRepository, origin, combinator, notifier}
+func NewUnifier(unityRepository unityRepository, cardRepository cardRepository, origin origin, combinator combinator, notifier notifier, artchitectBot artchitectBot) *Unifier {
+	return &Unifier{unityRepository, cardRepository, origin, combinator, notifier, artchitectBot}
 }
 
 func (u *Unifier) WorkOnce(ctx context.Context) (bool, error) {
@@ -452,6 +457,13 @@ func (u *Unifier) finishUnification(ctx context.Context, unity model.Unity, stat
 	if err != nil {
 		return model.Unity{}, errors.Wrapf(err, "[unifier] failed finish unity %s", unity.Mask)
 	}
+
+	if unity.Rank == model.Rank10000 {
+		if err := u.notifyBot(ctx, unity); err != nil {
+			log.Error().Err(err).Msgf("[unifier] failed to notify bot about new 10000 unity")
+		}
+	}
+
 	for i := 1; i <= 10; i++ {
 		select {
 		case <-ctx.Done():
@@ -471,4 +483,8 @@ func (u *Unifier) notify(ctx context.Context, state *model.UnityState) {
 	if err := u.notifier.NotifyUnity(ctx, *state); err != nil {
 		log.Error().Err(err).Msgf("[unifier] failed notify state")
 	}
+}
+
+func (u *Unifier) notifyBot(ctx context.Context, unity model.Unity) error {
+	return u.artchitectBot.SendUnityTo10Min(ctx, unity)
 }

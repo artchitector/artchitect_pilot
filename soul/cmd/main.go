@@ -89,8 +89,21 @@ func main() {
 
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
 
+	var artchitectBot *bot.Bot
+	if res.GetEnv().Telegram10BotEnabled {
+		artchitectBot = bot.NewBot(
+			res.GetEnv().Telegram10BotToken,
+			cardsRepo,
+			mmr,
+			res.GetEnv().ChatIDArtchitector,
+			res.GetEnv().ChatID10,
+			res.GetEnv().ChatIDInfinite,
+		)
+		go artchitectBot.Start(ctx)
+	}
+
 	cmbntr := combinator.NewCombinator(cardsRepo, mmr, sav, watermarkMaker)
-	unfr := unifier.NewUnifier(unityRepo, cardsRepo, origin, cmbntr, notifier)
+	unfr := unifier.NewUnifier(unityRepo, cardsRepo, origin, cmbntr, notifier, artchitectBot)
 
 	creator := creator2.NewCreator(
 		artist,
@@ -123,19 +136,6 @@ func main() {
 		unfr,
 		notifier,
 	)
-
-	var artchitectBot *bot.Bot
-	if res.GetEnv().Telegram10BotEnabled {
-		artchitectBot = bot.NewBot(
-			res.GetEnv().Telegram10BotToken,
-			cardsRepo,
-			mmr,
-			res.GetEnv().ChatIDArtchitector,
-			res.GetEnv().ChatID10,
-			res.GetEnv().ChatIDInfinite,
-		)
-		go artchitectBot.Start(ctx)
-	}
 
 	// gifter
 	if res.GetEnv().GifterActive && artchitectBot != nil {

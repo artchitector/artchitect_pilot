@@ -3,6 +3,7 @@ package bot
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"github.com/artchitector/artchitect/model"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -26,6 +27,7 @@ type cardRepository interface {
 
 type memory interface {
 	DownloadImage(ctx context.Context, cardID uint, size string) ([]byte, error)
+	GetUnityImage(ctx context.Context, mask string, size string, version string) ([]byte, error)
 }
 
 type Bot struct {
@@ -72,6 +74,27 @@ func (t *Bot) SendCardTo10Min(ctx context.Context, cardID uint) error {
 	}
 	text := getTextWithoutCaption(card)
 	return t.sendCard(ctx, card, img, text, t.chat10Min)
+}
+
+func (t *Bot) SendUnityTo10Min(ctx context.Context, unity model.Unity) error {
+	if t.bot == nil {
+		return errors.Errorf("[bot] not initialized")
+	}
+
+	img, err := t.getUnityImage(ctx, unity)
+
+	r := bytes.NewReader(img)
+	msg, err := t.bot.SendPhoto(ctx, &bot.SendPhotoParams{
+		ChatID:  t.chat10Min,
+		Photo:   &models.InputFileUpload{Data: r},
+		Caption: getUnityText(unity),
+	})
+	if err != nil {
+		return errors.Wrapf(err, "[bot] failed send unity image %s-%d", unity.Mask, unity.Version)
+	}
+
+	log.Info().Msgf("[bot] sent card to chat %s. Unity=%s-%d. MessageID=%d", t.chat10Min, unity.Mask, unity.Version, msg.ID)
+	return nil
 }
 
 func (t *Bot) SendCardToInfinite(ctx context.Context, cardID uint, caption string) error {
@@ -126,6 +149,14 @@ func (t *Bot) getCard(ctx context.Context, cardID uint) (model.Card, []byte, err
 		return model.Card{}, nil, errors.Wrapf(err, "[bot] failed to get image for card %d", card.ID)
 	}
 	return card, image, nil
+}
+
+func (t *Bot) getUnityImage(ctx context.Context, unity model.Unity) ([]byte, error) {
+	image, err := t.memory.GetUnityImage(ctx, unity.Mask, model.SizeF, fmt.Sprintf("%d", unity.Version))
+	if err != nil {
+		return nil, errors.Wrapf(err, "[bot] failed to get unity image %s-%d", unity.Mask, unity.Version)
+	}
+	return image, nil
 }
 
 func (t *Bot) handler(ctx context.Context, b *bot.Bot, update *models.Update) {
