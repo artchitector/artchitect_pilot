@@ -36,6 +36,9 @@
           {{ unification.CurrentProgress }}/{{ unification.TotalProgress }}
         </template>
       </div>
+      <div v-if="unification.Version">
+        {{ $t('version')}}: {{unification.Version}}
+      </div>
       <div v-if="unification.Children && unification.Children.length">
         {{ $t('children') }}:
         <template v-for="child in unification.Children">
@@ -47,7 +50,7 @@
       </div>
       <div v-if="!!unification.Thumb" class="has-text-centered">
         {{ $t('thumb') }}:<br/>
-        <img :src="`/api/image/unity/${unification.Unity.Mask}/m`"/>
+        <img :src="`/api/image/unity/${unification.Unity.Mask}-${unification.Unity.Version}/m`"/>
       </div>
       <div v-else-if="unification.Leads && unification.Leads.length">
         <template v-for="lead in unification.Leads">

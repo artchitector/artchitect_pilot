@@ -40,7 +40,7 @@ type origin interface {
 }
 
 type combinator interface {
-	CombineThumb(ctx context.Context, cardIDs []uint, mask string) error
+	CombineThumb(ctx context.Context, cardIDs []uint, mask string, version int) error
 }
 
 type notifier interface {
@@ -206,6 +206,15 @@ func (u *Unifier) Unify(ctx context.Context, unity model.Unity, state *model.Uni
 		return model.Unity{}, nil
 	default:
 	}
+	// Повышаем версию единства
+	unity.Version = unity.Version + 1
+	state.SetVersion(unity.Version)
+	u.notify(ctx, state)
+	select {
+	case <-ctx.Done():
+		return model.Unity{}, nil
+	default:
+	}
 	// Формирует картинку
 	if unity, err = u.saveThumb(ctx, unity, state); err != nil {
 		return model.Unity{}, errors.Wrapf(err, "[unifier] failed to save thumb for %s", unity)
@@ -215,6 +224,7 @@ func (u *Unifier) Unify(ctx context.Context, unity model.Unity, state *model.Uni
 		return model.Unity{}, nil
 	default:
 	}
+	// завершает унификацию
 	if unity, err = u.finishUnification(ctx, unity, state); err != nil {
 		return model.Unity{}, errors.Wrapf(err, "[unifier] failed to finish unity %s", unity)
 	}
@@ -409,7 +419,7 @@ func (u *Unifier) saveThumb(ctx context.Context, unity model.Unity, state *model
 	if err := json.Unmarshal([]byte(unity.Leads), &leads); err != nil {
 		log.Error().Err(err).Msgf("[unifier] failed unmarshal unity %s leads %s", unity.Mask, unity.Leads)
 	}
-	if err := u.combinator.CombineThumb(ctx, leads, unity.Mask); err != nil {
+	if err := u.combinator.CombineThumb(ctx, leads, unity.Mask, unity.Version); err != nil {
 		log.Error().Err(err).Msgf("[unifier] failed combine thumb %s", unity.Mask)
 	}
 	state.SetState(model.UnityStatePrepareThumb, 1, 1)
@@ -453,7 +463,7 @@ func (u *Unifier) finishUnification(ctx context.Context, unity model.Unity, stat
 		u.notify(ctx, state)
 		time.Sleep(time.Second)
 	}
-	log.Info().Msgf("[unifier] finished unity %s with state %s", unity, unity.State)
+	log.Info().Msgf("[unifier] finished unity %s with state %s with version %d", unity, unity.State, unity.Version)
 	return saved, nil
 }
 

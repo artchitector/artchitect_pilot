@@ -29,6 +29,7 @@ type Unity struct {
 	UpdatedAt time.Time
 	State     string
 	Leads     string  // leads is json array [56123, 56690, ...]. leads used for unity combination in single picture
+	Version   int     // version 0, 1, 2, 3 (when unity reassembled then version increased). 0 - not unified
 	Children  []Unity `gorm:"-" json:"-"`
 }
 

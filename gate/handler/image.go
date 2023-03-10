@@ -18,8 +18,9 @@ type ImageRequest struct {
 }
 
 type ImageUnityRequest struct {
-	Mask string `uri:"mask" binding:"required"`
-	Size string `uri:"size" binding:"required"`
+	Mask    string `uri:"mask" binding:"required"`
+	Version string `uri:"version" binding:"required"`
+	Size    string `uri:"size" binding:"required"`
 }
 
 type ImageHandler struct {
@@ -74,7 +75,7 @@ func (ih *ImageHandler) HandleUnity(c *gin.Context) {
 		return
 	}
 
-	imgBytes, err := ih.memory.GetUnityImage(c, request.Mask, request.Size)
+	imgBytes, err := ih.memory.GetUnityImage(c, request.Mask, request.Size, request.Version)
 	if err != nil {
 		if errors.Is(err, mmrPkg.ErrNotFound) {
 			if dt, err := os.ReadFile(fmt.Sprintf("./files/black-%s.jpg", request.Size)); err != nil {

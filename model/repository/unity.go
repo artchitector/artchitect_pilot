@@ -52,9 +52,10 @@ func (ur *UnityRepository) CreateUnity(mask string) (model.Unity, error) {
 	}
 
 	unity := model.Unity{
-		Mask:  mask,
-		Rank:  rank,
-		State: model.UnityStateEmpty,
+		Mask:    mask,
+		Rank:    rank,
+		State:   model.UnityStateEmpty,
+		Version: 1,
 	}
 	err := ur.db.Save(&unity).Error
 	return unity, err

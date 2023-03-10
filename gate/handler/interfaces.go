@@ -41,7 +41,7 @@ type listener interface {
 
 type memory interface {
 	GetCardImage(ctx context.Context, cardID uint, size string) ([]byte, error)
-	GetUnityImage(ctx context.Context, mask string, size string) ([]byte, error)
+	GetUnityImage(ctx context.Context, mask string, size string, version string) ([]byte, error)
 }
 
 type likeRepository interface {

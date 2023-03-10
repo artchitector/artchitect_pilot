@@ -3,6 +3,7 @@ package combinator
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"github.com/artchitector/artchitect/model"
 	"github.com/artchitector/artchitect/resizer"
 	"github.com/pkg/errors"
@@ -40,7 +41,7 @@ func NewCombinator(cardRepository cardRepository, memory memory, saver saver, wa
 	return &Combinator{cardRepository, memory, saver, watermark}
 }
 
-func (c *Combinator) CombineThumb(ctx context.Context, cardIDs []uint, mask string) error {
+func (c *Combinator) CombineThumb(ctx context.Context, cardIDs []uint, mask string, version int) error {
 	var imgs []image.Image
 	size := model.SizeS
 	if len(cardIDs) > 16 {
@@ -75,7 +76,8 @@ func (c *Combinator) CombineThumb(ctx context.Context, cardIDs []uint, mask stri
 	if err := jpeg.Encode(buf, resizedThumb, &jpeg.Options{Quality: model.QualityF}); err != nil {
 		return errors.Wrapf(err, "failed to encode total jpeg image")
 	}
-	err = c.saver.SaveUnity(mask, buf.Bytes())
+	filename := fmt.Sprintf("%s-%d", mask, version)
+	err = c.saver.SaveUnity(filename, buf.Bytes())
 	if err != nil {
 		return errors.Wrapf(err, "[combinator] failed to combine total card")
 	}
