@@ -50,7 +50,7 @@
       </div>
       <div v-if="!!unification.Thumb" class="has-text-centered">
         {{ $t('thumb') }}:<br/>
-        <img :src="`/api/image/unity/${unification.Unity.Mask}-${unification.Unity.Version}/m`"/>
+        <img :src="`/api/image/unity/${unification.Unity.Mask}/${unification.Unity.Version}/m`"/>
       </div>
       <div v-else-if="unification.Leads && unification.Leads.length">
         <template v-for="lead in unification.Leads">
