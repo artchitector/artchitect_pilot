@@ -458,9 +458,10 @@ func (u *Unifier) finishUnification(ctx context.Context, unity model.Unity, stat
 		return model.Unity{}, errors.Wrapf(err, "[unifier] failed finish unity %s", unity.Mask)
 	}
 
-	if unity.Rank == model.Rank10000 {
-		if err := u.notifyBot(ctx, unity); err != nil {
-			log.Error().Err(err).Msgf("[unifier] failed to notify bot about new 10000 unity")
+	isCompleted, err := u.isUnityCompleted(unity)
+	if (unity.Rank == model.Rank10000 && (unity.Version%5 == 0 || isCompleted)) || (unity.Rank == model.Rank1000 && isCompleted) {
+		if err := u.artchitectBot.SendUnityTo10Min(ctx, unity); err != nil {
+			log.Error().Err(err).Msgf("[unifier] failed to notify bot about new unity %s-%d", unity.Mask, unity.Version)
 		}
 	}
 
@@ -485,6 +486,16 @@ func (u *Unifier) notify(ctx context.Context, state *model.UnityState) {
 	}
 }
 
-func (u *Unifier) notifyBot(ctx context.Context, unity model.Unity) error {
-	return u.artchitectBot.SendUnityTo10Min(ctx, unity)
+func (u *Unifier) isUnityCompleted(unity model.Unity) (bool, error) {
+	var leads []uint
+	if err := json.Unmarshal([]byte(unity.Leads), &leads); err != nil {
+		return false, errors.Wrapf(err, "[unifier] failed to unmarshal leads %s", unity.Mask)
+	}
+	for _, lead := range leads {
+		if lead == 0 {
+			// not completed, if there is 0 lead
+			return false, nil
+		}
+	}
+	return true, nil
 }

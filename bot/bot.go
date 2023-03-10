@@ -82,12 +82,16 @@ func (t *Bot) SendUnityTo10Min(ctx context.Context, unity model.Unity) error {
 	}
 
 	img, err := t.getUnityImage(ctx, unity)
+	txt, err := getUnityText(unity)
+	if err != nil {
+		return errors.Wrapf(err, "[bot] failed to get unity text %s", unity.Mask)
+	}
 
 	r := bytes.NewReader(img)
 	msg, err := t.bot.SendPhoto(ctx, &bot.SendPhotoParams{
 		ChatID:  t.chat10Min,
 		Photo:   &models.InputFileUpload{Data: r},
-		Caption: getUnityText(unity),
+		Caption: txt,
 	})
 	if err != nil {
 		return errors.Wrapf(err, "[bot] failed send unity image %s-%d", unity.Mask, unity.Version)

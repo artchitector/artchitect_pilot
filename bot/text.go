@@ -1,8 +1,10 @@
 package bot
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/artchitector/artchitect/model"
+	"github.com/pkg/errors"
 )
 
 func getTextWithoutCaption(card model.Card) string {
@@ -35,11 +37,27 @@ func getTextWithCaption(card model.Card, caption string) string {
 	)
 }
 
-func getUnityText(unity model.Unity) string {
+func getUnityText(unity model.Unity) (string, error) {
+	var leads []uint
+	if err := json.Unmarshal([]byte(unity.Leads), &leads); err != nil {
+		return "", errors.Wrapf(err, "[unifier] failed to unmarshal leads %s", unity.Mask)
+	}
+	totalLeads := len(leads)
+	var filledLeads int
+	for _, lead := range leads {
+		if lead > 0 {
+			filledLeads += 1
+
+		}
+	}
+	isCompleted := totalLeads == filledLeads
 	return fmt.Sprintf(
-		"Unity %s unified. Version %d\n https://artchitect.space/unity/%s",
+		"Unity %s (re)unified. Version %d. Leads: %d from %d. Completed: %t. https://artchitect.space/unity/%s",
 		unity.Mask,
 		unity.Version,
+		filledLeads,
+		totalLeads,
+		isCompleted,
 		unity.Mask,
-	)
+	), nil
 }
