@@ -83,10 +83,6 @@ func (us *UnityState) SetState(state string, currentProgress int, totalProgress 
 	us.Last().SetState(state, currentProgress, totalProgress)
 }
 
-func (us *UnityState) SetVersion(version int) {
-	us.Last().SetVersion(version)
-}
-
 type UnityStateUnification struct {
 	Unity           Unity
 	Rank            uint
@@ -96,7 +92,6 @@ type UnityStateUnification struct {
 	Children        []Unity
 	Leads           []uint
 	Thumb           string
-	Version         int
 }
 
 func (uss *UnityStateUnification) SetUnity(unity Unity) {
@@ -124,10 +119,6 @@ func (uss *UnityStateUnification) SetLeads(leads []uint) {
 
 func (uss *UnityStateUnification) SetThumb(thumb string) {
 	uss.Thumb = thumb
-}
-
-func (uss *UnityStateUnification) SetVersion(version int) {
-	uss.Version = version
 }
 
 func (uss *UnityStateUnification) SetChildState(mask string, state string) {

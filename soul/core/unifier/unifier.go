@@ -208,7 +208,7 @@ func (u *Unifier) Unify(ctx context.Context, unity model.Unity, state *model.Uni
 	}
 	// Повышаем версию единства
 	unity.Version = unity.Version + 1
-	state.SetVersion(unity.Version)
+	state.SetUnity(unity)
 	u.notify(ctx, state)
 	select {
 	case <-ctx.Done():

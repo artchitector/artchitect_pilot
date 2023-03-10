@@ -10,7 +10,8 @@
     "prepare_thumb": "prepare collage",
     "finished": "unified",
     "children": "Children unities",
-    "thumb": "Collage"
+    "thumb": "Collage",
+    "version": "Version"
   },
   "ru": {
     "subtitle": "объединение единств",
@@ -22,7 +23,8 @@
     "prepare_thumb": "подготовка коллажа",
     "finished": "едино",
     "children": "Дочерние единства",
-    "thumb": "Коллаж"
+    "thumb": "Коллаж",
+    "version": "Версия"
   }
 }
 </i18n>
@@ -35,9 +37,10 @@
         <template v-if="unification.CurrentProgress > 0">
           {{ unification.CurrentProgress }}/{{ unification.TotalProgress }}
         </template>
+        <b>{{$t('version')}}: {{unification.Unity.Version}}</b>
       </div>
       <div v-if="unification.Version">
-        {{ $t('version')}}: {{unification.Version}}
+        {{ $t('version')}}:
       </div>
       <div v-if="unification.Children && unification.Children.length">
         {{ $t('children') }}:
