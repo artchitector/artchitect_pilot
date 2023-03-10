@@ -37,7 +37,10 @@ func (u *UnityWorker) Work(ctx context.Context) {
 	log.Info().Msgf("[unity_worker] got max %d", max)
 	n := math.Ceil(float64(max) / model.Rank10000)
 	for i := 0; i < int(n); i++ {
-		mask := fmt.Sprintf("%dXXXX", i)
+		// когда будет миллионная карточка 1ХХХХХХ, то надо будет сюда не 2 нуля, а 3 нуля добавить и перегенерировать все единства (хз сколько это займёт, неделю?)
+		mask := fmt.Sprintf("%02dXXXX", i)
+		log.Info().Msgf("[unity_worker] made mask %s", mask)
+
 		_, err := u.unityRepo.GetUnity(mask)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			log.Error().Err(err).Msgf("[unity_worker] failed to get unity %s", mask)

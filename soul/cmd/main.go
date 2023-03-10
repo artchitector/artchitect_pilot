@@ -22,6 +22,7 @@ import (
 	"github.com/artchitector/artchitect/soul/core/watermark"
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
 	"github.com/artchitector/artchitect/soul/resources"
+	"github.com/artchitector/artchitect/soul/workers/unity_worker"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -145,6 +146,9 @@ func main() {
 			}
 		}()
 	}
+
+	uw := unity_worker.NewUnityWorker(cardsRepo, unityRepo)
+	uw.Work(ctx)
 
 	// main loop to make artworks
 	var tick int
