@@ -52,7 +52,7 @@ func getUnityText(unity model.Unity) (string, error) {
 	}
 	isCompleted := totalLeads == filledLeads
 	return fmt.Sprintf(
-		"Unity %s unified. Version %d.\n Leads: %d from %d. Completed: %t.\n\n https://artchitect.space/unity/%s",
+		"Unity %s unified. Version %d.\nLeads: %d from %d. Completed: %t.\n\nhttps://artchitect.space/unity/%s",
 		unity.Mask,
 		unity.Version,
 		filledLeads,
