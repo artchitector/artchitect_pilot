@@ -163,7 +163,7 @@ export default {
         this.prev()
       } else if (e.key === 'ArrowRight') {
         this.next()
-      } else if (e.key === '+') {
+      } else if (e.key === '+' || e.key === '=') {
         this.like()
       }
     },
