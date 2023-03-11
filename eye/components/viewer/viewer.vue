@@ -156,13 +156,14 @@ export default {
       window.removeEventListener('keyup', this.onGlobalKey)
     },
     onGlobalKey (e) {
+      console.log(e.key)
       if (e.key === 'Escape') {
         this.close()
       } else if (e.key === 'ArrowLeft') {
         this.prev()
       } else if (e.key === 'ArrowRight') {
         this.next()
-      } else if (e.key === 'Enter') {
+      } else if (e.key === '+') {
         this.like()
       }
     },
