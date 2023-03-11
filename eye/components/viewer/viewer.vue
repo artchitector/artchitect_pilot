@@ -162,6 +162,8 @@ export default {
         this.prev()
       } else if (e.key === 'ArrowRight') {
         this.next()
+      } else if (e.key === 'Enter') {
+        this.like()
       }
     },
     setIndex (index) {
