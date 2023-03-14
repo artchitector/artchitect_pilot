@@ -1,2 +1,5 @@
 dt=$(date "+%Y%m%d-%H%m")
-pg_dump -d artchitect -U artchitector -h localhost -p 21431 | gzip > /root/dumps/db/dump-$dt.sql.gz
+echo "Starting get dump into file with timestamp - $dt"
+path=/root/dumps/db/dump-$dt.sql.gz
+pg_dump -d artchitect -U artchitector -h localhost -p 21431 | gzip > $path
+echo "success. created file is $path. finish."
