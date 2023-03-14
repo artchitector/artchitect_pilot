@@ -8,7 +8,7 @@ lastFolder=$(ls -tr | tail -1)
 echo "folder $lastFolder ignored"
 
 for x in `ls -tr -I$lastFolder`; do
-  filename="/var/root/dumps/cards/$x.tar.gz"
+  filename="/root/dumps/cards/$x.tar.gz"
   echo "working with folder $x and file $filename"
   if [ -e "$filename" ]; then
       echo "archive $filename already exists. skip"
