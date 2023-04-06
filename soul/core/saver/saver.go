@@ -70,6 +70,10 @@ func (s *Saver) SaveImage(cardID uint, imageData []byte) error {
 		return errors.Wrapf(err, "[saver] failed card id=%d image saving", cardID)
 	}
 
+	if res.StatusCode != http.StatusOK {
+		return errors.Errorf("[saver] failed to upload card. URL: %s. Status: %d", pth, res.StatusCode)
+	}
+
 	log.Info().Msgf("[saver] uploaded card %d to saver. URL: %s, Status: %d", cardID, pth, res.StatusCode)
 
 	return nil
