@@ -65,12 +65,12 @@ func (s *Saver) SaveImage(cardID uint, imageData []byte) error {
 
 	// Do the request
 	client := &http.Client{}
-	_, err = client.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
 		return errors.Wrapf(err, "[saver] failed card id=%d image saving", cardID)
 	}
 
-	log.Info().Msgf("[saver] upload card %d to saver", cardID)
+	log.Info().Msgf("[saver] uploaded card %d to saver. URL: %s, Status: %d", cardID, pth, res.StatusCode)
 
 	return nil
 }
