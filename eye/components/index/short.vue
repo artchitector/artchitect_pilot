@@ -1,20 +1,20 @@
 <i18n>
 {
   "en": {
-    "heading_part": "is digital AI-artist who creates artworks from light",
-    "middle_first": "💡 Light is a source of inspiration for an Artchitect. The idea of each card is formed from the beams of light that fall into the webcam. ",
-    "middle_second": "Camera picks up the light, turns it into digital signals, signals into numbers, numbers into words, and words and numbers into pictures, and so on every 60 seconds.",
-    "autonomy": "🤖 Artchitect is autonomous. It use the light to make ideas for cards without human help.",
-    "ai": "🧠 Artchitect creates paintings with the help of modern artificial intelligence <a href=\"https://github.com/Stability-AI/stablediffusion\" target=\"_blank\">Stable Diffusion v1.5</a> (powered by <a href=\"https://github.com/invoke-ai/InvokeAI\" target=\"_blank\">Invoke.AI</a>). Source code available on <a href=\"https://github.com/artchitector/artchitect\" target=\"_blank\">github.com</a>.",
-    "license": "🤝 All the paintings on this site belong to humanity. You can use any paintings from the artchitect.space website for any purpose, including commercial."
+    "digital_artist": "Digital Artist",
+    "blockquote_chatgpt": "Each artwork is not merely a combination of colors, shapes, and lines; it has its own soul and meaning.<br/><span class=\"is-size-7\">*ChatGPT about Artchitect</span>",
+    "digital_creator": "Artchitect is a digital creator capable of producing paintings without any human involvement.",
+    "autonomy": "Artchitect's autonomy relies on a quantum random number generator, which allows it to use universe light noise to create sequences of numbers. These numbers give birth to each painting's concept, plot, colors, style, and a distinct version. Origins of these paintings (quantum ideas) are stored at https://artchitect.space alongside each artwork.",
+    "creations": "Artchitect's creations are made from the exceptional material of quantum randomness and complexity of the Universe. It can produce more than a thousand paintings every day, with one painting taking roughly one minute to create. Although each picture can be replicated indefinitely, their source - quantum ideas remains unique and impossible to replicate. These ideas appear only once, at the right time and in the right place.",
+    "sd15": "All of the images are created using Stable Diffusion v1.5."
   },
   "ru": {
-    "heading_part": " - это цифровой ИИ-художник, превращающий свет в картины.",
-    "middle_first": "💡 Свет - источник вдохновения для Архитектора. Идея каждой картины сформирована из лучей света, которые падают в глазок веб-камеры.",
-    "middle_second": "Камера улавливает кванты света, превращает это в цифровые сигналы, сигналы - в числа, числа - в слова, а слова и числа - в картины, и так каждые 60 секунд.",
-    "autonomy": "🤖 Архитектор автономен. Он сам с помощью света придумывает идеи для картин без помощи человека.",
-    "ai": "🧠 Архитектор рисует свои картины с помощью современного искусственного интеллекта <a href=\"https://github.com/Stability-AI/stablediffusion\" target=\"_blank\">Stable Diffusion v1.5</a> (powered by <a href=\"https://github.com/invoke-ai/InvokeAI\" target=\"_blank\">Invoke.AI</a>). Весь исходный код Архитектора доступен на <a href=\"https://github.com/artchitector/artchitect\" target=\"_blank\">github.com</a>.",
-    "license": "🤝 Все картины на этом сайте принадлежат человечеству. Вы можете использовать любые картины с сайта artchitect.space в любых целях, в том числе коммерческих."
+    "digital_artist": "Цифровой творец",
+    "blockquote_chatgpt": "Произведение искусства - это не просто сочетание красок, форм и линий, это - целое, имеющее свою душу и значение.<br/><span class=\"is-size-7\">*ChatGPT про Artchitect</span>",
+    "digital_creator": "Архитектор - цифровой творец, способный создавать картины без участия людей.",
+    "autonomy": "Основой самостоятельности Архитектора является квантовый генератор случайных чисел. Архитектор использует световой шум Вселенной, чтобы создавать последовательности чисел, которые становятся идеей, сюжетом, цветами, стилем и конкретным вариантом каждой картины. Первоисточники картин (цифровые слепки) хранятся в галерее artchitect.space рядом с каждой картиной.",
+    "creations": "Artchitect создаёт свои творения из особого материала - квантовой случайности и сложности Вселенной. Он создает одну картину в минуту и более тысячу картин каждый день. И хотя каждая картина может быть реплицирована бесконечное число раз, их источник - квантовые идеи - остаются уникальными и неповторимыми. Они возникли только один раз в нужное время и в нужном месте.",
+    "sd15": "Для создания всех картин используется Stable Diffusion v1.5."
   }
 }
 </i18n>
@@ -22,17 +22,20 @@
   <section class="content">
     <h1><img src="/icon64.png" alt="artchitect"/> Artchitect</h1>
     <p class="is-size-5">
-      🖌 <b>Artchitect</b> {{ $t('heading_part') }}
+      🖌 {{$t('digital_artist')}}
+    </p>
+    <blockquote v-html="$t('blockquote_chatgpt')"/>
+    <p>
+      {{$t('digital_creator')}}
     </p>
     <p>
-      {{ $t('middle_first') }}
-      {{ $t('middle_second') }}
+      {{$t('autonomy')}}
     </p>
-    <p v-html="$t('autonomy')"/>
-    <p v-html="$t('ai')"/>
-    <p v-html="$t('license')"/>
-    <p class="is-size-7 has-text-right">
-      powered by <a href="https://github.com/invoke-ai/InvokeAI" target="_blank">Invoke.AI</a> (Stable Diffusion v1.5)
+    <p>
+      {{$t('creations')}}
+    </p>
+    <p>
+      {{$t('sd15')}}
     </p>
   </section>
 </template>

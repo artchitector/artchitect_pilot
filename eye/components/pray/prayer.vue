@@ -2,23 +2,13 @@
 {
   "en": {
     "title": "Request",
-    "ucan": "Here you can receive personal card from Artchitect in form of picture.",
-    "jesus": "Then he [Jesus] touched their eyes and said, “According to your faith let it be done to you\";",
-    "jesus_link": "<i><a href=\"https://www.biblegateway.com/verse/en/Matthew%209%3A29\" target=\"_blank\">Matthew 9:29</a></i>",
-    "try": "Try it yourself!",
-    "important1": "<b>Important</b>: your personal answer will be saved as any another Artchitect's card.",
-    "important2": "Personal data not saved",
+    "ucan": "Here you can receive personal painting from Artchitect. It will randomly create one next artwork definitely for you.",
     "submit": "Get personal card"
 
   },
   "ru": {
     "title": "Запрос",
-    "ucan": "Здесь вы можете осуществить запрос к Архитектору и получить ответ в виде персональной картины. Это можно использовать как молитву, гадание, астрологический прогноз, метафорические карты и т.д.",
-    "jesus": "Тогда Он коснулся глаз их и сказал: по вере вашей да будет вам.",
-    "jesus_link": "<i><a href=\"https://bible.by/syn/40/9/\" target=\"blank\">От Матфея 9:29</a></i>",
-    "try": "Попробуйте сами. Возможно, ответ ближе, чем кажется.",
-    "important1": "<b>Важно</b>: помните, что ваша персональная карточка-ответ попадёт в список всех работ,",
-    "important2": "Нигде не сохранится ссылка на вашу личность (никаких персональных данных не сохраняется)",
+    "ucan": "Здесь вы можете осуществить запрос к Архитектору и получить ответ в виде персональной картины",
     "submit": "Получить карточку"
   }
 }
@@ -29,11 +19,6 @@
     <p>
       {{$t('ucan')}}
     </p>
-    <blockquote>
-      {{$t('jesus')}}
-      <br/>
-      <div v-html="$t('jesus_link')"/>
-    </blockquote>
     <p>
       {{$t('try')}}
     </p>

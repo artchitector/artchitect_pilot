@@ -2,19 +2,15 @@
 {
   "en": {
     "main": "main",
-    "idea": "idea",
     "lottery": "lottery",
     "selection": "selection",
-    "request": "request",
     "liked": "liked",
     "unity": "unity"
   },
   "ru": {
     "main": "главная",
-    "idea": "идея",
     "lottery": "лотерея",
     "selection": "отборное",
-    "request": "запрос",
     "liked": "нравится",
     "unity": "единство"
   }
@@ -34,15 +30,11 @@
       <div>
         <NuxtLink :to="localePath('index')">{{$t('main')}}</NuxtLink>
         <span> - </span>
-        <NuxtLink :to="localePath('idea')">{{$t('idea')}}</NuxtLink>
-        <span> - </span>
         <NuxtLink :to="localePath('/unity')">{{$t('unity')}}</NuxtLink>
         <span> - </span>
         <NuxtLink :to="localePath('lottery')">{{$t('lottery')}}</NuxtLink>
         <span> - </span>
         <NuxtLink :to="localePath('selection')">{{$t('selection')}}</NuxtLink>
-        <span> - </span>
-        <NuxtLink :to="localePath('/pray')">{{$t('request')}}</NuxtLink>
         <span> - </span>
         <template v-if="loggedIn">
           <NuxtLink :to="localePath('/liked')">{{$t('liked')}}</NuxtLink>
@@ -67,8 +59,9 @@
 
     <footer class="footer">
       <p class="has-text-centered">
-        github: <a href="https://github.com/artchitector/artchitect" target="_blank">https://github.com/artchitector/artchitect</a><br/>
-        telegram: <a href="https://t.me/artchitect_space" target="_blank">t.me/artchitect_space</a><br/>
+        github: <a href="https://github.com/artchitector/artchitect">https://github.com/artchitector/artchitect</a><br/>
+        twitter: <a href="https://twitter.com/artchitectspace">@artchitectspace</a><br/>
+        instagram: <a href="https://www.instagram.com/artchitect.space">@artchitect.space</a><br/>
         {{$t('email')}}: <a href="mailto:i@nkuhta.ru">i@nkuhta.ru</a>
       </p>
     </footer>

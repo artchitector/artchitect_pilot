@@ -1,10 +1,10 @@
 <i18n>
 {
   "en": {
-    "title": "Artchitect: digital AI-artist who creates artworks from light"
+    "title": "Artchitect - digital AI-artist"
   },
   "ru": {
-    "title": "Artchitect: цифровой ИИ-художник, превращающий свет в картины"
+    "title": "Artchitect - цифровой творец"
   }
 }
 </i18n>
