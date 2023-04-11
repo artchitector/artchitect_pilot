@@ -2,12 +2,12 @@
 {
   "en": {
     "title": "Artchitect - lottery",
-    "lottery_description": "Everyday Artchitect selects 10-100 chosen cards, and saves them into ",
+    "lottery_description": "Everyday Artchitect selects 10-100 chosen dreams, and saves them into ",
     "selection": "selection"
   },
   "ru": {
     "title": "Artchitect - лотерея",
-    "lottery_description": "Ежедневно Архитектор выбирает 10-100 карточек из общего числа, созданных за день (~1400 карточек), и сохраняет их в ",
+    "lottery_description": "Ежедневно Архитектор выбирает 10-100 снов из общего числа, пережитых за день (~1400 снов), и сохраняет их в ",
     "selection": "отборное"
   }
 }

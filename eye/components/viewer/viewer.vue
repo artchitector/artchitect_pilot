@@ -1,23 +1,23 @@
 <i18n>
 {
   "en": {
-    "card": "Card",
+    "card": "Dream",
     "error": "Error",
     "try_later": "Try later, Artchitect is down",
     "close": "Close",
     "created": "created",
     "seed": "seed",
-    "tags": "tags"
+    "entities": "entities"
 
   },
   "ru": {
-    "card": "Карточка",
+    "card": "Сон",
     "error": "Ошибка",
     "try_later": "Попробуйте позже, сейчас Архитектору плохо",
     "close": "Закрыть",
     "created": "создано",
     "seed": "зерно",
-    "tags": "теги"
+    "entities": "сущности"
   }
 }
 </i18n>
@@ -71,11 +71,11 @@
       <img v-else-if="card" :src="`/api/image/f/${card.ID}`"/>
       <!--      -->
     </div>
-    <div class="tags">
+    <div class="entities">
       <template v-if="card">
         <p>{{ $t('created') }}: {{ formatDate(card.CreatedAt) }}</p>
         <p>{{ $t('seed') }}: {{ card.Spell.Seed }}</p>
-        <p class="is-size-7 tags-p">{{ $t('tags') }}: {{ card.Spell.Tags }}</p>
+        <p class="is-size-7 entities-p">{{ $t('entities') }}: {{ card.Spell.Tags }}</p>
       </template>
     </div>
   </div>
@@ -318,12 +318,12 @@ export default {
     }
   }
 
-  .tags {
+  .entities {
     z-index: 2;
     display: block;
     max-width: calc(60vw);
     background-color: rgba(0, 0, 0, 0.5);
-    .tags-p {
+    .entities-p {
       overflow: hidden;
       word-break: break-all;
       max-height: 3.5rem;

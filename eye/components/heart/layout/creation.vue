@@ -3,17 +3,17 @@
   "en": {
     "version": "Version",
     "seed":"Seed",
-    "tags_count": "Tags count",
-    "tags":"Tags",
-    "paint_progress": "Paint progress",
+    "tags_count": "Entities count",
+    "tags":"Entities",
+    "paint_progress": "Dream progress",
     "enjoy_progress":"Enjoy progress"
   },
   "ru": {
     "version": "Версия",
     "seed":"Зерно",
-    "tags_count": "Кол-во тегов",
-    "tags":"Теги",
-    "paint_progress": "Прогресс рисования",
+    "tags_count": "Кол-во сущностей",
+    "tags":"Сущности",
+    "paint_progress": "Прогресс сна",
     "enjoy_progress":"Прогресс наслаждения"
   }
 }

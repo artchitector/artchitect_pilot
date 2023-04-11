@@ -7,7 +7,7 @@
     "total": "total",
     "ws_error": "websocket listening error",
     "ws_connecting": "websocket connecting",
-    "selection_description": "Everyday Artchitect selects 10-100 chosen cards. For this purpose used ",
+    "selection_description": "Everyday Artchitect selects 10-100 chosen dreams. For this purpose used ",
     "lottery": "lottery"
   },
   "ru": {
@@ -17,7 +17,7 @@
     "total": "всего",
     "ws_error": "ошибка подключения к websocket",
     "ws_connecting": "подключение к websocket",
-    "selection_description": "Ежедневно Архитектор выбирает 10-100 карточек из общего числа, созданных за день (~1400 карточек). Для этого используется ",
+    "selection_description": "Ежедневно Архитектор выбирает 10-100 снов из общего числа, пережитых за день (~1400 снов). Для этого используется ",
     "lottery": "лотерея"
   }
 }

@@ -1,18 +1,18 @@
 <i18n>
 {
   "en": {
-    "last_99": "last 99 cards",
+    "last_99": "last 99 dreams",
     "loading": "loading",
     "error": "Error",
-    "not_loaded": "cards not loaded",
+    "not_loaded": "dreams not loaded",
     "connecting": "connecting",
     "connected": "connected. waiting for event"
   },
   "ru": {
-    "last_99": "последние 99 карточек",
+    "last_99": "последние 99 снов",
     "loading": "Загрузка",
     "error": "Ошибка",
-    "not_loaded": "карточки не загрузились",
+    "not_loaded": "сны не загрузились",
     "connecting": "соединение",
     "connected": "соединение установлено. ожидаю событий",
     "ws_error": "websocket listening error",

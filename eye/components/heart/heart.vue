@@ -1,15 +1,15 @@
 <i18n>
 {
   "en": {
-    "heart": "Artchitect's heart",
-    "maintenance": "Artchitect is offline today. Maintenance. No new cards.",
+    "heart": "Artchitect's dreaming",
+    "maintenance": "Artchitect is offline today. Maintenance. No new dreams.",
     "error": "Error",
     "connecting": "connecting",
     "connected": "connected. waiting for event"
   },
   "ru": {
-    "heart": "Сердце Архитектора",
-    "maintenance": "Artchitect сегодня не работает. Новые карточки не создаются, молитва не работает.",
+    "heart": "Сон Архитектора",
+    "maintenance": "Artchitect сегодня не работает. Новые сны не создаются.",
     "error": "Ошибка",
     "connecting": "соединение",
     "connected": "соединение установлено. ожидаю событий"
