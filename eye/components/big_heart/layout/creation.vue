@@ -14,14 +14,14 @@
       </div>
       <div>dreaming</div>
       <progress class="progress is-primary" :value="progress" max="100">-</progress>
-      <div class="last-dream-box" v-if="message && message.PreviousCardID">
-        <div>last dream was
+      <div class="last-dream-box" v-if="message && message.PreviousCardID" :style="{'height': lastDreamBoxHeight}">
+        <div class="mb-1">last dream was
           <NuxtLink :to="localePath(`/dream/${message.PreviousCardID}`)">
             #{{ message.PreviousCardID }}
           </NuxtLink>
         </div>
         <NuxtLink :to="localePath(`/dream/${message.PreviousCardID}`)">
-          <img :src="`/api/image/m/${message.PreviousCardID}`"/>
+          <img :src="`/api/image/f/${message.PreviousCardID}`"/>
         </NuxtLink>
       </div>
     </div>
@@ -47,6 +47,7 @@ export default {
       sizePrepared: false,
       maxImgHeight: 0,
       resizeTimeout: null,
+      lastDreamBoxHeightValue: null,
     }
   },
   computed: {
@@ -69,6 +70,20 @@ export default {
       }
       const progress = this.message.CurrentEnjoyTime / this.message.EnjoyTime;
       return Math.floor(progress * 100);
+    },
+    lastDreamBoxHeight() {
+      if (this.lastDreamBoxHeightValue !== null) {
+        return this.lastDreamBoxHeightValue;
+      } else {
+        const screenHeight = window.innerHeight
+        if (screenHeight > 900) {
+          this.lastDreamBoxHeightValue = `${Math.floor(screenHeight - 450)}px`
+          return this.lastDreamBoxHeightValue
+        }
+
+        this.lastDreamBoxHeightValue = '40%'
+        return this.lastDreamBoxHeightValue
+      }
     }
   },
   mounted() {
@@ -106,6 +121,7 @@ export default {
       clearTimeout(this.resizeTimeout)
       this.resizeTimeout = setTimeout(() => {
         this.fixImgSize()
+        this.lastDreamBoxHeightValue = null
       }, 50)
     }
   }
@@ -137,7 +153,7 @@ export default {
   position: absolute;
   bottom: 0;
   left: 50%;
-  height: 30%;
+  //height: 40%;
   width: 100%;
   margin-left: -50%;
 
