@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="resultBox">
     <div v-if="!message || !message.CardID" class="heart-heading">
       <h1 class="is-size-6 has-text-success">currently dreaming</h1>
       <div v-if="message" class="mb-3">
@@ -16,11 +16,14 @@
       <progress class="progress is-primary" :value="progress" max="100">-</progress>
     </div>
     <div v-else class="heart-result">
-      enjoy the <NuxtLink class="has-text-info" :to="localePath(`/dream/${message.CardID}`)">#{{ message.CardID }}</NuxtLink>
-      <progress class="progress is-warning" :value="enjoy" max="100">-</progress>
-      <NuxtLink :to="localePath(`/dream/${message.CardID}`)">
-        <img :src="`/api/image/m/${message.CardID}`"/>
-      </NuxtLink>
+      <div ref="preImgElement" class="mb-3">
+        enjoy the
+        <NuxtLink class="has-text-info" :to="localePath(`/dream/${message.CardID}`)">#{{ message.CardID }}</NuxtLink>
+        <progress class="progress is-warning" :value="enjoy" max="100">-</progress>
+      </div>
+      <a v-if="sizePrepared" :href="`/api/image/f/${message.CardID}`">
+        <img :src="`/api/image/f/${message.CardID}`" :style="{'max-height': `${maxImgHeight}px`}"/>
+      </a>
     </div>
   </div>
 </template>
@@ -31,6 +34,9 @@ export default {
   data() {
     return {
       message: null,
+      sizePrepared: false,
+      maxImgHeight: 0,
+      resizeTimeout: null,
     }
   },
   computed: {
@@ -55,9 +61,35 @@ export default {
       return Math.floor(progress * 100);
     }
   },
+  mounted() {
+    window.addEventListener('resize', this.onResize)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize)
+  },
   methods: {
     onMessage(channelName, message) {
       this.message = message
+      if (!this.sizePrepared) {
+        this.fixImgSize()
+      }
+    },
+    fixImgSize() {
+      if (!this.$refs.preImgElement) {
+        return
+      }
+      const article = this.$refs.resultBox.parentElement.parentElement
+      const maxImgHeight = article.clientHeight - this.$refs.preImgElement.clientHeight
+      this.maxImgHeight = maxImgHeight - 36
+      console.log(`heart calculate height ${this.maxImgHeight}`)
+      this.sizePrepared = true
+    },
+    onResize() {
+      this.sizePrepared = false
+      clearTimeout(this.resizeTimeout)
+      this.resizeTimeout = setTimeout(() => {
+        this.fixImgSize()
+      }, 50)
     }
   }
 }
