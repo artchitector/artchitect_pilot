@@ -69,6 +69,10 @@ export default {
   },
   methods: {
     onMessage(channelName, message) {
+      if (channelName !== "creation") {
+        this.message = null
+        return
+      }
       this.message = message
       if (!this.sizePrepared) {
         this.fixImgSize()
