@@ -1,3 +1,13 @@
+<i18n>
+{
+  "en": {
+    "title": "Artchitect's heart ❤️"
+  },
+  "ru": {
+    "title": "Сердце  Artchitect ❤️"
+  }
+}
+</i18n>
 <template>
   <div id="heart-main-backing">
 <!--    <div class="heart-caption">-->
@@ -28,7 +38,12 @@
 import Heart from "@/components/big_heart/heart.vue"
 export default {
   components: {Heart},
-  layout: "empty"
+  layout: "empty",
+  head() {
+    return {
+      title: this.$t('title')
+    }
+  }
 }
 </script>
 
