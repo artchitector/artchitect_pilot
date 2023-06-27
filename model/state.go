@@ -1,6 +1,7 @@
 package model
 
 type CreationState struct {
+	PreviousCardID       uint
 	Version              string
 	Seed                 uint
 	TagsCount            uint

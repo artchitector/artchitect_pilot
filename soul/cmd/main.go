@@ -110,6 +110,7 @@ func main() {
 		speller,
 		notifier,
 		unfr,
+		cardsRepo,
 		res.GetEnv().CardTotalTime,
 		res.GetEnv().PrehotDelay,
 	)

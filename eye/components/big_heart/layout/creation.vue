@@ -14,6 +14,16 @@
       </div>
       <div>dreaming</div>
       <progress class="progress is-primary" :value="progress" max="100">-</progress>
+      <div class="last-dream-box" v-if="message && message.PreviousCardID">
+        <div>last dream was
+          <NuxtLink :to="localePath(`/dream/${message.PreviousCardID}`)">
+            #{{ message.PreviousCardID }}
+          </NuxtLink>
+        </div>
+        <NuxtLink :to="localePath(`/dream/${message.PreviousCardID}`)">
+          <img :src="`/api/image/m/${message.PreviousCardID}`"/>
+        </NuxtLink>
+      </div>
     </div>
     <div v-else class="heart-result">
       <div ref="preImgElement" class="mb-3">
@@ -74,6 +84,9 @@ export default {
         return
       }
       this.message = message
+      if (this.message.CardID > 0) {
+        this.lastImageID = this.message.CardID
+      }
       if (!this.sizePrepared) {
         this.fixImgSize()
       }
@@ -99,7 +112,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .heart-heading {
   letter-spacing: 1px;
   margin-bottom: 5px;
@@ -116,5 +129,20 @@ export default {
   text-transform: uppercase;
   padding: 10px;
   text-align: center;
+}
+
+.last-dream-box {
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  height: 30%;
+  width: 100%;
+  margin-left: -50%;
+
+  img {
+    max-height: 90%;
+  }
 }
 </style>

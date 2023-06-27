@@ -26,6 +26,10 @@ type unifier interface {
 	UpdateUnitiesByNewCard(ctx context.Context, cardID uint) (bool, error)
 }
 
+type maxCardGetter interface {
+	GetMaxCardID(ctx context.Context) (uint, error)
+}
+
 // Creator used to make new Card with no input data. Used by Artchitect and Merciful
 type Creator struct {
 	mutex         sync.Mutex
@@ -33,12 +37,30 @@ type Creator struct {
 	speller       speller
 	notifier      notifier
 	unifier       unifier
+	maxCardGetter maxCardGetter
 	cardTotalTime uint // in seconds
 	prehotDelay   uint // in seconds
 }
 
-func NewCreator(artist artist, speller speller, notifier notifier, unifier unifier, cardTotalTime uint, prehotDelay uint) *Creator {
-	return &Creator{sync.Mutex{}, artist, speller, notifier, unifier, cardTotalTime, prehotDelay}
+func NewCreator(
+	artist artist,
+	speller speller,
+	notifier notifier,
+	unifier unifier,
+	maxCardGetter maxCardGetter,
+	cardTotalTime uint,
+	prehotDelay uint,
+) *Creator {
+	return &Creator{
+		sync.Mutex{},
+		artist,
+		speller,
+		notifier,
+		unifier,
+		maxCardGetter,
+		cardTotalTime,
+		prehotDelay,
+	}
 }
 
 func (c *Creator) CreateWithoutEnjoy(ctx context.Context) (model.Card, error) {
@@ -54,7 +76,13 @@ func (c *Creator) CreateWithEnjoy(ctx context.Context) (model.Card, error) {
 	log.Info().Msgf("[creator] start card creation with enjoy")
 	cardStart := time.Now()
 
-	state := model.CreationState{}
+	maxCardId, err := c.maxCardGetter.GetMaxCardID(ctx)
+	if err != nil {
+		maxCardId = 0
+	}
+	state := model.CreationState{
+		PreviousCardID: maxCardId,
+	}
 
 	card, err := c.create(ctx, &state)
 	if err != nil {
