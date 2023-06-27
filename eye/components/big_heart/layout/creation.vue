@@ -16,11 +16,11 @@
       <progress class="progress is-primary" :value="progress" max="100">-</progress>
     </div>
     <div v-else class="heart-result">
-      enjoy the <a class="has-text-info" :href="`http://localhost/card/${message.CardID}`">#{{ message.CardID }}</a>
+      enjoy the <NuxtLink class="has-text-info" :to="localePath(`/dream/${message.CardID}`)">#{{ message.CardID }}</NuxtLink>
       <progress class="progress is-warning" :value="enjoy" max="100">-</progress>
-      <a :href="`http://localhost/card/${message.CardID}`">
+      <NuxtLink :to="localePath(`/dream/${message.CardID}`)">
         <img :src="`/api/image/m/${message.CardID}`"/>
-      </a>
+      </NuxtLink>
     </div>
   </div>
 </template>

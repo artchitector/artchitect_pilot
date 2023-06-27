@@ -23,7 +23,7 @@
     <viewer ref="viewer"/>
     <div class="image-container">
       <img v-if="!state.CardID" src="/in-progress.jpeg"/>
-      <a v-else :href="`/card/${state.CardID}`" target="_blank" @click.prevent="viewer()">
+      <a v-else :href="`/dream/${state.CardID}`" target="_blank" @click.prevent="viewer()">
         <img :src="`/api/image/s/${state.CardID}`"/>
       </a>
     </div>

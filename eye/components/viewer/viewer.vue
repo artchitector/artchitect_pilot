@@ -47,7 +47,7 @@
     </div>
     <div class="header">
       <h1 class="is-size-4" v-if="card">
-        <NuxtLink :to="localePath(`/card/${card.ID}`)">
+        <NuxtLink :to="localePath(`/dream/${card.ID}`)">
           {{ $t('card') }} #{{ card.ID }}
         </NuxtLink>
       </h1>
