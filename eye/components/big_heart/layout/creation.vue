@@ -1,5 +1,5 @@
 <template>
-  <div ref="resultBox">
+  <div>
     <div v-if="!message || !message.CardID" class="heart-heading">
       <h1 class="is-size-6 has-text-success">currently dreaming</h1>
       <div v-if="message" class="mb-3">
@@ -16,32 +16,23 @@
       <progress class="progress is-primary" :value="progress" max="100">-</progress>
       <last_dream v-if="message" :message="message" :heartState="heartState" :style="{'height': lastDreamBoxHeight}"/>
     </div>
-    <div v-else class="heart-result">
-      <div ref="preImgElement" class="mb-3">
-        enjoy the
-        <NuxtLink class="has-text-info" :to="localePath(`/dream/${message.CardID}`)">#{{ message.CardID }}</NuxtLink>
-        <progress class="progress is-warning" :value="enjoy" max="100">-</progress>
-      </div>
-      <a v-if="sizePrepared" :href="`/api/image/f/${message.CardID}`">
-        <img :src="`/api/image/f/${message.CardID}`" :style="{'max-height': `${maxImgHeight}px`}"/>
-      </a>
-    </div>
+    <result v-else ref="resultBox"/>
   </div>
 </template>
 
 <script>
 import Last_dream from "@/components/big_heart/layout/creation/last_dream.vue";
+import Result from "@/components/big_heart/layout/creation/result.vue";
 
 export default {
   name: "creation",
-  components: {Last_dream},
+  components: {Result, Last_dream},
   data() {
     return {
       message: null,
       heartState: null,
       sizePrepared: false,
       maxImgHeight: 0,
-      resizeTimeout: null,
       lastDreamBoxHeightValue: null,
     }
   },
@@ -56,21 +47,12 @@ export default {
       const progress = this.message.CurrentCardPaintTime / this.message.LastCardPaintTime;
       return Math.floor(progress * 100);
     },
-    enjoy() {
-      if (!this.message) {
-        return 0;
-      }
-      if (!this.message.EnjoyTime || !this.message.CurrentEnjoyTime) {
-        return 0;
-      }
-      const progress = this.message.CurrentEnjoyTime / this.message.EnjoyTime;
-      return Math.floor(progress * 100);
-    },
     lastDreamBoxHeight() {
       if (this.lastDreamBoxHeightValue !== null) {
         return this.lastDreamBoxHeightValue;
       } else {
         const screenHeight = window.innerHeight
+        console.log(screenHeight)
         if (screenHeight > 900) {
           this.lastDreamBoxHeightValue = `${Math.floor(screenHeight - 450)}px`
           return this.lastDreamBoxHeightValue
@@ -98,33 +80,18 @@ export default {
         return
       }
       this.message = message
-      if (this.message.CardID > 0) {
-        this.lastImageID = this.message.CardID
-      }
-      if (!this.sizePrepared) {
-        this.fixImgSize()
+      if (this.$refs.resultBox) {
+        this.$refs.resultBox.onMessage(this.message)
       }
     },
     updateHeartState(msg) {
       this.heartState = msg
     },
-    fixImgSize() {
-      if (!this.$refs.preImgElement) {
-        return
-      }
-      const article = this.$refs.resultBox.parentElement.parentElement
-      const maxImgHeight = article.clientHeight - this.$refs.preImgElement.clientHeight
-      this.maxImgHeight = maxImgHeight - 36
-      console.log(`heart calculate height ${this.maxImgHeight}`)
-      this.sizePrepared = true
-    },
     onResize() {
-      this.sizePrepared = false
-      clearTimeout(this.resizeTimeout)
-      this.resizeTimeout = setTimeout(() => {
-        this.fixImgSize()
-        this.lastDreamBoxHeightValue = null
-      }, 50)
+      this.lastDreamBoxHeightValue = null
+      if (this.$refs.resultBox) {
+        this.$refs.resultBox.onResize()
+      }
     }
   }
 }
@@ -138,19 +105,9 @@ export default {
   font-size: 10px;
   padding: 10px;
   text-align: center;
+
   .tags .tag {
     font-size: 9px;
   }
 }
-
-.heart-result {
-  letter-spacing: 1px;
-  margin-bottom: 5px;
-  font-size: 12px;
-  text-transform: uppercase;
-  padding: 10px;
-  text-align: center;
-}
-
-
 </style>

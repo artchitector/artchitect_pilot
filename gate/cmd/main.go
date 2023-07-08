@@ -102,6 +102,7 @@ func main() {
 		r.POST("/pray/answer", prayHandler.HandleAnswer)
 		r.GET("/login", lh.Handle)
 		r.POST("/like", llh.Handle)
+		r.GET("/liked/:card_id", llh.HandleGet)
 		r.GET("/liked", llh.HandleList)
 		r.GET("/unity", uh.HandleList)
 		r.GET("/unity/:mask", uh.HandleUnity)

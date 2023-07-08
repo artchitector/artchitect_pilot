@@ -11,9 +11,20 @@
             #{{ message.PreviousCardID }}
           </NuxtLink>
         </div>
-        <NuxtLink :to="localePath(`/dream/${message.PreviousCardID}`)">
-          <img :src="`/api/image/f/${message.PreviousCardID}`"/>
-        </NuxtLink>
+        <div class="last-dream-wrapper">
+          <NuxtLink :to="localePath(`/dream/${message.PreviousCardID}`)">
+            <img :src="`/api/image/f/${message.PreviousCardID}`"/>
+          </NuxtLink>
+          <div class="control-like">
+            <font-awesome-icon v-if="liked && liked.error"
+                               icon="fa-solid fa-triangle-exclamation"
+                               :title="liked.error.message"/>
+            <a v-else href="#" @click.prevent="like()">
+              <font-awesome-icon v-if="!liked || !liked.liked" icon="fa-solid fa-heart" class="has-color-base"/>
+              <font-awesome-icon v-else icon="fa-solid fa-heart" class="has-text-danger"/>
+            </a>
+          </div>
+        </div>
       </div>
       <div class="right">
         <rnd v-if="heartState && heartState.Rnd.length > 2" :card-id="heartState.Rnd[2]"/>
@@ -28,7 +39,48 @@ import Rnd from "@/components/big_heart/layout/creation/rnd.vue";
 
 export default {
   components: {Rnd},
-  props: ["message", "heartState"]
+  props: ["message", "heartState"],
+  data() {
+    return {
+      liked: {
+        liked: false,
+        error: null,
+      }
+    }
+  },
+  mounted() {
+    this.initLiked()
+  },
+  methods: {
+    async like() {
+      try {
+        let like = await this.$axios.$post("/like", {
+          card_id: this.message.PreviousCardID,
+        })
+        this.$emit('liked', like)
+        this.liked = {
+          id: like.ID,
+          liked: like.Liked,
+        };
+      } catch (e) {
+        console.error(e)
+        this.liked = {
+          error: e
+        };
+      }
+
+    },
+    async initLiked() {
+      const cardID = this.message.PreviousCardID
+      try {
+        let like = await this.$axios.$get(`/liked/${cardID}`)
+        this.liked.liked = like.Liked
+      } catch (e) {
+        console.error(e)
+        this.liked.error = e
+      }
+    }
+  }
 }
 </script>
 
@@ -41,6 +93,7 @@ export default {
   left: 50%;
   width: 100%;
   margin-left: -50%;
+  margin-bottom: 20px;
 
   .wrapper {
     display: flex;
@@ -66,5 +119,19 @@ export default {
     }
   }
 
+  .last-dream-wrapper {
+    position: relative;
+
+    .control-like {
+      position: absolute;
+      left: 50%;
+      bottom: 20%;
+      z-index: 3;
+      margin-left: -20px;
+      font-size: 48px;
+      opacity: 0.7;
+      filter: drop-shadow(0px 0px 8px rgba(255, 0, 0, 0.6));
+    }
+  }
 }
 </style>

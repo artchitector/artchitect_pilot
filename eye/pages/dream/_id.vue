@@ -93,11 +93,6 @@ export default {
           id: like.ID,
           liked: like.Liked,
         };
-        if (like.Liked) {
-          this.card.Likes += 1
-        } else {
-          this.card.Likes -= 1
-        }
       } catch (e) {
         console.error(e)
         this.liked = {
@@ -113,6 +108,9 @@ export default {
       throw "id must be positive integer"
     }
     this.card = await this.$axios.$get(`/card/${id}`)
+    if (!!this.card.Liked) {
+      this.liked.liked = true
+    }
   }
 }
 </script>

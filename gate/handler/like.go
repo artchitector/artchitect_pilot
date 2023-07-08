@@ -8,7 +8,11 @@ import (
 )
 
 type LikeRequest struct {
-	CardID uint `json:"card_id" binding:"required"`
+	CardID uint `uri:"card_id" json:"card_id" binding:"required"`
+}
+
+type LikedResponse struct {
+	Liked bool
 }
 
 type bot interface {
@@ -94,4 +98,28 @@ func (lh *LikeHandler) HandleList(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, likes)
+}
+
+func (lh *LikeHandler) HandleGet(c *gin.Context) {
+	var request LikeRequest
+	if err := c.ShouldBindUri(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userID := lh.authService.getUserID(c)
+	if userID == 0 {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	liked, err := lh.likeRepository.IsLiked(c, userID, request.CardID)
+	if err != nil {
+		log.Error().Err(err).Send()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	lr := LikedResponse{Liked: liked}
+	c.JSON(http.StatusOK, lr)
 }
