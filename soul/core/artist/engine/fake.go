@@ -14,10 +14,13 @@ import (
 )
 
 type FakeEngine struct {
+	fakeGenerationTime uint
 }
 
-func NewFakeEngine() *FakeEngine {
-	return &FakeEngine{}
+func NewFakeEngine(fakeGenerationTime uint) *FakeEngine {
+	return &FakeEngine{
+		fakeGenerationTime,
+	}
 }
 
 func (e *FakeEngine) GetImage(ctx context.Context, spell model.Spell) (image.Image, error) {
@@ -25,7 +28,7 @@ func (e *FakeEngine) GetImage(ctx context.Context, spell model.Spell) (image.Ima
 	if b, err := os.ReadFile(fmt.Sprintf("files/fakes/%d.jpeg", fakeNumber)); err != nil {
 		return nil, errors.Wrap(err, "[fake artist] failed to get file")
 	} else {
-		time.Sleep(time.Second * 6) // imitation of long-running process
+		time.Sleep(time.Second * time.Duration(e.fakeGenerationTime)) // imitation of long-running process
 		buf := bytes.NewBuffer(b)
 		img, err := jpeg.Decode(buf)
 		return img, errors.Wrap(err, "[fake_artist] failed to decode jpeg")

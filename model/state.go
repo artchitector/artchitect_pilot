@@ -24,6 +24,10 @@ type PrayState struct {
 	Started bool
 }
 
+type HeartState struct {
+	Rnd []uint // Some random images for heart-entertainment. Usually 4 images
+}
+
 const (
 	UnityStateCollectingChildren = "collecting_children"
 	UnityStateUnifyChildren      = "unify_children"

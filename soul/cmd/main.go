@@ -11,6 +11,7 @@ import (
 	"github.com/artchitector/artchitect/soul/core/combinator"
 	creator2 "github.com/artchitector/artchitect/soul/core/creator"
 	"github.com/artchitector/artchitect/soul/core/gifter"
+	"github.com/artchitector/artchitect/soul/core/heart"
 	"github.com/artchitector/artchitect/soul/core/lottery"
 	merciful2 "github.com/artchitector/artchitect/soul/core/merciful"
 	originService "github.com/artchitector/artchitect/soul/core/origin"
@@ -79,7 +80,7 @@ func main() {
 	speller := spellerService.NewSpeller(spellRepo, origin, notifier)
 	var engine artistService.EngineContract
 	if res.GetEnv().UseFakeArtist {
-		engine = engine2.NewFakeEngine()
+		engine = engine2.NewFakeEngine(res.GetEnv().FakeGenerationTime)
 	} else {
 		engine = engine2.NewArtistEngine(res.GetEnv().ArtistURL)
 	}
@@ -120,6 +121,13 @@ func main() {
 
 	// merciful
 	merciful := merciful2.NewMerciful(prayRepo, creator, notifier)
+
+	heartStateOperator := heart.NewHeartState(notifier, cardsRepo, 4) // 4 dreams
+	go func() {
+		if err := heartStateOperator.Run(ctx, 3); err != nil { // 3 seconds
+			log.Error().Err(err).Send()
+		}
+	}()
 
 	// Artchitect core scheduler
 	artchitectConfig := artchitectService.Config{

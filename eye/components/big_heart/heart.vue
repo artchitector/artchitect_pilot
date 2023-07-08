@@ -27,7 +27,7 @@ export default {
       this.maintenance = true
       return
     }
-    this.connection = new WsConnection(process.env.WS_URL, this.logPrefix, ['creation', 'lottery', 'unity'], 100)
+    this.connection = new WsConnection(process.env.WS_URL, this.logPrefix, ['creation', 'lottery', 'unity', 'heart'], 100)
     this.connection.onmessage((channel, message) => {
       this.status.error = null
       this.status.reconnecting = null

@@ -8,4 +8,5 @@ const (
 	ChannelNewSelection = "new_selection"
 	ChannelLottery      = "lottery"
 	ChannelUnity        = "unity"
+	ChannelHeart        = "heart"
 )

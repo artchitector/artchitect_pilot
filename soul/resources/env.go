@@ -34,8 +34,9 @@ type Env struct {
 	MinioBucket    string
 
 	// settings
-	CardTotalTime uint
-	PrehotDelay   uint
+	CardTotalTime      uint
+	PrehotDelay        uint
+	FakeGenerationTime uint
 
 	// telegram constants
 	Telegram10BotToken string // 10bot (is for maintenance and secure use to control artchitect.space). Secured with single account usage.
@@ -63,6 +64,12 @@ func initEnv() *Env {
 	}
 	artchitectorChatStr := os.Getenv("CHAT_ID_ARTCHITECTOR")
 	artchitectorChatID, err := strconv.ParseInt(artchitectorChatStr, 10, 64)
+
+	fakeGenerationTimeStr := os.Getenv("FAKE_GENERATION_TIME")
+	fakeGenerationTime, err := strconv.Atoi(fakeGenerationTimeStr)
+	if err != nil {
+		log.Fatal().Err(err)
+	}
 
 	if err != nil {
 		log.Fatal().Err(err)
@@ -92,8 +99,9 @@ func initEnv() *Env {
 		MinioBucket:    os.Getenv("MINIO_BUCKET"),
 		SaverURL:       os.Getenv("SAVER_URL"),
 
-		CardTotalTime: uint(cardTotalTime),
-		PrehotDelay:   uint(prehotDelay),
+		CardTotalTime:      uint(cardTotalTime),
+		PrehotDelay:        uint(prehotDelay),
+		FakeGenerationTime: uint(fakeGenerationTime),
 
 		Telegram10BotToken: os.Getenv("TELEGRAM_10BOT_TOKEN"),
 		TelegramABotToken:  os.Getenv("TELEGRAM_ABOT_TOKEN"),

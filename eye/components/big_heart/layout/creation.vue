@@ -14,16 +14,7 @@
       </div>
       <div>dreaming</div>
       <progress class="progress is-primary" :value="progress" max="100">-</progress>
-      <div class="last-dream-box" v-if="message && message.PreviousCardID" :style="{'height': lastDreamBoxHeight}">
-        <div class="mb-1">last dream was
-          <NuxtLink :to="localePath(`/dream/${message.PreviousCardID}`)">
-            #{{ message.PreviousCardID }}
-          </NuxtLink>
-        </div>
-        <NuxtLink :to="localePath(`/dream/${message.PreviousCardID}`)">
-          <img :src="`/api/image/f/${message.PreviousCardID}`"/>
-        </NuxtLink>
-      </div>
+      <last_dream v-if="message" :message="message" :heartState="heartState" :style="{'height': lastDreamBoxHeight}"/>
     </div>
     <div v-else class="heart-result">
       <div ref="preImgElement" class="mb-3">
@@ -39,11 +30,15 @@
 </template>
 
 <script>
+import Last_dream from "@/components/big_heart/layout/creation/last_dream.vue";
+
 export default {
   name: "creation",
+  components: {Last_dream},
   data() {
     return {
       message: null,
+      heartState: null,
       sizePrepared: false,
       maxImgHeight: 0,
       resizeTimeout: null,
@@ -94,6 +89,10 @@ export default {
   },
   methods: {
     onMessage(channelName, message) {
+      if (channelName === "heart") {
+        this.updateHeartState(message)
+        return
+      }
       if (channelName !== "creation") {
         this.message = null
         return
@@ -105,6 +104,9 @@ export default {
       if (!this.sizePrepared) {
         this.fixImgSize()
       }
+    },
+    updateHeartState(msg) {
+      this.heartState = msg
     },
     fixImgSize() {
       if (!this.$refs.preImgElement) {
@@ -136,6 +138,9 @@ export default {
   font-size: 10px;
   padding: 10px;
   text-align: center;
+  .tags .tag {
+    font-size: 9px;
+  }
 }
 
 .heart-result {
@@ -147,18 +152,5 @@ export default {
   text-align: center;
 }
 
-.last-dream-box {
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0.1);
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  //height: 40%;
-  width: 100%;
-  margin-left: -50%;
 
-  img {
-    max-height: 90%;
-  }
-}
 </style>
