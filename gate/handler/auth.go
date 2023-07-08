@@ -10,15 +10,26 @@ import (
 )
 
 type AuthService struct {
-	secretKey []byte
+	secretKey     []byte
+	allowFakeAuth bool
 }
 
-func NewAuthService(secretKey string) *AuthService {
-	return &AuthService{[]byte(secretKey)}
+func NewAuthService(secretKey string, allowFakeAuth bool) *AuthService {
+	return &AuthService{[]byte(secretKey), allowFakeAuth}
 }
 
 func (as *AuthService) getUserID(c *gin.Context) uint {
 	authHeader := c.GetHeader("Authorization")
+
+	if authHeader == "FAKE_LOCAL_TOKEN" {
+		if !as.allowFakeAuth {
+			log.Error().Msgf("[auth] Authorization token is FAKE_LOCAL_TOKEN, but fake is disabled")
+			return 0
+		}
+		log.Info().Msgf("[auth] used 999 user_id for fake auth")
+		return 999
+	}
+
 	if authHeader == "" {
 		return 0
 	}

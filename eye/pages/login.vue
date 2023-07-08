@@ -17,9 +17,15 @@
       <loader/>
       <br/>
     </div>
-    <script v-else-if="!isServer && !isLoggedIn" async src="https://telegram.org/js/telegram-widget.js?21"
-            data-telegram-login="ArtchitectBot" data-size="large" data-auth-url="https://artchitect.space/api/login"
-            data-request-access="write"></script>
+    <template v-else-if="!isLocal && !isServer && !isLoggedIn">
+      <script async src="https://telegram.org/js/telegram-widget.js?21"
+              data-telegram-login="ArtchitectBot" data-size="large" data-auth-url="https://artchitect.space/api/login"
+              data-request-access="write"></script>
+    </template>
+    <template v-else-if="isLocal && !isServer && !isLoggedIn">
+      <button @click.prevent="fakeLogin">Fake login</button>
+    </template>
+
     <div v-else-if="isLoggedIn">
       <figure class="image is-128x128">
         <img class="is-rounded" :src="photoUrl"/>
@@ -59,10 +65,14 @@ export default {
   },
   data() {
     return {
-      loading: false
+      loading: false,
+      isLocal: false,
     }
   },
   mounted() {
+    if (process.env.IS_LOCAL === 'true') {
+      this.isLocal = true
+    }
     if (this.$route.query.token) {
       this.loading = true
       localStorage.setItem("token", this.$route.query.token)
@@ -78,6 +88,15 @@ export default {
       localStorage.removeItem("token")
       localStorage.removeItem("username")
       localStorage.removeItem("photo_url")
+      if (process.client) {
+        window.location.href = this.localePath(`/login`)
+      }
+    },
+    fakeLogin() {
+      this.loading = true
+      localStorage.setItem("token", "FAKE_LOCAL_TOKEN")
+      localStorage.setItem("username", "fake_artchitect")
+      localStorage.setItem("photo_url", "/icon196.png")
       if (process.client) {
         window.location.href = this.localePath(`/login`)
       }

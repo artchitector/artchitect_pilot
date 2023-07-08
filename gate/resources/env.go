@@ -15,6 +15,7 @@ type Env struct {
 	MemoryHost     string
 	JWTSecret      string
 	ArtchitectHost string
+	AllowFakeAuth  bool
 
 	// telegram constants
 	Telegram10BotToken   string // 10bot (is for maintenance and secure use to control artchitect.space). Secured with single account usage.
@@ -42,6 +43,7 @@ func initEnv() *Env {
 		MemoryHost:     os.Getenv("MEMORY_HOST"),
 		JWTSecret:      os.Getenv("JWT_SECRET"),
 		ArtchitectHost: os.Getenv("ARTCHITECT_HOST"),
+		AllowFakeAuth:  os.Getenv("ALLOW_FAKE_AUTH") == "true",
 
 		Telegram10BotToken:   os.Getenv("TELEGRAM_10BOT_TOKEN"),
 		TelegramABotToken:    os.Getenv("TELEGRAM_ABOT_TOKEN"),

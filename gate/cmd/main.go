@@ -57,7 +57,7 @@ func main() {
 		log.With().Str("service", "lottery_handler").Logger(),
 		lotteryRepo,
 	)
-	authS := handler.NewAuthService(res.GetEnv().JWTSecret)
+	authS := handler.NewAuthService(res.GetEnv().JWTSecret, res.GetEnv().AllowFakeAuth)
 	cardHandler := handler.NewCardHandler(cardsRepo, cache, likeRepo, authS)
 	selectionHander := handler.NewSelectionHandler(selectionRepo)
 	prayHandler := handler.NewPrayHandler(prayRepo)
