@@ -41,15 +41,7 @@
       </p>
       <div class="image-container">
         <img :src="`/api/image/f/${card.ID}`"/>
-        <div class="control-like">
-          <font-awesome-icon v-if="liked && liked.error"
-                             icon="fa-solid fa-triangle-exclamation"
-                             :title="liked.error.message"/>
-          <a v-else href="#" @click.prevent="like()">
-            <font-awesome-icon v-if="!liked || !liked.liked" icon="fa-solid fa-heart" class="has-color-base"/>
-            <font-awesome-icon v-else icon="fa-solid fa-heart" class="has-text-danger"/>
-          </a>
-        </div>
+        <liker :dream_id="card.ID" class="control-like"/>
       </div>
     </div>
   </section>
@@ -57,8 +49,10 @@
 </template>
 <script>
 import moment from "moment"
+import Liker from "@/components/utils/liker.vue";
 
 export default {
+  components: {Liker},
   head() {
     return {
       title: this.$t('title') + ` #${this.$route.params.id}`
@@ -67,11 +61,6 @@ export default {
   data() {
     return {
       card: null,
-      likes: 0,
-      liked: {
-        error: null,
-        liked: false,
-      }
     }
   },
   computed: {
@@ -82,35 +71,12 @@ export default {
       return `${process.env.STORAGE_URL}/cards/card-${this.card.ID}.jpg`
     }
   },
-  methods: {
-    async like() {
-      try {
-        let like = await this.$axios.$post("/like", {
-          card_id: this.card.ID,
-        })
-        this.$emit('liked', like)
-        this.liked = {
-          id: like.ID,
-          liked: like.Liked,
-        };
-      } catch (e) {
-        console.error(e)
-        this.liked = {
-          error: e
-        };
-      }
-
-    }
-  },
   async fetch() {
     const id = parseInt(this.$route.params.id);
     if (!id) {
       throw "id must be positive integer"
     }
     this.card = await this.$axios.$get(`/card/${id}`)
-    if (!!this.card.Liked) {
-      this.liked.liked = true
-    }
   }
 }
 </script>
