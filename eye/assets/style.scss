@@ -49,3 +49,15 @@ section a {
 .has-color-base {
   color: #d4d1c3;
 }
+
+// helps to fit image into flexbox cell
+img.absolutely {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}

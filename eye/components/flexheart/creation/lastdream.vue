@@ -1,0 +1,83 @@
+<template>
+  <div class="lastdream-container">
+
+    <div class="left-column">
+      <rnd :dream_id="four && four.length > 0 ? four[0] : 0"/>
+      <rnd :dream_id="four && four.length > 1 ? four[1] : 0"/>
+    </div>
+
+    <div class="center-column">
+      <div class="column-image">
+        <div class="link-container">
+          last dream
+          <NuxtLink :to="localePath(`/dream/${last}`)" class="has-text-info">#{{ last }}</NuxtLink>
+        </div>
+        <NuxtLink :to="localePath(`/dream/${last}`)" class="has-text-info">
+          <img v-if="last" :src="`/api/image/m/${last}`"/>
+        </NuxtLink>
+      </div>
+
+    </div>
+
+    <div class="right-column">
+      <rnd :dream_id="four && four.length > 2 ? four[2] : 0"/>
+      <rnd :dream_id="four && four.length > 3 ? four[3] : 0"/>
+    </div>
+
+  </div>
+</template>
+
+<script>
+import Rnd from "@/components/flexheart/creation/rnd.vue";
+
+export default {
+  name: "lastdream",
+  components: {Rnd},
+  props: ["last", "four"]
+}
+</script>
+
+<style lang="scss" scoped>
+.lastdream-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+  background-color: rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+
+  .left-column, .right-column {
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  .center-column {
+    flex-grow: 3;
+    margin: 0 5px;
+
+    .column-image {
+      text-align: center;
+      margin: 5px 5px;
+      position: relative;
+
+      img {
+        display: block;
+        width: 100%;
+      }
+
+      .link-container {
+        font-size: 12px;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 0 3px;
+      }
+    }
+  }
+
+  .left-column, .right-column, .center-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+  }
+}
+</style>
