@@ -47,6 +47,7 @@ export default {
       const progress = this.message.CurrentCardPaintTime / this.message.LastCardPaintTime;
       return Math.floor(progress * 100);
     },
+
     lastDreamBoxHeight() {
       if (this.lastDreamBoxHeightValue !== null) {
         return this.lastDreamBoxHeightValue;

@@ -9,29 +9,36 @@
 }
 </i18n>
 <template>
-<!--  <div id="heart-main-backing">-->
-<!--    <header class="has-text-centered">-->
-<!--      <NuxtLink :to="localePath('index')">-->
-<!--        <img src="/icon64.png" alt="artchitect"/>-->
-<!--      </NuxtLink>-->
-<!--      <h1 class="is-size-3 has-text-weight-bold">-->
-<!--        <NuxtLink :to="localePath('index')">-->
-<!--          artchitect.space-->
-<!--        </NuxtLink>-->
-<!--      </h1>-->
-<!--    </header>-->
-<!--    <div id="main">-->
-<!--      <article>-->
-        <flexheart-core/>
-<!--      </article>-->
+  <div id="heart-main-backing">
+<!--    <div class="heart-caption">-->
+<!--      Hy heart is gonna blow from this Love!-->
 <!--    </div>-->
-<!--  </div>-->
+    <header class="has-text-centered">
+      <NuxtLink :to="localePath('index')">
+      <img src="/icon64.png" alt="artchitect"/>
+      </NuxtLink>
+      <h1 class="is-size-3 has-text-weight-bold">
+        <NuxtLink :to="localePath('index')">
+        artchitect.space
+        </NuxtLink>
+      </h1>
+    </header>
+    <div id="main">
+      <article>
+        <heart/>
+      </article>
+<!--      <nav>Nav</nav>-->
+<!--      <aside>Aside</aside>-->
+    </div>
+<!--    <footer>Footer</footer>-->
+  </div>
 </template>
 
 <script>
+import Heart from "@/components/big_heart/heart.vue"
 export default {
-  name: "flexheart",
-  layout: "simple",
+  components: {Heart},
+  layout: "empty",
   head() {
     return {
       title: this.$t('title')

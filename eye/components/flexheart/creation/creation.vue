@@ -1,11 +1,20 @@
 <template>
   <div class="wrapper">
-    <div class="wrapper-cell">
-      <progress-view v-if="message" :message="message"/>
-    </div>
-    <div class="wrapper-cell">
-      <lastdream v-if="lastDreamID" :last="lastDreamID" :four="rndFour"/>
-    </div>
+
+    <template v-if="message && message.CardID">
+      <result :dream_id="message.CardID" :current-enjoy-time="message.CurrentEnjoyTime"
+              :total-enjoy-time="message.EnjoyTime"/>
+    </template>
+
+    <template v-else>
+      <div class="wrapper-cell">
+        <progress-view v-if="message" :message="message"/>
+      </div>
+      <div class="wrapper-cell">
+        <lastdream v-if="lastDreamID" :last="lastDreamID" :four="rndFour"/>
+      </div>
+    </template>
+
   </div>
 </template>
 
@@ -13,6 +22,8 @@
 import Lastdream from "@/components/flexheart/creation/lastdream.vue";
 import ProgressView from "@/components/flexheart/creation/progress-view.vue";
 import rnd from "@/components/big_heart/layout/creation/rnd.vue";
+import Result from "@/components/flexheart/creation/result.vue";
+
 export default {
   name: "creation",
   computed: {
@@ -20,7 +31,7 @@ export default {
       return rnd
     }
   },
-  components: {Lastdream, ProgressView},
+  components: {Result, Lastdream, ProgressView},
   data() {
     return {
       message: null,
