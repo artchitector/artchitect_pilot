@@ -1,6 +1,5 @@
 <template>
   <div class="wrapper">
-
     <template v-if="message && message.CardID">
       <result :dream_id="message.CardID" :current-enjoy-time="message.CurrentEnjoyTime"
               :total-enjoy-time="message.EnjoyTime"/>

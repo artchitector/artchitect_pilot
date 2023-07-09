@@ -4,15 +4,23 @@
       <NuxtLink :to="localePath(`/dream/${dream_id}`)" class="has-text-info">#{{ dream_id }}</NuxtLink>
     </p>
     <progress class="progress is-warning" :value="progress" max="100">-</progress>
-    <NuxtLink :to="localePath(`/dream/${dream_id}`)" class="has-text-info">
-      <img :src="`/api/image/f/${dream_id}`"/>
-    </NuxtLink>
+    <div class="image-container">
+      <NuxtLink :to="localePath(`/dream/${dream_id}`)" class="has-text-info">
+        <img :src="`/api/image/f/${dream_id}`"/>
+      </NuxtLink>
+      <div class="control-like">
+        <liker :dream_id="dream_id"/>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import Liker from "@/components/utils/liker.vue";
+
 export default {
   name: "result",
+  components: {Liker},
   props: ["dream_id", "totalEnjoyTime", "currentEnjoyTime"],
   computed: {
     progress() {
@@ -32,8 +40,19 @@ export default {
   text-align: center;
   height: 100%;
 
-  img {
-    max-height: 90%;
+  .image-container {
+    height: 90%;
+    position: relative;
+    img {
+      max-height: 100%;
+    }
+    .control-like {
+      position: absolute;
+      left: 50%;
+      bottom: 10%;
+      z-index: 3;
+      transform: translate(-50%, -10%);
+    }
   }
 }
 </style>

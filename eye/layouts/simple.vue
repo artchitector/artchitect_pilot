@@ -119,6 +119,9 @@ header {
     text-shadow: 0 0 3px #d4d1c3;
     a {
       color: #2d2d2d;
+      &:hover {
+        color: #2d2d2d;
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div v-if="activeComponent === 'empty'" class="has-text-centered pt-4">
-    no active component. wait for a while
+    no active component. wait for a while<br/>
     <loader class="mt-4"/>
   </div>
   <creation v-else-if="activeComponent === 'creation'" ref="creation"/>

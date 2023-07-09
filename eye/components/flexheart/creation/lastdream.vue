@@ -12,9 +12,14 @@
           last dream
           <NuxtLink :to="localePath(`/dream/${last}`)" class="has-text-info">#{{ last }}</NuxtLink>
         </div>
-        <NuxtLink :to="localePath(`/dream/${last}`)" class="has-text-info">
-          <img v-if="last" :src="`/api/image/m/${last}`"/>
-        </NuxtLink>
+        <div class="image-container">
+          <NuxtLink :to="localePath(`/dream/${last}`)" class="has-text-info">
+            <img v-if="last" :src="`/api/image/m/${last}`"/>
+          </NuxtLink>
+          <div class="control-like">
+            <liker :dream_id="last"/>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -29,11 +34,12 @@
 
 <script>
 import Rnd from "@/components/flexheart/creation/rnd.vue";
+import Liker from "@/components/utils/liker.vue";
 
 export default {
   name: "lastdream",
-  components: {Rnd},
-  props: ["last", "four"]
+  components: {Liker, Rnd},
+  props: ["last", "four"],
 }
 </script>
 
@@ -59,6 +65,18 @@ export default {
       text-align: center;
       margin: 5px 5px;
       position: relative;
+
+      .image-container {
+        position: relative;
+
+        .control-like {
+          position: absolute;
+          left: 50%;
+          bottom: 10%;
+          z-index: 3;
+          transform: translate(-50%, -10%);
+        }
+      }
 
       img {
         display: block;
