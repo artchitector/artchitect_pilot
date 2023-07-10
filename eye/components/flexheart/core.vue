@@ -4,17 +4,20 @@
     <loader class="mt-4"/>
   </div>
   <creation v-else-if="activeComponent === 'creation'" ref="creation"/>
+  <unity v-else-if="activeComponent === 'unity'" ref="unity"/>
+  <lottery v-else-if="activeComponent === 'lottery'" ref="lottery"/>
 </template>
 
 <script>
 
-
 import Creation from "@/components/flexheart/creation/creation.vue";
+import Lottery from "@/components/flexheart/lottery/lottery.vue"
 import WsConnection from "@/utils/ws_connection";
+import Unity from "@/components/flexheart/unity/unity.vue";
 
 export default {
   name: "core",
-  components: {Creation},
+  components: {Unity, Creation, Lottery},
   data() {
     return {
       logPrefix: '❤️',
@@ -70,10 +73,10 @@ export default {
       // (например, нарисовал и пошёл собирать множество)
       console.log(`${this.logPrefix}: new message`, `channel:${channelName}`, message)
 
-      if (channelName === 'creation' && this.activeComponent !== channelName) {
-        this.activeComponent = 'creation'
+      if (channelName !== 'heart' && this.activeComponent !== channelName) {
+        this.activeComponent = channelName
         setTimeout(() => {
-          this.$refs.creation.onMessage(channelName, message)
+          this.$refs[channelName].onMessage(channelName, message)
         }, 100)
       }
 
@@ -83,6 +86,18 @@ export default {
           if (this.$refs.creation && this.$refs.creation.onMessage) {
             this.$refs.creation.onMessage(channelName, message)
           }
+          break
+
+        case 'unity':
+          if (this.$refs.unity && this.$refs.unity.onMessage) {
+            this.$refs.unity.onMessage(channelName, message)
+          }
+          break
+        case 'lottery':
+          if (this.$refs.lottery && this.$refs.lottery.onMessage) {
+            this.$refs.lottery.onMessage(channelName, message)
+          }
+          break
       }
     },
   }

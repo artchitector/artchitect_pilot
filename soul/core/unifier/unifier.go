@@ -459,7 +459,8 @@ func (u *Unifier) finishUnification(ctx context.Context, unity model.Unity, stat
 	}
 
 	isCompleted, err := u.isUnityCompleted(unity)
-	if (unity.Rank == model.Rank10000 && (unity.Version%5 == 0 || isCompleted)) || (unity.Rank == model.Rank1000 && isCompleted) {
+	if (u.artchitectBot != nil && unity.Rank == model.Rank10000 && (unity.Version%5 == 0 || isCompleted)) ||
+		(unity.Rank == model.Rank1000 && isCompleted) {
 		if err := u.artchitectBot.SendUnityTo10Min(ctx, unity); err != nil {
 			log.Error().Err(err).Msgf("[unifier] failed to notify bot about new unity %s-%d", unity.Mask, unity.Version)
 		}
