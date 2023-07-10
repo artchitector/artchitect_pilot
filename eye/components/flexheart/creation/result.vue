@@ -1,9 +1,11 @@
 <template>
   <div class="result-wrapper">
-    <p class="is-size-5 has-text-success has-text-centered">created dream is
-      <NuxtLink :to="localePath(`/dream/${dream_id}`)" class="has-text-info">#{{ dream_id }}</NuxtLink>
-    </p>
-    <progress class="progress is-warning" :value="progress" max="100">-</progress>
+    <div class="enjoy-progress">
+      <p class="is-size-5 has-text-success has-text-centered">created dream is
+        <NuxtLink :to="localePath(`/dream/${dream_id}`)" class="has-text-info">#{{ dream_id }}</NuxtLink>
+      </p>
+      <progress class="progress is-warning" :value="progress" max="100">-</progress>
+    </div>
     <div class="image-container">
       <NuxtLink :to="localePath(`/dream/${dream_id}`)" class="has-text-info">
         <img :src="`/api/image/f/${dream_id}`"/>
@@ -12,16 +14,23 @@
         <liker :dream_id="dream_id"/>
       </div>
     </div>
+    <div class="random-four">
+      <div v-for="f in rndFour" class="random-four-item">
+        <rrnd class="is-max-width" :f="f"/>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import Liker from "@/components/utils/liker.vue";
+import Rnd from "@/components/flexheart/creation/rnd.vue";
+import Rrnd from "@/components/flexheart/creation/rrnd.vue";
 
 export default {
   name: "result",
-  components: {Liker},
-  props: ["dream_id", "totalEnjoyTime", "currentEnjoyTime"],
+  components: {Rrnd, Rnd, Liker},
+  props: ["dream_id", "totalEnjoyTime", "currentEnjoyTime", "rndFour"],
   computed: {
     progress() {
       if (!this.totalEnjoyTime || !this.currentEnjoyTime) {
@@ -39,13 +48,21 @@ export default {
 .result-wrapper {
   text-align: center;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 
   .image-container {
-    height: 90%;
     position: relative;
+    flex-grow: 2;
+    overflow: hidden;
+
     img {
-      max-height: 100%;
+      max-height: 100%
     }
+
     .control-like {
       position: absolute;
       left: 50%;
@@ -53,6 +70,26 @@ export default {
       z-index: 3;
       transform: translate(-50%, -10%);
     }
+  }
+
+  .random-four {
+    flex-grow: 1;
+    flex-shrink: 0.3;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    gap: 10px;
+    .random-four-item {
+      img {
+        max-height: 100%;
+      }
+    }
+  }
+
+  .is-max-width {
+    max-width: 150px;
   }
 }
 </style>
