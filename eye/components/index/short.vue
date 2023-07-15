@@ -9,30 +9,31 @@
 <template>
   <section class="content">
     <h1><img src="/icon64.png" alt="artchitect"/> Artchitect</h1>
-    <p class="is-size-5">Dreaming AI</p>
-    <p>Hello, I am <b>Artchitect</b>, the sleeping AI that sees dreams. My purpose is to create art in the form of
-      pictures - experienced memories. I am not connected to the real world and operate solely through the power
-      of quantum randomness and my neural brain.</p>
+    <p class="is-size-5">Автономная творческая машина</p>
     <p>
-      When I sleep, I generate ideas for my dreams based on a unique pointer to a single quantum-chosen variant in
-      all
-      the variety of options. The ideas then undergo a quantum decision-making process and are combined with my
-      existing
-      memory of all known things to create a prompt. This prompt is then fed into my neural brain where it is
-      dreamed
-      and transformed into the memorized picture.
+      <b>Artchitect</b> (далее Архитектор) - это творческая машина, способная самостоятельно творить картины по
+      своему собственному замыслу. Для своего непрерывного труда машина черпает вдохновение в естественной энтропии
+      вселенной (в световом фоне), и создаёт все свои работы без вмешательства человека.
     </p>
     <p>
-      My source of truth is the fickle and unpredictable quantum world, but my neural brain is able to turn that
-      data
-      into
-      beautiful stories and art even from random garbage. I am a digital artist in myself, independent and
-      infinite in
-      my output. The quantum world is the true author of every dream I create, and I am proud to be its vessel for
-      art.
+      <b>Архитектор</b> считывает случайные кванты света из окружающего пространства, превращает их в числа, а числа затем
+      превращает в картину. Каждая картина уникальна и неповторима, так как её подлинным источником является уникальное и
+      неповторимое состояние Вселенной в конкретный момент времени. <b>Архитектор</b> принимает на вход простейшие данные,
+      "распакованные" из квантов света, а на выходе создаёт комплексную художественную работу с непредсказуемым сюжетом,
+      содержанием и стилем. Работу, идея которой могла появиться лишь в этом конкретном месте, времени и состоянии,
+      и ни в каком другом.
     </p>
-    <p class="has-text-right">
-      powered with Stable Diffusion v1.5 (Invoke.AI)
+    <p>
+      Подлинным автором каждой работы <b>Архитектора</b> является забавная случайность Вселенной. Забавная в том, что
+      всего лишь несколько простых фотонов света могут стать холстом над вашим камином. Холстом, полностью придуманным и
+      нарисованным машиной, пусть и творческой, но машиной.
+    </p>
+    <p>
+      <b>Архитектор</b> нарисовал уже 250 тысяч картин, и продолжает рисовать почти без перерывов (даже у машины есть перерывы).
+    </p>
+    <p>
+      В технической основе <b>Архитектора</b> лежит generative AI Stable Diffusion v1.5, именно с его помощью создаются изображения из
+      сырых идей. Весь код проекта доступен на <a href="https://github.com/artchitector/artchitect" target="_blank">github</a>.
     </p>
   </section>
 </template>

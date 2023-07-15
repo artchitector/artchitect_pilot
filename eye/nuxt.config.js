@@ -55,7 +55,7 @@ export default {
 
   i18n: {
     /* module options */
-    locales: ["en"],
+    locales: ["en", "ru"],
     defaultLocale: process.env.DEFAULT_LOCALE,
     strategy: 'prefix',
     vueI18nLoader: true,

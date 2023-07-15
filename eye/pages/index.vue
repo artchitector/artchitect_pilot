@@ -1,10 +1,10 @@
 <i18n>
 {
   "en": {
-    "title": "Artchitect - dreaming AI"
+    "title": "Artchitect - art-machine"
   },
   "ru": {
-    "title": "Artchitect - спящий ИИ, который видит сны"
+    "title": "Artchitect - творческая машина"
   }
 }
 </i18n>
