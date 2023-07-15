@@ -5,14 +5,16 @@
     "lottery": "lottery",
     "selection": "selection",
     "liked": "liked",
-    "unity": "unity"
+    "unity": "unity",
+    "details": "details"
   },
   "ru": {
     "main": "главная",
     "lottery": "лотерея",
     "selection": "отборное",
     "liked": "вам нравится",
-    "unity": "единства"
+    "unity": "единства",
+    "details": "подробнее"
   }
 }
 </i18n>
@@ -31,6 +33,8 @@
         <NuxtLink :to="localePath('heart')">❤️</NuxtLink>
         <span> - </span>
         <NuxtLink :to="localePath('index')">{{$t('main')}}</NuxtLink>
+        <span> - </span>
+        <NuxtLink :to="localePath('details')">{{$t('details')}}</NuxtLink>
         <span> - </span>
         <NuxtLink :to="localePath('/unity')">{{$t('unity')}}</NuxtLink>
         <span> - </span>
