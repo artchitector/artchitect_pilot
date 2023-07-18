@@ -38,6 +38,13 @@
       каждой картины. По этому номеру всегда можно найти исходник на сайте <a href="https://artchitect.space">architect.space</a>
       и отследить оригинальную идею работы.
     </p>
+    <div class="has-text-centered">
+      <a href="/description_five.jpg" target="_blank">
+        <img src="/description_five.jpg"/>
+      </a>
+      <br/>
+      <span class="is-size-7">Картины с их параметрами</span>
+    </div>
 
     <hr/>
     <h6>Каким образом определяется стиль и содержание создаваемых картин? Есть ли какая-то предустановленная база знаний
