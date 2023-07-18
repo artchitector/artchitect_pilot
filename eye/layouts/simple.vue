@@ -13,7 +13,7 @@
     <div id="wrapper">
       <header ref="header" class="has-text-centered">
         <NuxtLink :to="localePath('index')">
-          <img src="/icon64.png" alt="artchitect"/>
+          <img src="/jesus_anim_92.gif" alt="artchitect"/>
         </NuxtLink>
         <h1 class="is-size-3 has-text-weight-bold">
           <NuxtLink :to="localePath('index')">
@@ -111,6 +111,7 @@ header {
   img {
     margin: 0;
     box-shadow: 0 0 10px #2d2d2d;
+    max-width: 64px;
   }
   h1 {
     margin: 0;
