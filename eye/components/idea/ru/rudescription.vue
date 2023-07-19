@@ -1,7 +1,7 @@
 <template>
   <section class="content">
     <div class="has-text-centered">
-      <img src="/icon64.png" alt="artchitect"/>
+      <img src="/jesus_anim_92.gif" alt="artchitect" style="max-height: 64px"/>
     </div>
 
     <hr/>

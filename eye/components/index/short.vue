@@ -8,7 +8,7 @@
 </i18n>
 <template>
   <section class="content">
-    <h1><img src="/icon64.png" alt="artchitect"/> Artchitect</h1>
+    <h1><img src="/jesus_anim_92.gif" alt="artchitect" style="max-height: 64px"/> Artchitect</h1>
     <p class="is-size-5">Автономная творческая машина</p>
     <blockquote>Может ли машина придумать что-то из ничего?
       <br/>Может ли машина осмыслить бессмысленное?
