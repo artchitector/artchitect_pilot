@@ -20,7 +20,7 @@
 <script>
 import Lastdream from "@/components/flexheart/creation/lastdream.vue";
 import ProgressView from "@/components/flexheart/creation/progress-view.vue";
-import rnd from "@/components/big_heart/layout/creation/rnd.vue";
+import rnd from "@/components/flexheart/creation/rnd.vue";
 import Result from "@/components/flexheart/creation/result.vue";
 
 export default {
