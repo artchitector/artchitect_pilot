@@ -85,15 +85,16 @@
       from distant stars. It is an infinite creation that reveals itself in time.
     </blockquote>
     <p>
-      During its existence, <b>Architect</b> has painted more than 250 thousand paintings, and all this time he is
-      persistently
-      looking for an answer to the philosophical question: "Can a machine create?"
+      During its existence, started in Jan2023, <b>Architect</b> created more than 250 arts, and all
+      this time it is
+      persistently looking for an answer to the philosophical question: "Can a machine create?"
     </p>
     <p class="is-size-6">
       <b>Techically</b> artchitect-project is the control-system wrapped around an art-system -
       <a href="https://github.com/Stability-AI/stablediffusion" target="_blank">Stable Diffusion AI v1.5</a>.
       Stable Diffusion AI is the ability to draw pictures for Artchitect.
-      <br/>Full source code is available on <a href="https://github.com/artchitector/artchitect" target="_blank">github</a>
+      <br/>Full source code is available on <a href="https://github.com/artchitector/artchitect"
+                                               target="_blank">github</a>
     </p>
   </section>
 </template>
