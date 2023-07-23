@@ -1,15 +1,15 @@
 <i18n>
 {
   "en": {
-    "heart": "Artchitect's dreaming",
-    "maintenance": "Artchitect is offline today. Maintenance. No new dreams.",
+    "heart": "creative process",
+    "maintenance": "Artchitect need rest. Maintenance. No creative process.",
     "error": "Error",
     "connecting": "connecting",
     "connected": "connected. waiting for event"
   },
   "ru": {
-    "heart": "Сон Архитектора",
-    "maintenance": "Artchitect сегодня не работает. Новые сны не создаются.",
+    "heart": "творческий процесс",
+    "maintenance": "Artchitect нуждается в отдыхе. Техобслуживание. Творческий процесс не запущен.",
     "error": "Ошибка",
     "connecting": "соединение",
     "connected": "соединение установлено. ожидаю событий"

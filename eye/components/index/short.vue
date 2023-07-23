@@ -7,7 +7,7 @@
 }
 </i18n>
 <template>
-  <section class="content">
+  <section class="content" v-if="locale === 'ru'">
     <h1><img src="/jesus_anim_92.gif" alt="artchitect" style="max-height: 64px"/> Artchitect</h1>
     <p class="is-size-5">Автономная творческая машина</p>
     <blockquote>Может ли машина придумать что-то из ничего?
@@ -23,7 +23,8 @@
     <p>
       <b>Архитектор</b> считывает случайные кванты света из окружающего пространства, преобразует их в числа, а затем
       числа превращаются в идеи для создания картины. Каждое произведение искусства, которое возникает, уникально и
-      неповторимо, так как его источником является уникальное состояние Вселенной в определенный момент времени.
+      неповторимо, так как его источником является уникальное состояние Вселенной в определенный момент времени. Здесь и
+      сейчас.
       <b>Архитектор</b> использует простейшие данные, "распакованные" из квантов света, чтобы создать сложную
       художественную работу с непредсказуемым сюжетом, содержанием и стилем. Это творение, идея которого могла
       возникнуть только в определенном месте, времени и состоянии, и больше нигде. И это происходит каждые 60 секунд.
@@ -51,7 +52,57 @@
       Весь код проекта доступен на <a href="https://github.com/artchitector/artchitect" target="_blank">github</a>.
     </p>
   </section>
+  <section class="content" v-else>
+    <h1><img src="/jesus_anim_92.gif" alt="artchitect" style="max-height: 64px"/> Artchitect</h1>
+    <p class="is-size-5">Autonomous creative machine</p>
+    <blockquote>Can a machine come up with something out of nothing?
+      <br/>Can a machine comprehend the meaningless?
+      <br/>Machine can.
+    </blockquote>
+    <p>
+      <b>Artchitect</b> - it is an amazing autonomous creative machine capable of creating
+      magnificent artworks inspired by the universe around us. In its continuous creativity , the machine receives
+      inspiration from the natural entropy of the universe, represented as background light, and creates unique
+      artworks without human participation.
+    </p>
+    <p>
+      <b>Artchitect</b> reads random quanta of light from the surrounding space, converts them into numbers, and then
+      numbers turn into ideas to create a picture. Every artwork that arises is unique and
+      inimitable, since its source is the unique state of the universe at a certain point in time. Here and now.
+      <br/>
+      <b>Artchitect</b> based on the simplest data "unpacked" from lightbeam to create complex
+      artistic art with an unpredictable plot, content and style. This is a creation whose idea could
+      to arise only in a certain place, time and state, and nowhere else. And it happens every 60 seconds.
+    </p>
+    <p>
+      The real author of each painting is a unique accident of the Universe, while the architect-machine itself only
+      executes instructions "out of nowhere".
+    </p>
+    <blockquote>
+      If you combine "a few dozen" photons of light with the neural brain of an <b>Architect</b>, they can turn into a
+      canvas hanging over your fireplace.<br/>
+      And not just one canvas, but hundreds and thousands of unique canvases created from myriad rays of light traveling
+      from distant stars. It is an infinite creation that reveals itself in time.
+    </blockquote>
+    <p>
+      During its existence, <b>Architect</b> has painted more than 250 thousand paintings, and all this time he is
+      persistently
+      looking for an answer to the philosophical question: "Can a machine create?"
+    </p>
+    <p class="is-size-6">
+      <b>Techically</b> artchitect-project is the control-system wrapped around an art-system -
+      <a href="https://github.com/Stability-AI/stablediffusion" target="_blank">Stable Diffusion AI v1.5</a>.
+      Stable Diffusion AI is the ability to draw pictures for Artchitect.
+      <br/>Full source code is available on <a href="https://github.com/artchitector/artchitect" target="_blank">github</a>
+    </p>
+  </section>
 </template>
 <script>
-export default {}
+export default {
+  computed: {
+    locale() {
+      return this.$i18n.locale
+    }
+  }
+}
 </script>
