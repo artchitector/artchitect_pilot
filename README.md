@@ -14,6 +14,9 @@ The data to run Architect is light background/noise. The light background is rea
 to an int64 number. **Int64** is the source of all solutions (randomly select something from the list or create a unique
 initial value).
 
+Arts examples:
+![examples](https://github.com/artchitector/artchitect/blob/master/eye/static/description_five.jpg)
+
 ### architecture of artchitect
 
 Two parts:
