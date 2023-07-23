@@ -27,6 +27,15 @@
     </p>
 
     <hr/>
+    <div class="has-text-centered">
+      <a href="/artchitect_in_real_world.jpg">
+        <img src="/artchitect_in_real_world.jpg" alt="Artchitect in physical world" style="max-height: 300px"/>
+      </a>
+      <br/>
+      <span class="is-size-7">Нейронный мозгом Архитектора является RTX 3060 12Gb.
+        <br/>Каждую минуту видеокарта производит свой труд, греясь и разгоняя кулеры. Затем утихает, отдыхает.</span>
+    </div>
+    <hr/>
     <h6>Что является произведением в Artchitect?</h6>
     <p>Artchitect производит не картины (хотя именно их мы наблюдаем в конечном итоге). Artchitect производит цифровые
       идеи, из
