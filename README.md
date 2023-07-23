@@ -22,12 +22,6 @@ Two parts:
   Diffusion (artchitect using RTX 3060 12Gb and Stable Diffusion v1.5, Invoke.AI "fork").
 - gate - multiple dedicated VDSs (frontend+backend server, file storage, database)
 
-There is no reliability question, SLA is not important. If the Artchitect breaks down and turns off, it can stand for
-several days
-before repair. VDS servers that provide viewing of paintings work reliably, but the "soul" - main home computer can
-be turned off for downtime from days to weeks
-for downtime, up to several weeks, if necessary.
-
 Home computer need access to VDS, but VDS doesn't need access to home computed.
 
 More GPU-RAM = larger resolution = more quality. RTX3060-12Gb gives resolution 2560x3840 (printable on 40x60 canvas).
@@ -43,14 +37,30 @@ will help.
 
 ### engineering style
 
-- artchitect is available for everyone. If you want your running-copy of Artchitect, you need devops skills (to
+- no restrictions. artchitect is available for everyone. If you want your running-copy of
+  Artchitect, you can do it. (
+  But you need devops skills to
   setup and run your own servers, databases, to understand code)
 
-- artchitect is one-person-project, so there is no code style here
+```
+/*
+* — * «THE BEER-WARE LICENSE» (Revision 42):
+* <i@nkuhta.ru> wrote this file. As long as you retain this notice you
+* can do whatever you want with this stuff. If we meet some day, and you think
+* this stuff is worth it, you can buy me a beer in return. Poul-Henning Kamp
+* — */
+```
 
-- many things in source-code are not called obviously: main
+- no code style. artchitect is one-person-project
+
+- no reliability. SLA is not important. If the Artchitect breaks down and turns off, it can stand for
+  several days
+  before repair. VDS servers that provide viewing of paintings work reliably, but the "soul" - main home computer can
+  be turned off for downtime from days to weeks if necessary.
+
+- less seriously, more jokes. many things in source-code are called mystical and not obvious: main
   service called "soul", and it consists of "gifter", "merciful", "speller"... (sometimes the author does not remember
-  which of them does what)
+  which of them does what). `Don't be boring while code review.`
 
 - no docs. if you need help, make an issue. author will personally explain what to do or will make docs
 
@@ -58,7 +68,7 @@ will help.
 
 - no testing, neither manual nor automated
 
-- manual deployment with simple ssh-commands, crontasks
+- no deployment automation, manual ssh-commands and crontasks
 
 ### How Artchitect looks like:
 
