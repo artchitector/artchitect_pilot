@@ -49,7 +49,8 @@
       <a href="https://github.com/Stability-AI/stablediffusion" target="_blank">Stable Diffusion</a> v1.5 и
       <a href="https://github.com/invoke-ai/InvokeAI" target="_blank">InvokeAI</a>, именно с их помощью создаются
       комплексные изображения из сырых идей.
-      Весь код проекта доступен на <a href="https://github.com/artchitector/artchitect" target="_blank">github</a>.
+      <br/>
+      Исходный код проекта Artchitect доступен на <a href="https://github.com/artchitector/artchitect" target="_blank">github</a>.
     </p>
   </section>
   <section class="content" v-else>
@@ -89,11 +90,11 @@
       this time it is
       persistently looking for an answer to the philosophical question: "Can a machine create?"
     </p>
-    <p class="is-size-6">
+    <p class="is-size-7">
       <b>Techically</b> artchitect-project is the control-system wrapped around an art-system -
       <a href="https://github.com/Stability-AI/stablediffusion" target="_blank">Stable Diffusion AI v1.5</a>.
       Stable Diffusion AI is the ability to draw pictures for Artchitect.
-      <br/>Full source code is available on <a href="https://github.com/artchitector/artchitect"
+      <br/>Full source code of Artchitect is available on <a href="https://github.com/artchitector/artchitect"
                                                target="_blank">github</a>
     </p>
   </section>
