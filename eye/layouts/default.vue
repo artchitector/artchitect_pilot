@@ -66,9 +66,9 @@
     <footer class="footer">
       <p class="has-text-centered">
         github: <a href="https://github.com/artchitector/artchitect">https://github.com/artchitector/artchitect</a><br/>
-        twitter: <a href="https://twitter.com/artchitectspace">@artchitectspace</a><br/>
-        instagram: <a href="https://www.instagram.com/artchitect.space">@artchitect.space</a><br/>
-        {{$t('email')}}: <a href="mailto:i@nkuhta.ru">i@nkuhta.ru</a>
+        twitter (en): <a href="https://twitter.com/artchitectspace">@artchitectspace</a><br/>
+        telegram (ru): <a href="https://t.me/artchitect_space">t.me/artchitect_space</a><br/>
+        contacts: <a href="mailto:i@nkuhta.ru">i@nkuhta.ru</a> or <a href="https://t.me/artchitector">@artchitector</a>
       </p>
     </footer>
   </div>
