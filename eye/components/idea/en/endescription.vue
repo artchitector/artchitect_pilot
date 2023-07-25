@@ -88,9 +88,9 @@
       possibilities in the field of art and allows us to look at creativity from a new perspective.
     </p>
     <p class="notification is-warning">
-      Ultimately, the creators and authors of each artchitect's art are thousands of engineers, programmers, artists who have
-      invested their labor in art and technologies that have allowed the creation of artificial intelligence underlying
-      Artchitect.
+      Ultimately, the creators and authors of each artchitect's art are thousands of engineers, programmers, scientists
+      and artists who have invested their labour in art and technology for centuries, which has allowed today to create
+      artificial intelligence underlying Artchitect.
     </p>
 
     <hr/>
@@ -99,107 +99,100 @@
         <img src="/artchitect_in_real_world.jpg" alt="Artchitect in physical world" style="max-height: 300px"/>
       </a>
       <br/>
-      <span class="is-size-7">Нейронный мозгом Архитектора является RTX 3060 12Gb.
-        <br/>Каждую минуту видеокарта производит свой труд, греясь и разгоняя кулеры. Затем утихает, отдыхает.</span>
+      <span class="is-size-7">The neural brain of the Artchitect is RTX 3060 12Gb.
+        <br/>Every minute the video card does its work, warming up and overclocking the coolers. Then it calms down, rests.</span>
     </div>
     <hr/>
-    <h6>Что является произведением в Artchitect?</h6>
-    <p>Artchitect производит не картины (хотя именно их мы наблюдаем в конечном итоге). Artchitect производит цифровые
-      идеи, из
-      которых эти картины могут быть воссозданы на подходящем оборудовании. Эти идеи состоят из слов и чисел, которые
-      были
-      получены из окружающей энтропии в момент начала "рисования" очередной работы. Именно эти идеи являются источником
-      визуальных изображений, создаваемых Архитектором. Каждая идея имеет свой уникальный номер, который отпечатан в
-      углу
-      каждой картины. По номеру всегда можно найти исходник на сайте <a
-        href="https://artchitect.space">artchitect.space</a>
-      и отследить оригинальную идею работы.
+    <h6>What is an artwork in Artchitect?</h6>
+    <p>Artchitect does not produce paintings (although they are what we observe in the end). Artchitect produces digital
+      ideas from which these paintings can be recreated on suitable equipment. These ideas consist of words and numbers
+      that were obtained from the surrounding entropy at the time of the beginning of the "drawing" of the next work. It
+      is these ideas that are the source of visual images created by the Artchitect. Each idea has its own unique
+      number,
+      which is printed in the corner of each painting. By number, you can always find the source code on the
+      <a href="https://artchitect.space">artchitect.space</a> website and track the original idea of the work.
+    </p>
+
+
+    <hr/>
+    <h6>How is the style and content of the created paintings determined? Is there some kind of pre-installed knowledge
+      base or influence of other works of art?</h6>
+    <p>
+      Artchitect use internal dictionary of entities and styles, which was set by authors of the
+      project. This dictionary contains everything, that Artchitect knows about real world. It lists both simple
+      entities, for example, "man", "cat", "sun", "red", "gloomy", "joyful", as well as some artistic styles or specific
+      artists. The final artwork of the Artchitect is a combination of entities and styles that became the basis of the
+      idea
+      of the painting. Next to each picture of the Artchitect, you can see keywords that make up the idea of the work.
+
     </p>
     <p>
-      Искусственный интеллект Stable Diffusion в недрах Artchitect работает таким способом, что он определяет
-      оптимальное соотношение и использует лишь
-      ограниченный набор слов в своей работе. Какие из исходных слов повлияют на сюжет картины - определяется внутри ИИ
-      Stable Diffusion. Задача ИИ - превратить случайный набор слов в стройную картину, взяв нужное и отбросив лишнее.
+      Stable Diffusion AI consume the general idea of plot (seed-number and keywords) and then it recombine all entities
+      to one single frame, according to it's internal "sense of beauty" or "golden ratio". Usually <b>most of the
+      keywords are ignored</b>.
+      If there are several styles in the keywords of the picture, then in the end you can get a
+      combination of styles, and one style from several, and none of them at all. This will all be solved in the bowels
+      of AI "thinking".
     </p>
     <div class="has-text-centered">
       <a href="/description_five.jpg" target="_blank">
         <img src="/description_five.jpg"/>
       </a>
       <br/>
-      <span class="is-size-7">Картины с их параметрами</span>
+      <span class="is-size-7">Arts with related keywords</span>
     </div>
 
     <hr/>
-    <h6>Каким образом определяется стиль и содержание создаваемых картин? Есть ли какая-то предустановленная база знаний
-      или влияние других художественных произведений?</h6>
+    <h6>How does a machine gets inspiration from the natural entropy of the universe? How does she interpret and use
+      this information?</h6>
     <p>
-      Архитектор опирается на свой внутренний словарь сущностей и стилей, который был задан авторами проекта. В этом
-      словаре содержится все, что Архитектор знает о окружающем мире. Там перечислены как простые сущности, например,
-      "человек", "кот", "солнце", "красный", "мрачно", "радостно", так и некоторые художественные стили или конкретные
-      художники. Конечное произведение Архитектора представляет собой комбинацию сущностей и стилей, которые стали
-      основой идеи картины. Рядом с каждой картиной Архитектора можно увидеть слова, составляющие идею работы.
-    </p>
-    <p>ИИ определяет стилистику исходя из всех ключевых слов и seed-номера картины, переваривая общую идею в своём
-      нейронном
-      мозгу. Если в ключевых слова картины будет несколько стилей - то в итоге может получиться и комбинация стилей, и
-      один стиль из нескольких, и вообще ни один из них. Это всё будет решено в недрах "мышления" ИИ.
-    </p>
-
-    <hr/>
-    <h6>Как машина черпает вдохновение из естественной энтропии Вселенной? Как она интерпретирует и использует эту
-      информацию?</h6>
-    <p>
-      Для процесса творения Архитектор использует случайные числа-зерна (seeds), которые являются исходными точками для
-      создания картины.<br/>
-      Числа-зерна считываются веб-камерой из случайных кадров. При этом, не содержимое кадра, а только
-      световой шум используется для генерации случайных чисел.<br/>
-      Световой шум настолько различается на соседних кадрах, даже в темноте, что обеспечивает отличную случайную
-      генерацию чисел. Архитектор принимает десятки тысяч самостоятельных решений каждый день и считывает десятки тысяч
-      кадров, что поддерживает непрерывный процесс творения.
+      <b>Artchitect uses entropy of surrounding lightnoise catched by webcam.</b><br/>
+      In the beginning of creative process Artchitect
+      collects seed-numbers, which are the source of decisions needed
+      to construct idea of plot. Seed-numbers are read with the webcam from random frames. <br/>
+      At the same time, not the content of the frame, but
+      only light noise is used to generate random numbers. The light noise is so different on adjacent frames, even in
+      the dark, which provides excellent random number generation.
+      <br/>Artchitect makes thousands of independent decisions every day and reads thousands
+      of frames, which supports the continuous creative process.
       <br/>
-      <a href="https://github.com/artchitector/artchitect/blob/master/soul/core/origin/driver/webcam.go#L56-L71">Алгоритм
-        преобразования</a>
-      кадра в число доступен на github.
-    </p>
-
+      The frame-to-number conversion <a
+      href="https://github.com/artchitector/artchitect/blob/master/soul/core/origin/driver/webcam.go#L56-L71">algorithm</a>
+      is available on github.
     <div class="has-text-centered">
       <img src="/one_frame.jpeg" height="480" width="640"/>
       <br/>
-      <span class="is-size-7">Кадр пространства, на которое Архитектор смотрит каждый день. <br/>Из подобных кадров, где
-        изображение не меняется месяцами, он и рисует все свои картины</span>
+      <span class="is-size-7">Usual Artchitect's frame - source of int64 number .
+From such frames, where the image does not change for months, Artchitect draws all his arts</span>
     </div>
 
     <hr/>
-    <h6>Есть ли какая-либо форма регулировки или контроля со стороны человека в процессе создания картин?</h6>
+    <h6>Is there any human control in the process of creating art?</h6>
     <p>
-      Человек не может вмешиваться в рабочий процесс Архитектора (такого управления просто нет), но человек задает
-      изначальные условия - алгоритмы преобразования, и, что самое главное, определяет словарь знаний Архитектора.
-      Архитектор может рисовать картины только в рамках своих знаний о мире, в рамках словаря. Словарь Архитектора
-      включает более 1200 различных сущностей и стилей, из которых составляются картины.
+      Human cannot interfere in the Artchitect's workflow (there is no such controls), but human sets the
+      initial conditions - transformation algorithms, and, most importantly, defines the Artchitect's dictionary of
+      knowledge. Artchitect can generate ideas only within the set of his knowledge about the real world. Artchitect's
+      dictionary includes more than 1200 different entities and styles from
+      which arts are made.
       <br/>
-      Текущий словарь можно
-      <a target="_blank" href="https://github.com/artchitector/artchitect/blob/master/soul/files/tags_v12.yaml">посмотреть</a>
-      в исходном коде Архитектора.
+      Current dictionary can be found in
+      <a target="_blank"
+         href="https://github.com/artchitector/artchitect/blob/master/soul/files/tags_v12.yaml">sourcecode</a>. There
+      are multiple versions of dictionary (smaller, larger). Dictionary can be expanded in future to make more various
+      arts.
     </p>
 
     <hr/>
-    <h6>В описании говорится, что каждая картина уникальна и неповторима. Существует ли возможность, что машина
-      может создать несколько разных картин, которые визуально будут очень похожи друг на друга?</h6>
+    <h6>Is there a possibility that the machine can
+      create several different pictures that visually will be very similar to each other?</h6>
     <p>
-      Оригинал картины представляет собой цифровой слепок пространства, зафиксированный в момент генерации картины и
-      представленный в виде чисел и слов. Из уникального слепка можно воспроизвести одну и ту же картину сколько угодно
-      раз, но сам слепок не может быть воспроизведен заново. Оригинал в Artchitect - это цифровая идея картины,
-      состоящая
-      из ключевых слов и чисел, собранных из пространства в определённый момент времени. Оригиналы нумеруются по
-      порядку,
-      каждая картина имеет уникальный номер.
+      Not every art of Artchitect is pretty and good.
     </p>
     <p>
-      Но в реальности Архитектор далеко не идеален. Есть комбинации, где Архитектор создает очень похожие работы, почти
-      неотличимые друг от друга. Кроме действительно красивых
-      и уникальных работ, иногда появляется значительная часть работ, которые могут быть сломанными или некрасивыми, и
-      часто лишены художественного смысла.<br/>Но, Архитектор - машина, и для него не существует хороших и плохих
-      картин.
+      In real life Artchitect's paintings are far from perfect. There are combinations where Artchitect creates
+      very similar works. In addition to really beautiful works, there are a
+      significant part that are broken and ugly, often devoid of artistic meaning.<br/>
+      <b>Artchitect is machine, and there are no good and bad pictures for itself.</b>
     </p>
 
     <hr/>
