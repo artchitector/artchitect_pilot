@@ -1,21 +1,21 @@
 <template>
   <div class="progress-view">
     <div v-if="message.CardID">
-      already dreamed #{{message.CardID}}
+      already created #{{message.CardID}}
     </div>
     <div v-else class="heart-heading">
-      <h1 class="is-size-5 has-text-success has-text-centered">currently dreaming</h1>
+      <h1 class="is-size-5 has-text-success has-text-centered">currently creating</h1>
       <div class="mb-3">
-        <div class="is-size-7">Seed</div>
+        <div class="is-size-7">Seed-number</div>
         <span class="tag is-primary">{{ message.Seed }}</span>
       </div>
       <div>
-        <div class="is-size-7">Tags</div>
+        <div class="is-size-7">Keywords</div>
         <div class="tags mb-3">
           <span class="tag" v-for="tag in message.Tags">{{ tag }}</span>
         </div>
       </div>
-      <div>dreaming</div>
+      <div>creating</div>
       <progress class="progress is-primary" :value="progress" max="100">-</progress>
     </div>
   </div>

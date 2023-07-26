@@ -1,7 +1,7 @@
 <i18n>
 {
   "en": {
-    "card": "Dream",
+    "card": "Art",
     "error": "Error",
     "try_later": "Try later, Artchitect is down",
     "close": "Close",
@@ -11,7 +11,7 @@
 
   },
   "ru": {
-    "card": "Сон",
+    "card": "Картина",
     "error": "Ошибка",
     "try_later": "Попробуйте позже, сейчас Архитектору плохо",
     "close": "Закрыть",
@@ -47,7 +47,7 @@
     </div>
     <div class="header">
       <h1 class="is-size-4" v-if="card">
-        <NuxtLink :to="localePath(`/dream/${card.ID}`)">
+        <NuxtLink :to="localePath(`/art/${card.ID}`)">
           {{ $t('card') }} #{{ card.ID }}
         </NuxtLink>
       </h1>

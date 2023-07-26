@@ -1,6 +1,6 @@
 <template>
   <div class="image-container">
-    <a :href="`/dream/${card.ID}`" @click.prevent="select()">
+    <a :href="`/art/${card.ID}`" @click.prevent="select()">
       <img :src="'/api/image/m/' + card.ID"/>
     </a>
     <div class="likes">

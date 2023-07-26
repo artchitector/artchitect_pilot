@@ -57,11 +57,11 @@
       <br/>
       Next, Artchitect sends the received idea to the Stable Diffusion AI input (as prompt+seed) and receives an
       image.<br/>So Artchitect created the painting #271165
-      <NuxtLink :to="localePath(`/dream/271165`)">#271165</NuxtLink>
+      <NuxtLink :to="localePath(`/art/271165`)">#271165</NuxtLink>
     </p>
 
     <div class="has-text-centered">
-      <NuxtLink :to="localePath(`/dream/271165`)">
+      <NuxtLink :to="localePath(`/art/271165`)">
         <img src="https://artchitect.space/api/image/m/271165" style="max-height: 400px"/>
       </NuxtLink>
       <br/>

@@ -1,10 +1,10 @@
 <i18n>
 {
   "en": {
-    "title": "Artchitect - details"
+    "title": "Artchitect - idea"
   },
   "ru": {
-    "title": "Artchitect - подробнее"
+    "title": "Artchitect - идея"
   }
 }
 </i18n>

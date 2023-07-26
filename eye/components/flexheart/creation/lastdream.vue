@@ -10,10 +10,10 @@
       <div class="column-image">
         <div class="link-container">
           last dream
-          <NuxtLink :to="localePath(`/dream/${last}`)" class="has-text-info">#{{ last }}</NuxtLink>
+          <NuxtLink :to="localePath(`/art/${last}`)" class="has-text-info">#{{ last }}</NuxtLink>
         </div>
         <div class="image-container">
-          <NuxtLink :to="localePath(`/dream/${last}`)" class="has-text-info">
+          <NuxtLink :to="localePath(`/art/${last}`)" class="has-text-info">
             <img v-if="last" :src="`/api/image/m/${last}`"/>
           </NuxtLink>
           <div class="control-like">

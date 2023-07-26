@@ -61,11 +61,11 @@
       <br/>
       Далее Архитектор отправляет полученные решения на вход Stable Diffusion AI и получает изображение.<br/>Так
       Архитектор создал картину
-      <NuxtLink :to="localePath(`/dream/271165`)">#271165</NuxtLink>
+      <NuxtLink :to="localePath(`/art/271165`)">#271165</NuxtLink>
     </p>
 
     <div class="has-text-centered">
-      <NuxtLink :to="localePath(`/dream/271165`)">
+      <NuxtLink :to="localePath(`/art/271165`)">
         <img src="https://artchitect.space/api/image/m/271165" style="max-height: 400px"/>
       </NuxtLink>
       <br/>

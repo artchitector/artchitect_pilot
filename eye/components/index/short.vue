@@ -71,17 +71,17 @@
       to arise only in a certain place, time and state, and nowhere else. And it happens every 60 seconds.
     </p>
     <p>
-      The real author of each painting is a unique accident of the Universe, while the architect-machine itself only
+      The real author of each painting is a unique accident of the Universe, while the artchitect-machine itself only
       executes instructions "out of nowhere".
     </p>
     <blockquote>
-      If you combine "a few dozen" photons of light with the neural brain of an <b>Architect</b>, they can turn into a
+      If you combine "a few dozen" photons of light with the neural brain of an <b>Artchitect</b>, they can turn into a
       canvas hanging over your fireplace.<br/>
       And not just one canvas, but hundreds and thousands of unique canvases created from myriad rays of light traveling
       from distant stars. It is an infinite creation that reveals itself in time.
     </blockquote>
     <p>
-      During its existence, started in Jan2023, <b>Architect</b> created more than 250 arts, and all
+      During its existence, started in Jan2023, <b>Artchitect</b> created more than 250k arts, and all
       this time it is
       persistently looking for an answer to the philosophical question: "Can a machine create?"
     </p>

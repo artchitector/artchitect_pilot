@@ -1,12 +1,12 @@
 <template>
   <div class="column-image">
-    <NuxtLink v-if="dream_id > 0" :to="localePath(`/dream/${dream_id}`)" class="has-text-info">
+    <NuxtLink v-if="dream_id > 0" :to="localePath(`/art/${dream_id}`)" class="has-text-info">
       <img :src="`/api/image/s/${dream_id}`"/>
     </NuxtLink>
     <img v-else src="/in-progress.jpeg"/>
 
     <div v-if="dream_id > 0" class="link-container">
-      <NuxtLink v-if="dream_id > 0" :to="localePath(`/dream/${dream_id}`)" class="has-text-info">#{{ dream_id }}</NuxtLink>
+      <NuxtLink v-if="dream_id > 0" :to="localePath(`/art/${dream_id}`)" class="has-text-info">#{{ dream_id }}</NuxtLink>
     </div>
   </div>
 </template>

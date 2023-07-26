@@ -1,23 +1,23 @@
 <i18n>
 {
   "en": {
-    "title": "Artchitect - dream",
-    "card": "Dream",
+    "title": "Artchitect - art",
+    "card": "Art",
     "loading": "loading...",
     "error": "error: ",
     "version": "version",
-    "seed": "Seed",
-    "tags": "entities",
+    "seed": "Seed-number",
+    "tags": "Keywords",
     "full_size": "view full size"
   },
   "ru": {
-    "title": "Artchitect - сон",
-    "card": "Сон",
+    "title": "Artchitect - картина",
+    "card": "Картина",
     "loading": "загрузка...",
     "error": "ошибка: ",
     "version": "версия",
-    "seed": "Зерно",
-    "tags": "сущности",
+    "seed": "Seed-номер",
+    "tags": "Ключевые слова",
     "full_size": "смотреть в полном размере"
   }
 }

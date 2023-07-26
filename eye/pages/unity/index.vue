@@ -3,12 +3,12 @@
   "en": {
     "title": "Artchitect - unity",
     "subtitle": "unity",
-    "description": "Hundred of dreams have become a 100-unity, thousands of dreams have become a 1000-unity, and the same goes for 10,000 and 100,000 unities. Unities is a useful browser to view Architect's dreams from a global perspective."
+    "description": "Hundred of arts have become a 100-unity, thousands of arts have become a 1000-unity, and the same goes for 10,000 and 100,000 unities. Unities is a useful browser to view Architect's arts from a global perspective."
   },
   "ru": {
     "title": "Artchitect - единство",
     "subtitle": "единство",
-    "description": "Сотни снов становятся 100-единством, тысяча снов становится 1000-единством, и то же самое касается 10 000 и 100 000 единств. Единства - это полезный браузер, позволяющий увидеть сны Архитектора с глобальной точки зрения."
+    "description": "Сотня картин становится 100-единством, тысяча картин становится 1000-единством, и то же самое касается 10 000 и 100 000 единств. Единства - это полезный браузер, позволяющий увидеть картины Архитектора с глобальной точки зрения."
   }
 }
 </i18n>

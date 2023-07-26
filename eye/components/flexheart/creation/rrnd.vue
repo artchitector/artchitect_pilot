@@ -1,11 +1,11 @@
 <template>
   <div class="rrnd">
     <div class="rrnd-img-link">
-      <NuxtLink :to="localePath(`/dream/${f}`)">
+      <NuxtLink :to="localePath(`/art/${f}`)">
         <img :src="`/api/image/s/${f}`"/>
       </NuxtLink>
     </div>
-    <NuxtLink class="rrnd-number-link has-text-info" :to="localePath(`/dream/${f}`)">#{{ f }}</NuxtLink>
+    <NuxtLink class="rrnd-number-link has-text-info" :to="localePath(`/art/${f}`)">#{{ f }}</NuxtLink>
   </div>
 </template>
 

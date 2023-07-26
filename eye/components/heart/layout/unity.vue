@@ -6,7 +6,7 @@
     "state": "State",
     "collecting_children": "collect children unities",
     "unify_children": "unify children unities",
-    "promote_leads": "promote lead dreams",
+    "promote_leads": "promote lead arts",
     "prepare_thumb": "prepare collage",
     "finished": "unified",
     "children": "Children unities",

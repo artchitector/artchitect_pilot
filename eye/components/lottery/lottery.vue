@@ -34,7 +34,7 @@
       {{$t('winners')}} ({{ lottery.Winners.length }} {{$t('of_total')}} {{ lottery.TotalWinners }})<br/>
       <template v-for="winnerID in winners">
       <img v-if="winnerID === 0" class="mini-preview ml-1 mr-1" src="/in-progress-lottery.jpg"/>
-      <a v-else :href="localePath(`/dream/${winnerID}`)" @click.prevent="select(winnerID)" class="winner-link">
+      <a v-else :href="localePath(`/art/${winnerID}`)" @click.prevent="select(winnerID)" class="winner-link">
         <img class="mini-preview ml-1 mr-1" :src="`/api/image/xs/${winnerID}`"/>
       </a>
       </template>
