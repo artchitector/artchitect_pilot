@@ -13,6 +13,7 @@
       convenient working assembly of this AI.
     </p>
     <hr/>
+    <a id="how_to_draw"></a>
     <h6>How does Artchitect create a picture without human help?</h6>
     <p>
       At the very beginning of creative process, Artchitect must make several decisions that determine the essence of
@@ -70,6 +71,7 @@
     </div>
 
     <hr/>
+    <a id="creation_or_creator"></a>
     <h6>Is Artchitect creation or creator?</h6>
     <p>
       Artchitect is the result of human creativity and effort. It was designed and created by humans, and its creativity

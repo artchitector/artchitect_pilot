@@ -12,25 +12,28 @@
     <p class="is-size-5">Автономная творческая машина</p>
     <blockquote>Может ли машина придумать что-то из ничего?
       <br/>Может ли машина осмыслить бессмысленное?
-      <br/>Может.
+      <br/><NuxtLink :to="localePath('idea') + `#creation_or_creator`">Может?</NuxtLink>
     </blockquote>
     <p>
       <b>Artchitect</b> (или <b>Архитектор</b>), - это удивительная автономная творческая машина, способная создавать
       великолепные картины, вдохновляясь окружающей нас Вселенной. В своем непрерывном творчестве машина черпает
       вдохновение из естественной энтропии Вселенной, представленной в виде фонового света, и создает уникальные
       произведения без участия человека. <b>Архитектор</b> создаёт новую картину каждые 60 секунд.
+    </p>
+    <p class="has-text-centered">
+      <NuxtLink :to="localePath('idea') + `#how_to_draw`">Как Artchitect рисует картину?</NuxtLink>
+    </p>
     <p>
       <b>Архитектор</b> считывает случайные кванты света из окружающего пространства, преобразует их в числа, а затем
-      числа превращаются в идеи для создания картины. Каждое произведение искусства, которое возникает, уникально и
-      неповторимо, так как его источником является уникальное состояние Вселенной в определенный момент времени.
-      сейчас.
+      числа превращаются в идеи для создания картины. Каждая созданная картина уникальна и
+      неповторима, так как её источником является уникальное состояние Вселенной в определенный момент времени.
       <b>Архитектор</b> использует простейшие данные, "распакованные" из квантов света, чтобы создать сложную
       художественную работу с непредсказуемым сюжетом, содержанием и стилем. Это творение, идея которого могла
       возникнуть только в определенном месте, времени и состоянии, и больше нигде. И это происходит каждые 60 секунд.
     </p>
     <p>
       Подлинным автором каждой картины является уникальная случайность Вселенной, в то время как сама машина <b>Artchitect</b>
-      лишь исполняет указания "из ниоткуда".
+      лишь исполняет простейшие указания "из ниоткуда".
     </p>
     <blockquote>
       Если соединить "несколько дюжин" фотонов света с нейронным мозгом <b>Архитектора</b>,
@@ -53,13 +56,16 @@
     <p class="is-size-5">Autonomous creative machine</p>
     <blockquote>Can a machine come up with something out of nothing?
       <br/>Can a machine comprehend the meaningless?
-      <br/>Machine can.
+      <br/><NuxtLink :to="localePath('idea') + `#creation_or_creator`">Can?</NuxtLink>
     </blockquote>
     <p>
       <b>Artchitect</b> - it is an amazing autonomous creative machine capable of creating
       magnificent artworks inspired by the universe around us. In its continuous creativity , the machine receives
       inspiration from the natural entropy of the universe, represented as background light, and creates unique
       artworks without human participation.
+    </p>
+    <p class="has-text-centered">
+      <NuxtLink :to="localePath('idea') + `#how_to_draw`">How Artchitect draw each picture?</NuxtLink>
     </p>
     <p>
       <b>Artchitect</b> reads random quanta of light from the surrounding space, converts them into numbers, and then
