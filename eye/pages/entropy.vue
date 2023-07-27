@@ -31,7 +31,8 @@
       <img v-if="images.bytes !== null" :src="`data:image/png;base64, ${images.bytes}`"
            style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading bytes stream"/>
       <br/>
-      <span>{{ entropy.bytes }}</span><br/>
+      <span class="is-size-7" v-html="entropy.bytes.match(/.{1,8}/g).join('<br/>')">{{ entropy.bytes }}</span><br/>
+      <h1>Resulting value (scale 0 to 1)</h1>
       <span>{{ entropy.float }}</span><br/>
     </div>
 
