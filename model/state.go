@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type CreationState struct {
 	PreviousCardID       uint
 	Version              string
@@ -26,6 +28,12 @@ type PrayState struct {
 
 type HeartState struct {
 	Rnd []uint // Some random images for heart-entertainment. Usually 4 images
+}
+
+type EntropyState struct {
+	Timestamp time.Time
+	Phase     string
+	Image     string // base64 jpeg-encoded
 }
 
 const (

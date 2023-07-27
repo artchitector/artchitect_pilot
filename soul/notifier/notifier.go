@@ -86,6 +86,15 @@ func (n *Notifier) NotifyHeart(ctx context.Context, state model.HeartState) erro
 	return errors.Wrap(err, "[notifier] failed to notify heart")
 }
 
+func (n *Notifier) NotifyEntropy(ctx context.Context, state model.EntropyState) error {
+	jsn, err := json.Marshal(state)
+	if err != nil {
+		return errors.Wrap(err, "[notifier] failed marshal phase payload")
+	}
+	err = n.publish(ctx, model.ChannelEntropy, jsn)
+	return errors.Wrap(err, "[notifier] failed to notify phase")
+}
+
 func (n *Notifier) publish(ctx context.Context, channel string, data interface{}) error {
 	for key, r := range n.redises {
 		if err := r.Publish(ctx, channel, data).Err(); err != nil {

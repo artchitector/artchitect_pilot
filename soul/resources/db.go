@@ -38,7 +38,6 @@ func initDB(env *Env) *gorm.DB {
 		&model.Lottery{},
 		&model.Pray{},
 		&model.Selection{},
-		&model.Hundred{},
 		&model.Like{},
 		&model.Unity{},
 	); err != nil {

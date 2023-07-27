@@ -8,6 +8,7 @@ import (
 	"github.com/artchitector/artchitect/gate/handler"
 	"github.com/artchitector/artchitect/gate/listener"
 	"github.com/artchitector/artchitect/gate/resources"
+	streamer2 "github.com/artchitector/artchitect/gate/streamer"
 	"github.com/artchitector/artchitect/memory"
 	repository2 "github.com/artchitector/artchitect/model/repository"
 	"github.com/gin-contrib/cors"
@@ -51,6 +52,21 @@ func main() {
 		res.GetEnv().ChatIDInfinite,
 	)
 
+	// streamer (for mjpg streams of entropy)
+	streamer := streamer2.NewStreamer()
+
+	// listeners with websocket handler
+	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo, mmr, streamer)
+	websocketHandler := handler.NewWebsocketHandler(lis)
+
+	go func() {
+		err := lis.Run(ctx)
+		if err != nil {
+			log.Error().Err(err).Send()
+			cancel()
+		}
+	}()
+
 	// handlers
 	lastCardsHandler := handler.NewLastCardsHandler(cardsRepo, cache)
 	lotteryHandler := handler.NewLotteryHandler(
@@ -65,18 +81,7 @@ func main() {
 	llh := handler.NewLikeHandler(likeRepo, cardsRepo, authS, enhotter, artchitectBot, uint(res.GetEnv().ChatIDArtchitector), res.GetEnv().SendToInfiniteOnLike)
 	uh := handler.NewUnityHandler(unityRepo, cardsRepo)
 	ih := handler.NewImageHandler(mmr)
-
-	// listeners with websocket handler
-	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo, mmr)
-	websocketHandler := handler.NewWebsocketHandler(lis)
-
-	go func() {
-		err := lis.Run(ctx)
-		if err != nil {
-			log.Error().Err(err).Send()
-			cancel()
-		}
-	}()
+	sh := handler.NewStreamHandler(streamer)
 
 	go func() {
 		r := gin.Default()
@@ -106,6 +111,8 @@ func main() {
 		r.GET("/liked", llh.HandleList)
 		r.GET("/unity", uh.HandleList)
 		r.GET("/unity/:mask", uh.HandleUnity)
+
+		r.GET("/stream/:phase/image.mjpeg", sh.HandleStream)
 
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()

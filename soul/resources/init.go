@@ -9,6 +9,7 @@ type Resources struct {
 	env     *Env
 	db      *gorm.DB
 	redises map[string]*redis.Client
+	webcam  *Webcam
 }
 
 func (r *Resources) GetDB() *gorm.DB {
@@ -23,10 +24,14 @@ func (r *Resources) GetRedises() map[string]*redis.Client {
 	return r.redises
 }
 
+func (r *Resources) GetWebcam() *Webcam {
+	return r.webcam
+}
+
 func InitResources() *Resources {
 	env := initEnv()
 	db := initDB(env)
 	redises := initRedises(env)
 
-	return &Resources{env, db, redises}
+	return &Resources{env, db, redises, &Webcam{env.OriginURL}}
 }

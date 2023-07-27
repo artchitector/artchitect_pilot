@@ -10,6 +10,7 @@ import (
 	engine2 "github.com/artchitector/artchitect/soul/core/artist/engine"
 	"github.com/artchitector/artchitect/soul/core/combinator"
 	creator2 "github.com/artchitector/artchitect/soul/core/creator"
+	"github.com/artchitector/artchitect/soul/core/entropy"
 	"github.com/artchitector/artchitect/soul/core/gifter"
 	"github.com/artchitector/artchitect/soul/core/heart"
 	"github.com/artchitector/artchitect/soul/core/lottery"
@@ -129,6 +130,14 @@ func main() {
 		}
 	}()
 
+	gk := entropy.NewGatekeeper(res.GetRedises(), notifier)
+	lightMaster := entropy.NewLightmaster(res.GetWebcam(), gk)
+	go func() {
+		if err := lightMaster.StartEntropyReading(ctx); err != nil {
+			log.Fatal().Err(err).Msgf("[CRITICAL MALFUNCTION] lightmaster died")
+		}
+	}()
+
 	// Artchitect core scheduler
 	artchitectConfig := artchitectService.Config{
 		CardsCreationEnabled: res.GetEnv().CardCreationEnabled,
@@ -166,7 +175,7 @@ mainFor:
 		select {
 		case <-ctx.Done():
 			break mainFor
-		case <-time.Tick(time.Second * 1):
+		case <-time.Tick(time.Second * 10):
 			tick += 1
 			err := artchitect.Run(ctx, tick)
 			if err != nil {

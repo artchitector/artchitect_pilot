@@ -25,6 +25,10 @@ type memory interface {
 	GetCardImage(ctx context.Context, cardID uint, size string) ([]byte, error)
 }
 
+type streamer interface {
+	OnPhaseEvent(ctx context.Context, state model.EntropyState)
+}
+
 // Listener read incoming request from redis and do some actions
 // new card saved - load it to redis
 type Listener struct {
@@ -33,11 +37,20 @@ type Listener struct {
 	cache          cache
 	cardRepository cardRepository
 	memory         memory
+	streamer       streamer
 	eventChannels  []chan localmodel.Event
 }
 
-func NewListener(red *redis.Client, cache cache, cardRepository cardRepository, memory memory) *Listener {
-	return &Listener{sync.Mutex{}, red, cache, cardRepository, memory, []chan localmodel.Event{}}
+func NewListener(red *redis.Client, cache cache, cardRepository cardRepository, memory memory, streamer streamer) *Listener {
+	return &Listener{
+		sync.Mutex{},
+		red,
+		cache,
+		cardRepository,
+		memory,
+		streamer,
+		[]chan localmodel.Event{},
+	}
 }
 
 func (l *Listener) Run(ctx context.Context) error {
@@ -51,6 +64,7 @@ func (l *Listener) Run(ctx context.Context) error {
 		model.ChannelPrehotCard,
 		model.ChannelUnity,
 		model.ChannelHeart,
+		model.ChannelEntropy,
 	)
 	for {
 		select {
@@ -77,6 +91,7 @@ func (l *Listener) handle(ctx context.Context, msg *redis.Message) error {
 	case model.ChannelLottery:
 	case model.ChannelUnity:
 	case model.ChannelHeart:
+	case model.ChannelEntropy:
 
 	case model.ChannelPrehotCard:
 		if err := l.handlePrehotCard(ctx, msg); err != nil {
@@ -129,6 +144,15 @@ func (l *Listener) handlePrehotCard(ctx context.Context, msg *redis.Message) err
 	}
 	log.Info().Msgf("[listener] prehot card(id=%d)", card.ID)
 	return l.cacheCard(ctx, card.ID)
+}
+
+func (l *Listener) handlePhase(ctx context.Context, msg *redis.Message) error {
+	var state model.EntropyState
+	if err := json.Unmarshal([]byte(msg.Payload), &state); err != nil {
+		return errors.Wrap(err, "[listener] failed to unmarshal phase message")
+	}
+	l.streamer.OnPhaseEvent(ctx, state)
+	return nil
 }
 
 func (l *Listener) handleNewSelection(ctx context.Context, msg *redis.Message) error {

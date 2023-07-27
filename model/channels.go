@@ -9,4 +9,5 @@ const (
 	ChannelLottery      = "lottery"
 	ChannelUnity        = "unity"
 	ChannelHeart        = "heart"
+	ChannelEntropy      = "entropy"
 )

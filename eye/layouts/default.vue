@@ -6,7 +6,8 @@
     "selection": "selection",
     "liked": "liked",
     "unity": "unity",
-    "idea": "idea"
+    "idea": "idea",
+    "entropy": "entropy"
   },
   "ru": {
     "main": "главная",
@@ -14,7 +15,8 @@
     "selection": "отборное",
     "liked": "вам нравится",
     "unity": "единства",
-    "idea": "идея"
+    "idea": "идея",
+    "entropy": "энтропия"
   }
 }
 </i18n>
@@ -35,6 +37,8 @@
         <NuxtLink :to="localePath('index')">{{$t('main')}}</NuxtLink>
         <span> - </span>
         <NuxtLink :to="localePath('/idea')">{{$t('idea')}}</NuxtLink>
+        <span> - </span>
+        <NuxtLink :to="localePath('/entropy')">{{$t('entropy')}}</NuxtLink>
         <span> - </span>
         <NuxtLink :to="localePath('/unity')">{{$t('unity')}}</NuxtLink>
         <span> - </span>
