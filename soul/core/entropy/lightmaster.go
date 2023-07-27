@@ -8,6 +8,7 @@ import (
 	"image"
 	"image/color"
 	"math"
+	"math/bits"
 )
 
 const (
@@ -177,24 +178,44 @@ func (l *Lightmaster) shrinkNoise(noiseImage image.Image) (image.Image, error) {
 	resultBounds := image.Rect(0, 0, ResultSize, ResultSize)
 	resultImg := image.NewRGBA(resultBounds)
 
-	// how many source pixels is in result pixed (default 56px into 1px, 448px-side into 8px-side)
 	proportion := noiseBounds.Dx() / resultBounds.Dx()
+	var minPower int64 = math.MaxInt64
+	var maxPower int64 = math.MinInt64
+	powers := make([][]int64, 0, 8)
+
+	// collect powers of 64-pixels
 	for x := 0; x < resultBounds.Dx(); x++ {
+		powers = append(powers, make([]int64, 8))
 		for y := 0; y < resultBounds.Dy(); y++ {
-			// ищем средний цвет для этого пикселя, ужимая пиксели
-			var sumR, sumG, sumB int64
+			var powerOfPixel int64
+			// Проходим по всем пикселям в квадрате 56х56 и собираем их силу в сумму
 			for nx := x * proportion; nx < x*proportion+proportion; nx++ {
 				for ny := y * proportion; ny < y*proportion+proportion; ny++ {
 					clr := noiseImage.At(nx, ny)
-					sumR += int64(clr.(color.RGBA).R)
-					sumG += int64(clr.(color.RGBA).G)
-					sumB += int64(clr.(color.RGBA).B)
+					powerOfPixel += int64(clr.(color.RGBA).R)
+					powerOfPixel += int64(clr.(color.RGBA).G)
+					powerOfPixel += int64(clr.(color.RGBA).B)
 				}
 			}
-			sumR /= int64(proportion)
-			sumG /= int64(proportion)
-			sumB /= int64(proportion)
-			resultImg.SetRGBA(x, y, color.RGBA{R: uint8(sumR), G: uint8(sumG), B: uint8(sumB), A: 255})
+			if powerOfPixel < minPower {
+				minPower = powerOfPixel
+			}
+			if powerOfPixel > maxPower {
+				maxPower = powerOfPixel
+			}
+			powers[x][y] = powerOfPixel
+
+		}
+	}
+
+	scale := maxPower - minPower
+	for x := 0; x < resultBounds.Dx(); x++ {
+		for y := 0; y < resultBounds.Dy(); y++ {
+			powerOfPixel := powers[x][y] - minPower // clear extra power
+
+			redPower := math.Round(float64(powerOfPixel) / float64(scale) * 255.0)
+
+			resultImg.SetRGBA(x, y, color.RGBA{R: uint8(redPower), G: uint8(0), B: uint8(0), A: 255})
 		}
 	}
 
@@ -209,13 +230,11 @@ func (l *Lightmaster) noiseToBytes(noiseImage image.Image) (image.Image, uint64,
 	for x := 0; x < bounds.Dx(); x++ {
 		for y := 0; y < bounds.Dy(); y++ {
 			// считаем сумму заполнения трёх цветов, и делим на три. если это больше 255/2 - цвет бита белый, иначе чёрный
-			var sum int16
 			clr := noiseImage.At(x, y)
-			sum += int16(clr.(color.RGBA).R)
-			sum += int16(clr.(color.RGBA).G)
-			sum += int16(clr.(color.RGBA).B)
-			sum /= 3
-			if sum > math.MaxInt8/2 { // set white
+			power := clr.(color.RGBA).R
+			power = bits.Reverse8(power)
+
+			if power > 150 { // set white
 				bytesImage.Set(x, y, color.RGBA{R: 255, G: 255, B: 255, A: 255})
 
 				byteIndex := x*ResultSize + y
