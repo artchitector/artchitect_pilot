@@ -8,7 +8,6 @@ import (
 	"github.com/artchitector/artchitect/model"
 	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -65,7 +64,6 @@ func (gk *Gatekeeper) NotifyEntropyPhase(
 	if entropyAnswer > 0 {
 		entropyAnswerByte = fmt.Sprintf("%064b", entropyAnswer)
 		entropyAnswerFloat = float64(entropyAnswer) / float64(math.MaxUint64)
-		log.Info().Msgf("%f %f %.12f", float64(math.MaxUint64), float64(entropyAnswer), entropyAnswerFloat)
 	}
 
 	// Теперь отправить уведомление в канал
