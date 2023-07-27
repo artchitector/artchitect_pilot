@@ -175,7 +175,7 @@ mainFor:
 		select {
 		case <-ctx.Done():
 			break mainFor
-		case <-time.Tick(time.Second * 10):
+		case <-time.Tick(time.Second * 1):
 			tick += 1
 			err := artchitect.Run(ctx, tick)
 			if err != nil {
