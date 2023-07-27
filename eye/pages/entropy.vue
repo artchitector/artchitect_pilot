@@ -13,8 +13,28 @@
   <section>
     <div class="has-text-centered">
       <h1>Source</h1>
-      <img v-if="images.source !== null" :src="`data:image/jpeg;base64, ${images.source}`"/>
+      <img v-if="images.source !== null" :src="`data:image/jpeg;base64, ${images.source}`"
+           alt="loading source stream"/>
     </div>
+    <div class="has-text-centered">
+      <h1>Noise</h1>
+      <img v-if="images.noise !== null" :src="`data:image/jpeg;base64, ${images.noise}`"
+           alt="loading noise stream"/>
+    </div>
+    <div class="has-text-centered">
+      <h1>Shrink</h1>
+      <img v-if="images.shrink !== null" :src="`data:image/png;base64, ${images.shrink}`"
+           style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading shrink stream"/>
+    </div>
+    <div class="has-text-centered">
+      <h1>Bytes</h1>
+      <img v-if="images.bytes !== null" :src="`data:image/png;base64, ${images.bytes}`"
+           style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading bytes stream"/>
+      <br/>
+      <span>{{ entropy.bytes }}</span><br/>
+      <span>{{ entropy.float }}</span><br/>
+    </div>
+
   </section>
 </template>
 
@@ -35,7 +55,14 @@ export default {
       maintenance: false,
       connection: null,
       images: {
-        source: null
+        source: null,
+        noise: null,
+        shrink: null,
+        bytes: null
+      },
+      entropy: {
+        bytes: "",
+        float: 0.0
       }
     }
   },
@@ -85,13 +112,26 @@ export default {
         return
       }
 
+      if (msg.EntropyAnswer > 0) {
+        this.entropy.bytes = msg.EntropyAnswerByte
+        this.entropy.float = msg.EntropyAnswer
+      }
+
       switch (msg.Phase) {
         case 'source':
-          console.log(`${this.logPrefix}: update image ${msg.Phase}`)
           this.images.source = msg.Image
           break
+        case 'noise':
+          this.images.noise = msg.Image
+          break
+        case 'shrink':
+          this.images.shrink = msg.Image
+          break
+        case 'bytes':
+          this.images.bytes = msg.Image
+          break
         default:
-          alert(`new phase ${msg.Phase}`)
+          console.warn(`new phase ${msg.Phase}`)
       }
     }
   }

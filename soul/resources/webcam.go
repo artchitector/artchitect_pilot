@@ -25,7 +25,6 @@ func (w *Webcam) GetStream(ctx context.Context) chan image.Image {
 				if img, err := w.getFrame(ctx); err != nil {
 					log.Error().Err(err).Msgf("[webcam] failed getFrame")
 				} else {
-					log.Info().Msgf("[webcam] got image")
 					ch <- img
 				}
 			}

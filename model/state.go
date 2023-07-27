@@ -30,10 +30,18 @@ type HeartState struct {
 	Rnd []uint // Some random images for heart-entertainment. Usually 4 images
 }
 
+const (
+	ImageTypeJPEG = "jpeg"
+	ImageTypePNG  = "png"
+)
+
 type EntropyState struct {
-	Timestamp time.Time
-	Phase     string
-	Image     string // base64 jpeg-encoded
+	Timestamp         time.Time
+	Phase             string
+	Image             string // base64 jpeg-encoded
+	ImageType         string
+	EntropyAnswerByte string
+	EntropyAnswer     float64
 }
 
 const (
