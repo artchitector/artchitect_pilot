@@ -15,8 +15,6 @@ import (
 	"github.com/artchitector/artchitect/soul/core/heart"
 	"github.com/artchitector/artchitect/soul/core/lottery"
 	merciful2 "github.com/artchitector/artchitect/soul/core/merciful"
-	originService "github.com/artchitector/artchitect/soul/core/origin"
-	"github.com/artchitector/artchitect/soul/core/origin/driver"
 	"github.com/artchitector/artchitect/soul/core/saver"
 	spellerService "github.com/artchitector/artchitect/soul/core/speller"
 	"github.com/artchitector/artchitect/soul/core/storage"
@@ -50,20 +48,26 @@ func main() {
 		cancel()
 	}()
 
-	// origin
-	webcamDriver := driver.NewWebcamDriver(res.GetEnv().OriginURL)
-	origin := originService.NewOrigin(webcamDriver)
+	// notifier
+	notifier := notifier2.NewNotifier(res.GetRedises())
+
+	// Entropy reader + (lightmaster+gatekeeper)
+	gk := entropy.NewGatekeeper(res.GetRedises(), notifier)
+	lightMaster := entropy.NewLightmaster(res.GetWebcam(), gk)
+	go func() {
+		if err := lightMaster.StartEntropyReading(ctx); err != nil {
+			log.Fatal().Err(err).Msgf("[CRITICAL MALFUNCTION] lightmaster died")
+		}
+	}()
+	entrp := entropy.NewEntropy(lightMaster)
 
 	// repositoties
-	cardsRepo := repository.NewCardRepository(res.GetDB(), origin)
+	cardsRepo := repository.NewCardRepository(res.GetDB(), entrp)
 	spellRepo := repository.NewSpellRepository(res.GetDB())
 	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
 	prayRepo := repository.NewPrayRepository(res.GetDB())
 	selectionRepo := repository.NewSelectionRepository(res.GetDB())
 	unityRepo := repository.NewUnityRepository(res.GetDB())
-
-	// notifier
-	notifier := notifier2.NewNotifier(res.GetRedises())
 
 	// s3 storage
 	strg, err := storage.NewS3(
@@ -78,7 +82,7 @@ func main() {
 	}
 
 	// speller+artist+creator
-	speller := spellerService.NewSpeller(spellRepo, origin, notifier)
+	speller := spellerService.NewSpeller(spellRepo, entrp, notifier)
 	var engine artistService.EngineContract
 	if res.GetEnv().UseFakeArtist {
 		engine = engine2.NewFakeEngine(res.GetEnv().FakeGenerationTime)
@@ -89,8 +93,10 @@ func main() {
 	watermarkMaker := watermark.NewWatermark()
 	artist := artistService.NewArtist(engine, cardsRepo, notifier, watermarkMaker, strg, sav)
 
+	// memory (save images to memory-server)
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
 
+	// artchitect bots
 	var artchitectBot *bot.Bot
 	if res.GetEnv().Telegram10BotEnabled {
 		artchitectBot = bot.NewBot(
@@ -104,9 +110,11 @@ func main() {
 		go artchitectBot.Start(ctx)
 	}
 
+	// combinator (makes unity images), unifier (makes unities)
 	cmbntr := combinator.NewCombinator(cardsRepo, mmr, sav, watermarkMaker)
-	unfr := unifier.NewUnifier(unityRepo, cardsRepo, origin, cmbntr, notifier, artchitectBot)
+	unfr := unifier.NewUnifier(unityRepo, cardsRepo, entrp, cmbntr, notifier, artchitectBot)
 
+	// creator makes arts
 	creator := creator2.NewCreator(
 		artist,
 		speller,
@@ -118,7 +126,7 @@ func main() {
 	)
 
 	// lottery runner
-	runner := lottery.NewRunner(lotteryRepo, selectionRepo, cardsRepo, origin, notifier)
+	runner := lottery.NewRunner(lotteryRepo, selectionRepo, cardsRepo, entrp, notifier)
 
 	// merciful
 	merciful := merciful2.NewMerciful(prayRepo, creator, notifier)
@@ -127,14 +135,6 @@ func main() {
 	go func() {
 		if err := heartStateOperator.Run(ctx, 3); err != nil { // 3 seconds
 			log.Error().Err(err).Send()
-		}
-	}()
-
-	gk := entropy.NewGatekeeper(res.GetRedises(), notifier)
-	lightMaster := entropy.NewLightmaster(res.GetWebcam(), gk)
-	go func() {
-		if err := lightMaster.StartEntropyReading(ctx); err != nil {
-			log.Fatal().Err(err).Msgf("[CRITICAL MALFUNCTION] lightmaster died")
 		}
 	}()
 
@@ -157,7 +157,7 @@ func main() {
 
 	// gifter
 	if res.GetEnv().GifterActive && artchitectBot != nil {
-		gift := gifter.NewGifter(cardsRepo, origin, artchitectBot)
+		gift := gifter.NewGifter(cardsRepo, entrp, artchitectBot)
 		go func() {
 			if err := gift.Run(ctx); err != nil {
 				log.Fatal().Err(err).Send()

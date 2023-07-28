@@ -1,6 +1,16 @@
 package entropy
 
+import (
+	"context"
+	"math"
+)
+
 type Entropy struct {
+	lightmaster *Lightmaster
+}
+
+func NewEntropy(lightmaster *Lightmaster) *Entropy {
+	return &Entropy{lightmaster: lightmaster}
 }
 
 /*
@@ -8,6 +18,9 @@ type Entropy struct {
 	Entropy replies: "take element 31" (calculated with the lightnoise-entropy)
 */
 
-func (e *Entropy) GetAnswer(totalElements uint) (uint, error) {
-	return 0, nil
+func (e *Entropy) Select(ctx context.Context, totalElements uint) (uint, error) {
+	entropyF := e.lightmaster.GetEntropy(ctx)
+	targetIndex := uint(math.Floor(float64(totalElements) * entropyF))
+
+	return targetIndex, nil
 }

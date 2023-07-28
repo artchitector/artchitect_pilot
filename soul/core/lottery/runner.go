@@ -26,7 +26,7 @@ type notifier interface {
 	NotifyLottery(ctx context.Context, state model.LotteryState) error
 }
 
-type origin interface {
+type entropy interface {
 	Select(ctx context.Context, totalVariants uint) (uint, error)
 }
 
@@ -34,7 +34,7 @@ type Runner struct {
 	lotteryRepository   lotteryRepository
 	selectionRepository selectionRepository
 	cardsRepository     cardsRepository
-	origin              origin
+	entropy             entropy
 	notifier            notifier
 }
 
@@ -42,14 +42,14 @@ func NewRunner(
 	lotteryRepository lotteryRepository,
 	selectionRepository selectionRepository,
 	cardsRepository cardsRepository,
-	origin origin,
+	entropy entropy,
 	notifier notifier,
 ) *Runner {
 	return &Runner{
 		lotteryRepository,
 		selectionRepository,
 		cardsRepository,
-		origin,
+		entropy,
 		notifier,
 	}
 }
@@ -90,9 +90,9 @@ func (lr *Runner) startLottery(ctx context.Context, lottery model.Lottery) (mode
 	lottery.Started = time.Now()
 
 	// select from 10 to 100 winners
-	totalWinners, err := lr.origin.Select(ctx, 90)
+	totalWinners, err := lr.entropy.Select(ctx, 90)
 	if err != nil {
-		return model.Lottery{}, errors.Wrapf(err, "[runner] failed to get total winners from origin (lottery=%d)", lottery.ID)
+		return model.Lottery{}, errors.Wrapf(err, "[runner] failed to get total winners from entropy (lottery=%d)", lottery.ID)
 	}
 	totalWinners += 10 // min 10 winners, max 110
 
@@ -120,9 +120,9 @@ func (lr *Runner) performLotteryStep(ctx context.Context, lottery model.Lottery)
 	}
 
 	totalCards := uint(len(cards))
-	selection, err := lr.origin.Select(ctx, totalCards)
+	selection, err := lr.entropy.Select(ctx, totalCards)
 	if err != nil {
-		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to select from origin with max=%d", totalCards)
+		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to select from entropy with max=%d", totalCards)
 	}
 	cardID := cards[selection]
 	log.Info().Msgf("[runner] selected %d(card id=%d), total cards %d", selection, cardID, len(cards))

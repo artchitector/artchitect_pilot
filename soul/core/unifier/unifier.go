@@ -35,7 +35,7 @@ type cardRepository interface {
 	GetCard(ctx context.Context, ID uint) (model.Card, error)
 }
 
-type origin interface {
+type entropy interface {
 	Select(ctx context.Context, totalVariants uint) (uint, error)
 }
 
@@ -54,14 +54,14 @@ type artchitectBot interface {
 type Unifier struct {
 	unityRepository unityRepository
 	cardRepository  cardRepository
-	origin          origin
+	entropy         entropy
 	combinator      combinator
 	notifier        notifier
 	artchitectBot   artchitectBot
 }
 
-func NewUnifier(unityRepository unityRepository, cardRepository cardRepository, origin origin, combinator combinator, notifier notifier, artchitectBot artchitectBot) *Unifier {
-	return &Unifier{unityRepository, cardRepository, origin, combinator, notifier, artchitectBot}
+func NewUnifier(unityRepository unityRepository, cardRepository cardRepository, entropy entropy, combinator combinator, notifier notifier, artchitectBot artchitectBot) *Unifier {
+	return &Unifier{unityRepository, cardRepository, entropy, combinator, notifier, artchitectBot}
 }
 
 func (u *Unifier) WorkOnce(ctx context.Context) (bool, error) {
@@ -336,9 +336,9 @@ func (u *Unifier) promoteLeads(ctx context.Context, unity model.Unity, state *mo
 			default:
 			}
 
-			selection, err := u.origin.Select(ctx, model.Rank100)
+			selection, err := u.entropy.Select(ctx, model.Rank100)
 			if err != nil {
-				return model.Unity{}, errors.Wrapf(err, "[unifier] failed to get data from origin")
+				return model.Unity{}, errors.Wrapf(err, "[unifier] failed to get data from entropy")
 			}
 			lead := unity.Start() + selection // Выбираем даже несуществующие карточки. Они будут заполняться чёрным цветом.
 			if _, err := u.cardRepository.GetCard(ctx, lead); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
@@ -379,9 +379,9 @@ func (u *Unifier) promoteLeads(ctx context.Context, unity model.Unity, state *mo
 			return model.Unity{}, errors.Errorf("[unifier] wrong rank %d", unity.Rank)
 		}
 		for len(currentLeaders) < leadersCount {
-			selection, err := u.origin.Select(ctx, uint(len(allLeaders)))
+			selection, err := u.entropy.Select(ctx, uint(len(allLeaders)))
 			if err != nil {
-				return model.Unity{}, errors.Errorf("[unifier] failed get selection from origin. all lead count: %d", len(allLeaders))
+				return model.Unity{}, errors.Errorf("[unifier] failed get selection from entropy. all lead count: %d", len(allLeaders))
 			}
 			selectedLeader := allLeaders[selection]
 			currentLeaders = append(currentLeaders, selectedLeader)

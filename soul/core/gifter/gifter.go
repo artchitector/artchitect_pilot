@@ -13,7 +13,7 @@ type cardRepository interface {
 	GetCardWithOffset(offset uint) (model.Card, error)
 }
 
-type origin interface {
+type entropy interface {
 	Select(ctx context.Context, totalVariants uint) (uint, error)
 }
 
@@ -26,17 +26,17 @@ const (
 )
 
 type Gifter struct {
-	origin         origin
+	entropy        entropy
 	cardRepository cardRepository
 	artchitectBot  artchitectBot
 }
 
 func NewGifter(
 	cardRepository cardRepository,
-	origin origin,
+	entropy entropy,
 	bot artchitectBot,
 ) *Gifter {
-	return &Gifter{origin, cardRepository, bot}
+	return &Gifter{entropy, cardRepository, bot}
 }
 
 func (g *Gifter) Run(ctx context.Context) error {
@@ -80,9 +80,9 @@ func (g *Gifter) getCard(ctx context.Context) (uint, error) {
 	if err != nil {
 		return 0, errors.Wrap(err, "[gifter] failed get total cards")
 	}
-	selection, err := g.origin.Select(ctx, totalCards)
+	selection, err := g.entropy.Select(ctx, totalCards)
 	if err != nil {
-		return 0, errors.Wrap(err, "[gifter] failed to select from origin")
+		return 0, errors.Wrap(err, "[gifter] failed to select from entropy")
 	}
 	card, err := g.cardRepository.GetCardWithOffset(selection)
 	if err != nil {

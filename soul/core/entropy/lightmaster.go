@@ -12,6 +12,8 @@ import (
 	"math"
 	"math/bits"
 	"os"
+	"sync"
+	"time"
 )
 
 const (
@@ -38,6 +40,10 @@ type Lightmaster struct {
 	tags          []string
 	selectedWords map[string]int
 	counter       int
+
+	entropyMutex         sync.Mutex
+	lastEntropyValueUsed bool
+	lastEntropyValue     float64
 }
 
 func NewLightmaster(webcam *resources.Webcam, gatekeeper *Gatekeeper) *Lightmaster {
@@ -48,6 +54,38 @@ func NewLightmaster(webcam *resources.Webcam, gatekeeper *Gatekeeper) *Lightmast
 		nil,
 		make(map[string]int),
 		0,
+		sync.Mutex{},
+		false,
+		-1.0,
+	}
+}
+
+func (l *Lightmaster) GetEntropy(ctx context.Context) float64 {
+	if l.lastEntropyValue >= 0.0 && !l.lastEntropyValueUsed {
+		l.entropyMutex.Lock()
+		defer l.entropyMutex.Unlock()
+
+		l.lastEntropyValueUsed = true
+		return l.lastEntropyValue
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			log.Info().Msgf("[lightmaster] stop reading entropy, while ctx.Done")
+			return 0.0
+		case <-time.After(time.Second * 5):
+			log.Error().Msgf("[lightmaster] too slow entropy get")
+			return 0.0
+		case <-time.Tick(time.Millisecond * 50):
+			if l.lastEntropyValue >= 0.0 && !l.lastEntropyValueUsed {
+				l.entropyMutex.Lock()
+				defer l.entropyMutex.Unlock()
+
+				l.lastEntropyValueUsed = true
+				return l.lastEntropyValue
+			}
+		}
 	}
 }
 
@@ -86,10 +124,14 @@ func (l *Lightmaster) handleSingleFrame(ctx context.Context, newFrame image.Imag
 	}
 
 	if len(l.lastNFrames) == LastFramesToUse {
-		if entropy, err := l.pipelineEntropy(ctx); err != nil {
+		if _, entropyF, err := l.pipelineEntropy(ctx); err != nil {
 			log.Error().Err(err).Msgf("[lightmaster] failed to notify gate with phase %s", PhaseNoise)
 		} else {
-			l.testEntropy(entropy)
+			l.entropyMutex.Lock()
+			defer l.entropyMutex.Unlock()
+
+			l.lastEntropyValue = entropyF
+			l.lastEntropyValueUsed = false
 		}
 	}
 
@@ -116,30 +158,31 @@ func (l *Lightmaster) extractSquare(frame image.Image) (image.Image, error) {
 	return squareImg, nil
 }
 
-func (l *Lightmaster) pipelineEntropy(ctx context.Context) (uint64, error) {
+func (l *Lightmaster) pipelineEntropy(ctx context.Context) (uint64, float64, error) {
 	noiseImage, err := l.sourceToNoise()
 
 	if err != nil {
-		return 0.0, errors.Wrapf(err, "[lightmaster] failed to transform source to noise")
+		return 0, 0.0, errors.Wrapf(err, "[lightmaster] failed to transform source to noise")
 	} else if err := l.gatekeeper.NotifyEntropyPhase(ctx, noiseImage, PhaseNoise, 0); err != nil {
 		log.Error().Err(err).Msgf("[lightmaster] failed to notify gate with phase %s", PhaseNoise)
 	}
 
 	shrinkedNoise, err := l.shrinkNoise(noiseImage)
 	if err != nil {
-		return 0.0, errors.Wrapf(err, "[lightmaster] failed to shrink noise")
+		return 0, 0.0, errors.Wrapf(err, "[lightmaster] failed to shrink noise")
 	} else if err := l.gatekeeper.NotifyEntropyPhase(ctx, shrinkedNoise, PhaseNoiseShrink, 0); err != nil {
 		log.Error().Err(err).Msgf("[lightmaster] failed to notify gate with phase %s", PhaseNoiseShrink)
 	}
 
-	bytesImage, entropyAnswer, err := l.noiseToBytes(shrinkedNoise)
+	bytesImage, entropyI, err := l.noiseToBytes(shrinkedNoise)
 	if err != nil {
-		return 0.0, errors.Wrapf(err, "[lightmaster] failed noise2bytes")
-	} else if err := l.gatekeeper.NotifyEntropyPhase(ctx, bytesImage, PhaseBytes, entropyAnswer); err != nil {
+		return 0, 0.0, errors.Wrapf(err, "[lightmaster] failed noise2bytes")
+	} else if err := l.gatekeeper.NotifyEntropyPhase(ctx, bytesImage, PhaseBytes, entropyI); err != nil {
 		log.Error().Err(err).Msgf("[lightmaster] failed to notify gate with phase %s", PhaseBytes)
 	}
 
-	return entropyAnswer, nil
+	entropyF := float64(entropyI) / float64(math.MaxUint64)
+	return entropyI, entropyF, nil
 }
 
 func (l *Lightmaster) sourceToNoise() (image.Image, error) {

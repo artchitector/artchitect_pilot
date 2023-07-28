@@ -20,7 +20,7 @@ type spellRepository interface {
 	Save(ctx context.Context, spell model.Spell) (model.Spell, error)
 }
 
-type origin interface {
+type entropy interface {
 	Select(ctx context.Context, totalVariants uint) (uint, error)
 }
 
@@ -29,13 +29,13 @@ Speller generates Spell (combination of painting caption, tags and seed). Card w
 */
 type Speller struct {
 	spellRepository spellRepository
-	origin          origin
+	entropy         entropy
 	notifier        notifier
 	dictionaries    map[string][]string
 }
 
-func NewSpeller(spellRepository spellRepository, origin origin, notifier notifier) *Speller {
-	return &Speller{spellRepository, origin, notifier, make(map[string][]string)}
+func NewSpeller(spellRepository spellRepository, entropy entropy, notifier notifier) *Speller {
+	return &Speller{spellRepository, entropy, notifier, make(map[string][]string)}
 }
 
 func (s *Speller) MakeSpell(ctx context.Context, artistState *model.CreationState) (model.Spell, error) {
@@ -58,7 +58,7 @@ func (s *Speller) generateSpell(ctx context.Context, state *model.CreationState)
 	}
 	state.Version = version
 	s.notify(ctx, state)
-	selection, err := s.origin.Select(ctx, model.MaxSeed)
+	selection, err := s.entropy.Select(ctx, model.MaxSeed)
 	if err != nil {
 		return model.Spell{}, errors.Wrap(err, "[speller] failed to get selection")
 	}
@@ -81,7 +81,7 @@ func (s *Speller) generateTags(ctx context.Context, version string, state *model
 		return []string{}, errors.Wrap(err, "failed to get Dictionary")
 	}
 
-	tagsToTake, err := s.origin.Select(ctx, MaxTags)
+	tagsToTake, err := s.entropy.Select(ctx, MaxTags)
 	tagsToTake += 1 // Select returns [0,MaxTags). Plus 1 is ok
 
 	tags := make([]string, 0, tagsToTake)
@@ -93,7 +93,7 @@ func (s *Speller) generateTags(ctx context.Context, version string, state *model
 
 	allowedTagsLen := uint(len(dictionary))
 	for i := uint(0); i < tagsToTake; i++ {
-		tag, err := s.origin.Select(ctx, allowedTagsLen)
+		tag, err := s.entropy.Select(ctx, allowedTagsLen)
 		if err != nil {
 			return []string{}, errors.Wrap(err, "[speller][generateTags] failed get tag number")
 		}
@@ -143,8 +143,8 @@ func (s *Speller) getDictionary(ctx context.Context, version string) ([]string, 
 
 func (s *Speller) selectVersion(ctx context.Context) (string, error) {
 	count := len(model.AvailableVersions)
-	idx, err := s.origin.Select(ctx, uint(count))
-	return model.AvailableVersions[idx], errors.Wrap(err, "[speller] failed to select version from origin")
+	idx, err := s.entropy.Select(ctx, uint(count))
+	return model.AvailableVersions[idx], errors.Wrap(err, "[speller] failed to select version from entropy")
 }
 
 func (s *Speller) notify(ctx context.Context, state *model.CreationState) {

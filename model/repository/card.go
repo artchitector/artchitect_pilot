@@ -9,17 +9,17 @@ import (
 	"time"
 )
 
-type origin interface {
+type entropy interface {
 	Select(ctx context.Context, totalVariants uint) (uint, error)
 }
 
 type CardRepository struct {
-	db     *gorm.DB
-	origin origin
+	db      *gorm.DB
+	entropy entropy
 }
 
-func NewCardRepository(db *gorm.DB, origin origin) *CardRepository {
-	return &CardRepository{db, origin}
+func NewCardRepository(db *gorm.DB, entropy entropy) *CardRepository {
+	return &CardRepository{db, entropy}
 }
 
 func (pr *CardRepository) GetLastCards(ctx context.Context, count uint) ([]model.Card, error) {
@@ -92,7 +92,7 @@ func (pr *CardRepository) GetOriginSelectedCard(ctx context.Context) (model.Card
 	if err != nil {
 		return model.Card{}, errors.Wrap(err, "[gifter] failed get total cards")
 	}
-	selection, err := pr.origin.Select(ctx, totalCards)
+	selection, err := pr.entropy.Select(ctx, totalCards)
 	if err != nil {
 		return model.Card{}, errors.Wrap(err, "[gifter] failed to select from origin")
 	}
@@ -109,7 +109,7 @@ func (pr *CardRepository) GetOriginSelectedCardByPeriod(ctx context.Context, sta
 	if err != nil {
 		return model.Card{}, errors.Wrapf(err, "[card_repository] failed to get number of cards")
 	}
-	selection, err := pr.origin.Select(ctx, total)
+	selection, err := pr.entropy.Select(ctx, total)
 	if err != nil {
 		return model.Card{}, errors.Wrapf(err, "[card_repository] failed to get selection from origin")
 	}
@@ -130,7 +130,7 @@ func (pr *CardRepository) GetAnyCardIDFromHundred(ctx context.Context, rank uint
 		return 0, errors.Wrapf(err, "[card_repo] failed to get variants from r:%d h:%d", rank, start)
 	}
 	log.Info().Msgf("[card_repo] selected max(id)=%d from r:%d h:%d", variants, rank, start)
-	offset, err := pr.origin.Select(ctx, variants)
+	offset, err := pr.entropy.Select(ctx, variants)
 	if err != nil {
 		return 0, errors.Wrapf(err, "[card_repo] failed to get selection from origin. variants: %d", variants-start)
 	}
