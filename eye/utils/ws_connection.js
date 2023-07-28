@@ -66,6 +66,10 @@ class WsConnection {
       console.log(`${this.logPrefix}: websocket Successfully connected to the echo websocket server ${this.url}`)
       this.reconnectAttempts = 0
       this.emit('onopen', null)
+
+      for (let allowedEvent of this.events) {
+        this.connection.send(`subscribe.${allowedEvent}`)
+      }
     })
     return true
   }

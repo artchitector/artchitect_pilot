@@ -2,10 +2,12 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/artchitector/artchitect/gate/localmodel"
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog/log"
 	"net/http"
+	"strings"
 )
 
 var wsupgrader = websocket.Upgrader{
@@ -33,7 +35,35 @@ func (wh *WebsocketHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	ch, done := wh.listener.EventChannel()
 	defer close(ch)
 
+	subscribedChannels := []string{}
+	go func() {
+		// read messages. channel subscription goes from client
+		for {
+			_, message, err := conn.ReadMessage()
+			if err != nil {
+				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+					log.Error().Err(err).Msgf("[websocket] got error from conn.ReadMessage")
+				} else {
+					log.Warn().Msgf("[websocket] client closed correctly")
+				}
+				done <- struct{}{}
+				break
+			}
+
+			subscribedChannels, err = wh.checkAndSubscribe(subscribedChannels, string(message))
+			if err != nil {
+				log.Error().Err(err).Send()
+				break
+			}
+		}
+	}()
+
 	for event := range ch {
+		// check, if we have subscription in this ws-channel
+		if !wh.isSubscribed(subscribedChannels, event.Name) {
+			continue
+		}
+
 		j, err := json.Marshal(event)
 		if err != nil {
 			log.Error().Err(err).Msgf("[websocket] failed to marshal event")
@@ -47,4 +77,26 @@ func (wh *WebsocketHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Warn().Msgf("[websocket] stopping handler")
+}
+
+func (wh *WebsocketHandler) isSubscribed(channels []string, name string) bool {
+	for _, ch := range channels {
+		if name == ch {
+			return true
+		}
+	}
+	return false
+}
+
+func (wh *WebsocketHandler) checkAndSubscribe(channels []string, s string) ([]string, error) {
+	if wh.isSubscribed(channels, s) {
+		return channels, nil
+	}
+	segments := strings.Split(s, ".")
+	if len(segments) != 2 || segments[0] != "subscribe" {
+		return channels, fmt.Errorf("[websocket] failed to parse message: %s", s)
+	}
+	channels = append(channels, segments[1])
+	log.Info().Msgf("[websocket] subscribe to channel %s", segments[1])
+	return channels, nil
 }

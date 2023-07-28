@@ -71,7 +71,6 @@ export default {
       // В Сердце может находиться не тот компонент, по которому пришло новое сообщение.
       // Такое бывает, когда режим Архитектора переключается на иную задачу
       // (например, нарисовал и пошёл собирать множество)
-      console.log(`${this.logPrefix}: new message`, `channel:${channelName}`, message)
 
       if (channelName !== 'heart' && this.activeComponent !== channelName) {
         this.activeComponent = channelName
