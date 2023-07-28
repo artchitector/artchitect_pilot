@@ -18,7 +18,7 @@
     </div>
     <div class="has-text-centered">
       <h1>Noise</h1>
-      <img v-if="images.noise !== null" :src="`data:image/jpeg;base64, ${images.noise}`"
+      <img v-if="images.noise !== null" :src="`data:image/jpeg;base64, ${images.noise}`" style="height: 256px; width: 256px;"
            alt="loading noise stream"/>
     </div>
     <div class="has-text-centered">

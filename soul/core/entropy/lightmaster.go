@@ -69,7 +69,7 @@ func (l *Lightmaster) StartEntropyReading(ctx context.Context) error {
 }
 
 func (l *Lightmaster) handleSingleFrame(ctx context.Context, newFrame image.Image) error {
-	if err := l.gatekeeper.NotifyEntropyPhase(ctx, newFrame, PhaseSource, 0); err != nil {
+	if err := l.gatekeeper.NotifyEntropyPhase(ctx, l.addBordersOnFrame(newFrame), PhaseSource, 0); err != nil {
 		log.Error().Err(err).Msgf("[lightmaster] failed to notify gate with phase %s", PhaseSource)
 		// not stop
 	}
@@ -172,10 +172,14 @@ func (l *Lightmaster) sourceToNoise() (image.Image, error) {
 				newB *= -1
 			}
 
+			var amplifierRatio int16 = 30 // чем больше, чем меньше цвета будет на картине
+			// ВАЖНО! Усиление и изменение цветов на шумовой картине не влияет на результат. Дальше шум проходит нормализацию,
+			// Абсолютные значение не так важны, всё строится на относительной светимости пикселей.
+			// Цвет можно выбирать по своему вкусу и дизайну
 			noiseColor := color.RGBA{
-				R: uint8(newR * 10),
-				G: uint8(newG * 10),
-				B: uint8(newB * 10),
+				R: uint8(255) - uint8(newR*amplifierRatio),
+				G: uint8(255) - uint8(newG*amplifierRatio),
+				B: uint8(255) - uint8(newB*amplifierRatio),
 				A: 255,
 			}
 			noiseImage.SetRGBA(x, y, noiseColor)
@@ -246,12 +250,12 @@ func (l *Lightmaster) noiseToBytes(noiseImage image.Image) (image.Image, uint64,
 			power = bits.Reverse8(power)
 
 			if power > 128 { // set white
-				bytesImage.Set(x, y, color.RGBA{R: 180, G: 0, B: 0, A: 255})
+				bytesImage.Set(x, y, color.RGBA{R: power, G: 0, B: 0, A: 255})
 
 				byteIndex := x*ResultSize + y
 				entropyAnswer = entropyAnswer | 1<<(63-byteIndex)
 			} else {
-				bytesImage.Set(x, y, color.RGBA{R: 0, G: 0, B: 0, A: 255})
+				bytesImage.Set(x, y, color.RGBA{R: power, G: 0, B: 0, A: 255})
 			}
 		}
 	}
@@ -308,4 +312,35 @@ func (l *Lightmaster) saveWords() {
 	}
 
 	log.Info().Msgf("file saved")
+}
+
+func (l *Lightmaster) addBordersOnFrame(frame image.Image) image.Image {
+	oldBounds := frame.Bounds()
+	if oldBounds.Dx() < SquareSize || oldBounds.Dy() < SquareSize {
+		log.Error().Err(errors.Errorf("[lightmaster] too small image. size is %d and %d", oldBounds.Dx(), oldBounds.Dy())).Send()
+		return frame
+	}
+	squareRect := image.Rect(0, 0, SquareSize, SquareSize)
+	bordersImage := image.NewRGBA(oldBounds)
+
+	leftOffset := (oldBounds.Dx() - squareRect.Dx()) / 2
+	topOffset := (oldBounds.Dy() - squareRect.Dy()) / 2
+	rightOffset := oldBounds.Dx() - leftOffset
+	bottomOffset := oldBounds.Dy() - topOffset
+
+	// Рисуем квадрат на картинке (область вырезания)
+	for x := 0; x < oldBounds.Dx(); x++ {
+		for y := 0; y < oldBounds.Dy(); y++ {
+
+			if (x == leftOffset || x == rightOffset) && y >= topOffset && y <= bottomOffset {
+				bordersImage.Set(x, y, color.RGBA{R: 180, G: 0, B: 0, A: 255})
+			} else if (y == topOffset || y == bottomOffset) && x >= leftOffset && x <= rightOffset {
+				bordersImage.Set(x, y, color.RGBA{R: 180, G: 0, B: 0, A: 255})
+			} else {
+				bordersImage.Set(x, y, frame.At(x, y))
+			}
+		}
+	}
+
+	return bordersImage
 }

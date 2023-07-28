@@ -44,7 +44,7 @@ func (gk *Gatekeeper) NotifyEntropyPhase(
 		fallthrough
 	case PhaseNoise:
 		format = model.ImageTypeJPEG
-		if err := jpeg.Encode(buf, img, &jpeg.Options{Quality: model.QualityS}); err != nil {
+		if err := jpeg.Encode(buf, img, &jpeg.Options{Quality: model.QualityM}); err != nil {
 			return errors.Wrapf(err, "[gatekeeper] failed to make jpeg")
 		}
 	case PhaseNoiseShrink:
