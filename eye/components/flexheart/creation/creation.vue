@@ -64,7 +64,7 @@ export default {
 .wrapper {
   width: 100%;
   height: 100%;
-  padding: 10px;
+  padding: 2px 10px 10px 10px;
 
   letter-spacing: 1px;
   text-transform: uppercase;

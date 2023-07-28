@@ -5,14 +5,17 @@
     </div>
     <div v-else class="heart-heading">
       <entropy v-if="entropy" :entropy="entropy"/>
-      <h1 class="is-size-5 has-text-success has-text-centered">currently creating</h1>
+      <h1 class="is-size-5 has-text-success has-text-centered mb-2">currently creating</h1>
       <div>
         <div class="tags mb-3">
           <span class="tag is-primary">seed={{message.Seed}}</span>
           <span class="tag" v-for="tag in message.Tags">{{ tag }}</span>
         </div>
       </div>
-      <div class="is-size-7 has-text-centered">creating</div>
+      <div class="is-size-7 has-text-centered">
+        creating
+        <span v-if="progress">({{message.CurrentCardPaintTime}}/{{message.LastCardPaintTime}})</span>
+      </div>
       <progress class="progress is-primary" :value="progress" max="100">-</progress>
     </div>
   </div>
@@ -42,8 +45,10 @@ export default {
 <style lang="scss" scoped>
   .progress-view {
     max-width: 800px;
+    min-width: 370px;
     .tags .tag {
-      font-size: 10px;
+      font-size: 9px;
+      letter-spacing: 0px;
     }
   }
 </style>

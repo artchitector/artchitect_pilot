@@ -20,6 +20,7 @@
             artchitect.space
           </NuxtLink>
         </h1>
+        <div class="subtitle">autonomous creative machine</div>
       </header>
       <div id="main">
         <article :style="{'height': `${articleHeight}px`}">
@@ -124,6 +125,10 @@ header {
         color: #2d2d2d;
       }
     }
+  }
+  .subtitle {
+    margin-top: -12px;
+    font-size: 14px;
   }
 }
 #main > article {

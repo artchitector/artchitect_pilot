@@ -1,10 +1,15 @@
 <template>
   <div class="has-text-centered">
     <span class="is-size-7">ENTROPY SENSOR</span><br/>
-    <img v-if="entropy.ImagesEncoded.entropy !== null" :src="`data:image/png;base64, ${entropy.ImagesEncoded.entropy}`"
-         style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading entropy stream"/>
-    <img v-if="entropy.ImagesEncoded.choice !== null" :src="`data:image/png;base64, ${entropy.ImagesEncoded.choice}`"
-         style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading choice stream"/>
+    <NuxtLink :to="localePath('entropy')">
+      <img v-if="entropy.ImagesEncoded.entropy !== null"
+           :src="`data:image/png;base64, ${entropy.ImagesEncoded.entropy}`"
+           style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading entropy stream"/>
+    </NuxtLink>
+    <NuxtLink :to="localePath('entropy')">
+      <img v-if="entropy.ImagesEncoded.choice !== null" :src="`data:image/png;base64, ${entropy.ImagesEncoded.choice}`"
+           style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading choice stream"/>
+    </NuxtLink>
   </div>
 </template>
 
