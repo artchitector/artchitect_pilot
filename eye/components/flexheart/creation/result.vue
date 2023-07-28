@@ -2,7 +2,7 @@
   <div class="result-wrapper">
     <entropy v-if="entropy" :entropy="entropy"/>
     <div class="enjoy-progress">
-      <p class="is-size-5 has-text-success has-text-centered">created dream is
+      <p class="is-size-5 has-text-success has-text-centered">created art is
         <NuxtLink :to="localePath(`/art/${dream_id}`)" class="has-text-info">#{{ dream_id }}</NuxtLink>
       </p>
       <progress class="progress is-warning" :value="progress" max="100">-</progress>

@@ -9,7 +9,7 @@
     <div class="center-column">
       <div class="column-image">
         <div class="link-container">
-          last dream
+          last art
           <NuxtLink :to="localePath(`/art/${last}`)" class="has-text-info">#{{ last }}</NuxtLink>
         </div>
         <div class="image-container">
