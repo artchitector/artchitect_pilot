@@ -3,27 +3,27 @@ package entropy
 import (
 	"context"
 	"fmt"
+	"github.com/artchitector/artchitect/model"
 	"github.com/artchitector/artchitect/soul/resources"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"gopkg.in/yaml.v3"
 	"image"
 	"image/color"
 	"math"
 	"math/bits"
-	"os"
 	"sync"
 	"time"
 )
 
 const (
-	PhaseSource      = "source"
-	PhaseNoise       = "noise"
-	PhaseNoiseShrink = "shrink"
-	PhaseBytes       = "bytes"
-	LastFramesToUse  = 2 // Шум считается между двумя или более кадров
-	SquareSize       = 64 * 7
-	ResultSize       = 8
+	ImageSource  = "source"
+	ImageNoise   = "noise"
+	ImageEntropy = "entropy"
+	ImageChoice  = "choice"
+
+	LastFramesToUse = 2 // Шум считается между двумя или более кадров
+	SquareSize      = 64 * 7
+	ResultSize      = 8
 )
 
 /*
@@ -41,9 +41,12 @@ type Lightmaster struct {
 	selectedWords map[string]int
 	counter       int
 
-	entropyMutex         sync.Mutex
+	entropyMutex sync.Mutex
+
 	lastEntropyValueUsed bool
 	lastEntropyValue     float64
+	lastChoiceValueUsed  bool
+	lastChoiceValue      float64
 }
 
 func NewLightmaster(webcam *resources.Webcam, gatekeeper *Gatekeeper) *Lightmaster {
@@ -54,7 +57,11 @@ func NewLightmaster(webcam *resources.Webcam, gatekeeper *Gatekeeper) *Lightmast
 		nil,
 		make(map[string]int),
 		0,
+
 		sync.Mutex{},
+
+		false,
+		-1.0,
 		false,
 		-1.0,
 	}
@@ -89,6 +96,35 @@ func (l *Lightmaster) GetEntropy(ctx context.Context) float64 {
 	}
 }
 
+func (l *Lightmaster) GetChoice(ctx context.Context) float64 {
+	if l.lastChoiceValue >= 0.0 && !l.lastChoiceValueUsed {
+		l.entropyMutex.Lock()
+		defer l.entropyMutex.Unlock()
+
+		l.lastChoiceValueUsed = true
+		return l.lastChoiceValue
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			log.Info().Msgf("[lightmaster] stop reading entropy, while ctx.Done")
+			return 0.0
+		case <-time.After(time.Second * 5):
+			log.Error().Msgf("[lightmaster] too slow entropy get")
+			return 0.0
+		case <-time.Tick(time.Millisecond * 50):
+			if l.lastChoiceValue >= 0.0 && !l.lastChoiceValueUsed {
+				l.entropyMutex.Lock()
+				defer l.entropyMutex.Unlock()
+
+				l.lastChoiceValueUsed = true
+				return l.lastChoiceValue
+			}
+		}
+	}
+}
+
 /*
 Запускается процесс считывания кадров с веб-камеры и превращение их в float64-число
 */
@@ -107,11 +143,19 @@ func (l *Lightmaster) StartEntropyReading(ctx context.Context) error {
 }
 
 func (l *Lightmaster) handleSingleFrame(ctx context.Context, newFrame image.Image) error {
-	if err := l.gatekeeper.NotifyEntropyPhase(ctx, l.addBordersOnFrame(newFrame), PhaseSource, 0); err != nil {
-		log.Error().Err(err).Msgf("[lightmaster] failed to notify gate with phase %s", PhaseSource)
-		// not stop
+	// step 1. source frame here
+	state := model.EntropyState{
+		IsShort:       false,
+		Images:        make(map[string]image.Image),
+		ImagesEncoded: make(map[string]string),
+		Entropy:       model.EntropyValue{},
+		Choice:        model.EntropyValue{},
 	}
 
+	borderedFrame := l.addBordersOnFrame(newFrame)
+	state.Images["source"] = borderedFrame
+
+	// step 2. extract square image from source
 	square, err := l.extractSquare(newFrame)
 	if err != nil {
 		return errors.Wrap(err, "[lightmaster] failed extract square")
@@ -124,15 +168,21 @@ func (l *Lightmaster) handleSingleFrame(ctx context.Context, newFrame image.Imag
 	}
 
 	if len(l.lastNFrames) == LastFramesToUse {
-		if _, entropyF, err := l.pipelineEntropy(ctx); err != nil {
-			log.Error().Err(err).Msgf("[lightmaster] failed to notify gate with phase %s", PhaseNoise)
+		if err := l.pipelineEntropy(ctx, &state); err != nil {
+			return errors.Wrap(err, "[lightmaster] failed to pipeline entropy")
 		} else {
 			l.entropyMutex.Lock()
 			defer l.entropyMutex.Unlock()
 
-			l.lastEntropyValue = entropyF
+			l.lastEntropyValue = state.Entropy.Float64
 			l.lastEntropyValueUsed = false
+			l.lastChoiceValue = state.Choice.Float64
+			l.lastChoiceValueUsed = false
 		}
+	}
+
+	if err := l.gatekeeper.NotifyEntropyState(ctx, state); err != nil {
+		log.Error().Err(err).Msgf("[lightmaster] failed NotifyEntropyState")
 	}
 
 	return nil
@@ -158,31 +208,32 @@ func (l *Lightmaster) extractSquare(frame image.Image) (image.Image, error) {
 	return squareImg, nil
 }
 
-func (l *Lightmaster) pipelineEntropy(ctx context.Context) (uint64, float64, error) {
+func (l *Lightmaster) pipelineEntropy(ctx context.Context, state *model.EntropyState) error {
 	noiseImage, err := l.sourceToNoise()
 
 	if err != nil {
-		return 0, 0.0, errors.Wrapf(err, "[lightmaster] failed to transform source to noise")
-	} else if err := l.gatekeeper.NotifyEntropyPhase(ctx, noiseImage, PhaseNoise, 0); err != nil {
-		log.Error().Err(err).Msgf("[lightmaster] failed to notify gate with phase %s", PhaseNoise)
+		return errors.Wrapf(err, "[lightmaster] failed sourceToNoise")
+	} else {
+		state.Images[ImageNoise] = noiseImage
 	}
 
-	shrinkedNoise, err := l.shrinkNoise(noiseImage)
+	entropyImage, entropyVal, err := l.noiseToEntropy(noiseImage)
 	if err != nil {
-		return 0, 0.0, errors.Wrapf(err, "[lightmaster] failed to shrink noise")
-	} else if err := l.gatekeeper.NotifyEntropyPhase(ctx, shrinkedNoise, PhaseNoiseShrink, 0); err != nil {
-		log.Error().Err(err).Msgf("[lightmaster] failed to notify gate with phase %s", PhaseNoiseShrink)
+		return errors.Wrapf(err, "[lightmaster] failed noiseToEntropy")
+	} else {
+		state.Images[ImageEntropy] = entropyImage
 	}
+	state.Entropy = l.makeEntropyStruct(entropyVal)
 
-	bytesImage, entropyI, err := l.noiseToBytes(shrinkedNoise)
+	choiceImage, choiceVal, err := l.invertEntropy(entropyImage)
 	if err != nil {
-		return 0, 0.0, errors.Wrapf(err, "[lightmaster] failed noise2bytes")
-	} else if err := l.gatekeeper.NotifyEntropyPhase(ctx, bytesImage, PhaseBytes, entropyI); err != nil {
-		log.Error().Err(err).Msgf("[lightmaster] failed to notify gate with phase %s", PhaseBytes)
+		return errors.Wrapf(err, "[lightmaster] failed invertEntropy")
+	} else {
+		state.Images[ImageChoice] = choiceImage
 	}
+	state.Choice = l.makeEntropyStruct(choiceVal)
 
-	entropyF := float64(entropyI) / float64(math.MaxUint64)
-	return entropyI, entropyF, nil
+	return nil
 }
 
 func (l *Lightmaster) sourceToNoise() (image.Image, error) {
@@ -231,7 +282,7 @@ func (l *Lightmaster) sourceToNoise() (image.Image, error) {
 	return noiseImage, nil
 }
 
-func (l *Lightmaster) shrinkNoise(noiseImage image.Image) (image.Image, error) {
+func (l *Lightmaster) noiseToEntropy(noiseImage image.Image) (image.Image, uint64, error) {
 	noiseBounds := noiseImage.Bounds()
 	resultBounds := image.Rect(0, 0, ResultSize, ResultSize)
 	resultImg := image.NewRGBA(resultBounds)
@@ -266,24 +317,29 @@ func (l *Lightmaster) shrinkNoise(noiseImage image.Image) (image.Image, error) {
 		}
 	}
 
+	var entropyAnswer uint64
 	scale := maxPower - minPower
 	for x := 0; x < resultBounds.Dx(); x++ {
 		for y := 0; y < resultBounds.Dy(); y++ {
 			powerOfPixel := powers[x][y] - minPower // clear extra power
-
+			// TODO Если надо инвертировать entropy - Это здесь!
 			redPower := math.Round(float64(powerOfPixel) / float64(scale) * 255.0)
-
 			resultImg.SetRGBA(x, y, color.RGBA{R: uint8(redPower), G: uint8(0), B: uint8(0), A: 255})
+
+			if redPower >= 128 {
+				byteIndex := x*ResultSize + y
+				entropyAnswer = entropyAnswer | 1<<(63-byteIndex)
+			}
 		}
 	}
 
-	return resultImg, nil
+	return resultImg, entropyAnswer, nil
 }
 
-func (l *Lightmaster) noiseToBytes(noiseImage image.Image) (image.Image, uint64, error) {
+func (l *Lightmaster) invertEntropy(noiseImage image.Image) (image.Image, uint64, error) {
 	bounds := noiseImage.Bounds()
 	bytesImage := image.NewRGBA(bounds)
-	var entropyAnswer uint64
+	var choiceAnswer uint64
 
 	for x := 0; x < bounds.Dx(); x++ {
 		for y := 0; y < bounds.Dy(); y++ {
@@ -292,69 +348,18 @@ func (l *Lightmaster) noiseToBytes(noiseImage image.Image) (image.Image, uint64,
 			power := clr.(color.RGBA).R
 			power = bits.Reverse8(power)
 
-			if power > 128 { // set white
+			if power >= 128 { // set white
 				bytesImage.Set(x, y, color.RGBA{R: power, G: 0, B: 0, A: 255})
 
 				byteIndex := x*ResultSize + y
-				entropyAnswer = entropyAnswer | 1<<(63-byteIndex)
+				choiceAnswer = choiceAnswer | 1<<(63-byteIndex)
 			} else {
 				bytesImage.Set(x, y, color.RGBA{R: power, G: 0, B: 0, A: 255})
 			}
 		}
 	}
 
-	return bytesImage, entropyAnswer, nil
-}
-
-func (l *Lightmaster) testEntropy(entropy uint64) {
-	entropyFl := float64(entropy) / float64(math.MaxUint64)
-
-	if l.tags == nil {
-		yamlFile, err := os.ReadFile("files/tags_v12.yaml")
-		if err != nil {
-			log.Fatal().Err(err).Send()
-		}
-		tags := []string{}
-		err = yaml.Unmarshal(yamlFile, &tags)
-		if err != nil {
-			log.Fatal().Err(err).Send()
-		}
-
-		l.tags = tags
-	}
-
-	targetIndex := int(math.Floor(float64(len(l.tags)) * entropyFl))
-	selectedTag := l.tags[targetIndex]
-
-	if _, ok := l.selectedWords[selectedTag]; !ok {
-		l.selectedWords[selectedTag] = 1
-	} else {
-		l.selectedWords[selectedTag] += 1
-	}
-	l.counter += 1
-
-	if l.counter%100 == 0 {
-		l.saveWords()
-	}
-}
-
-func (l *Lightmaster) saveWords() {
-	f, err := os.Create("test_result.txt")
-	if err != nil {
-		log.Fatal().Err(err).Send()
-	}
-	defer f.Close()
-
-	f.WriteString(fmt.Sprintf("Total words taken = %d\n", l.counter))
-	for _, word := range l.tags {
-		if counter, found := l.selectedWords[word]; found {
-			f.WriteString(fmt.Sprintf("%04d\t%s\n", counter, word))
-		} else {
-			f.WriteString(fmt.Sprintf("%04d\t%s\n", 0, word))
-		}
-	}
-
-	log.Info().Msgf("file saved")
+	return bytesImage, choiceAnswer, nil
 }
 
 func (l *Lightmaster) addBordersOnFrame(frame image.Image) image.Image {
@@ -386,4 +391,12 @@ func (l *Lightmaster) addBordersOnFrame(frame image.Image) image.Image {
 	}
 
 	return bordersImage
+}
+
+func (l *Lightmaster) makeEntropyStruct(value uint64) model.EntropyValue {
+	return model.EntropyValue{
+		Uint64:  value,
+		Float64: float64(value) / float64(math.MaxUint64),
+		Binary:  fmt.Sprintf("%064b", value),
+	}
 }

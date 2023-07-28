@@ -19,7 +19,7 @@ func NewEntropy(lightmaster *Lightmaster) *Entropy {
 */
 
 func (e *Entropy) Select(ctx context.Context, totalElements uint) (uint, error) {
-	entropyF := e.lightmaster.GetEntropy(ctx)
+	entropyF := e.lightmaster.GetChoice(ctx)
 	targetIndex := uint(math.Floor(float64(totalElements) * entropyF))
 
 	return targetIndex, nil

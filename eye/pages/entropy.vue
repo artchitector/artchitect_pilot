@@ -52,8 +52,9 @@
     </p>
     <div class="has-text-centered">
 
-      <img v-if="images.shrink !== null" :src="`data:image/png;base64, ${images.shrink}`"
-           style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading shrink stream"/>
+      <img v-if="images.entropy !== null" :src="`data:image/png;base64, ${images.entropy}`"
+           style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading entropy stream"/>
+      <div>{{entropy.float}}</div>
     </div>
     <p><b>Шаг 4. Инвертированная энтропия (Choice)</b>
       <br/>
@@ -67,9 +68,9 @@
       из словаря.
     </p>
     <div class="has-text-centered">
-      <img v-if="images.bytes !== null" :src="`data:image/png;base64, ${images.bytes}`"
-           style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading bytes stream"/>
-      <br/>
+      <img v-if="images.choice !== null" :src="`data:image/png;base64, ${images.choice}`"
+           style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading choice stream"/>
+      <div>{{choice.float}}</div>
     </div>
     <p>
       <b>Шаг 5. Превращение изображения в число</b>
@@ -79,12 +80,22 @@
       uint64 числом на шкале от 0 до 18446744073709551615. Положение этого числа на шкале и есть точка выбора.
       Далее шкала превращается в float64-число, представляющее шкалу выбора - это дробное число от 0.0 до 1.0, где 0 -
       самый первый элемент в списке, 1.0 - последний элемент, 0.5 - примерно середина списка.
-      <br/>
-      Архитектору хватает нескольких float64-чисел, чтобы принять все решения относительно идеи новой картины.
     </p>
-    <div class="has-text-centered">
-      <span class="is-size-7" v-html="entropy.bytes ? entropy.bytes.match(/.{1,8}/g).join('<br/>') : '-'"></span><br/>
-      <span>Выбранное значение по шкале от 0.0 до 1.0: <b>{{ entropy.float }}</b></span><br/>
+    <div class="columns">
+      <div class="column has-text-centered">
+        <img v-if="images.entropy !== null" :src="`data:image/png;base64, ${images.entropy}`"
+             style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading entropy stream"/>
+        <div class="is-size-7" v-html="entropy.bytes ? entropy.bytes.match(/.{1,8}/g).join('<br/>') : '-'"></div>
+        <div>uint64: {{entropy.int}}</div>
+        <div>float64: <b>{{entropy.float}}</b></div>
+      </div>
+      <div class="column has-text-centered">
+        <img v-if="images.choice !== null" :src="`data:image/png;base64, ${images.choice}`"
+             style="width: 64px; height: 64px; image-rendering: pixelated;" alt="loading choice stream"/>
+        <div class="is-size-7" v-html="choice.bytes ? choice.bytes.match(/.{1,8}/g).join('<br/>') : '-'"></div>
+        <div>uint64: {{choice.int}}</div>
+        <div>float64: <b>{{choice.float}}</b></div>
+      </div>
     </div>
 
   </section>
@@ -106,15 +117,22 @@ export default {
       },
       maintenance: false,
       connection: null,
+
       images: {
         source: null,
         noise: null,
-        shrink: null,
-        bytes: null
+        entropy: null,
+        choice: null
       },
       entropy: {
-        bytes: "",
-        float: 0.0
+        bytes: null,
+        int: null,
+        float: null,
+      },
+      choice: {
+        bytes: null,
+        int: null,
+        float: null,
       }
     }
   },
@@ -160,30 +178,28 @@ export default {
   },
   methods: {
     onMessage(chan, msg) {
-      if (!msg.Image) {
-        return
+      if (msg.Entropy) {
+        this.entropy.bytes = msg.Entropy.Binary
+        this.entropy.float = msg.Entropy.Float64
+        this.entropy.int = msg.Entropy.Uint64
+      } else {
+        this.entropy.bytes = null
+        this.entropy.float = null
+        this.entropy.int = null
       }
 
-      if (msg.EntropyAnswer > 0) {
-        this.entropy.bytes = msg.EntropyAnswerByte
-        this.entropy.float = msg.EntropyAnswer
+      if (msg.Choice) {
+        this.choice.bytes = msg.Choice.Binary
+        this.choice.float = msg.Choice.Float64
+        this.choice.int = msg.Choice.Uint64
+      } else {
+        this.choice.bytes = 0
+        this.choice.float = 0
+        this.choice.int = 0
       }
 
-      switch (msg.Phase) {
-        case 'source':
-          this.images.source = msg.Image
-          break
-        case 'noise':
-          this.images.noise = msg.Image
-          break
-        case 'shrink':
-          this.images.shrink = msg.Image
-          break
-        case 'bytes':
-          this.images.bytes = msg.Image
-          break
-        default:
-          console.warn(`new phase ${msg.Phase}`)
+      for (const imageName in msg.ImagesEncoded) {
+        this.images[imageName] = msg.ImagesEncoded[imageName]
       }
     }
   }

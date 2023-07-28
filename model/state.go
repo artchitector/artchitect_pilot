@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"image"
+	"time"
+)
 
 type CreationState struct {
 	PreviousCardID       uint
@@ -35,13 +38,18 @@ const (
 	ImageTypePNG  = "png"
 )
 
+type EntropyValue struct {
+	Uint64  uint64
+	Float64 float64
+	Binary  string
+}
 type EntropyState struct {
-	Timestamp         time.Time
-	Phase             string
-	Image             string // base64 jpeg-encoded
-	ImageType         string
-	EntropyAnswerByte string
-	EntropyAnswer     float64
+	Timestamp     time.Time
+	IsShort       bool                   // EntropyState can have all full images or only entropy+choice. To reduce useless traffic)
+	Images        map[string]image.Image `json:"-"`
+	ImagesEncoded map[string]string      // base64 encoded images (source, noise, entropy, choice)
+	Entropy       EntropyValue
+	Choice        EntropyValue
 }
 
 const (

@@ -73,7 +73,6 @@ export default {
     this.connection = new WsConnection(process.env.WS_URL, '🧡', ['creation', 'lottery', 'unity'], 10)
 
     this.connection.onmessage((channel, state) => {
-      console.log('🧡: new message', channel, state)
       this.status.error = null
       this.status.reconnecting = null
       this.stateChannel = channel
