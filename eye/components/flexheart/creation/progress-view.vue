@@ -6,13 +6,9 @@
     <div v-else class="heart-heading">
       <entropy v-if="entropy" :entropy="entropy"/>
       <h1 class="is-size-5 has-text-success has-text-centered">currently creating</h1>
-      <div class="mb-3">
-        <div class="is-size-7">Seed-number</div>
-        <span class="tag is-primary">{{ message.Seed }}</span>
-      </div>
       <div>
-        <div class="is-size-7">Keywords</div>
         <div class="tags mb-3">
+          <span class="tag is-primary">seed={{message.Seed}}</span>
           <span class="tag" v-for="tag in message.Tags">{{ tag }}</span>
         </div>
       </div>
