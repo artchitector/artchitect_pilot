@@ -2,12 +2,12 @@
   <div class="wrapper">
     <template v-if="message && message.CardID">
       <result :dream_id="message.CardID" :current-enjoy-time="message.CurrentEnjoyTime"
-              :total-enjoy-time="message.EnjoyTime" :rnd-four="rndFour"/>
+              :total-enjoy-time="message.EnjoyTime" :rnd-four="rndFour" :entropy="entropy"/>
     </template>
 
     <template v-else>
       <div class="wrapper-cell">
-        <progress-view v-if="message" :message="message"/>
+        <progress-view v-if="message" :message="message" :entropy="entropy"/>
       </div>
       <div class="wrapper-cell">
         <lastdream v-if="lastDreamID" :last="lastDreamID" :four="rndFour"/>
@@ -36,6 +36,7 @@ export default {
       message: null,
       lastDreamID: null,
       rndFour: [],
+      entropy: null,
     }
   },
   methods: {
@@ -51,6 +52,8 @@ export default {
         if (msg.Rnd.length > 0) {
           this.rndFour = msg.Rnd
         }
+      } else if (channelName === 'entropy_mini') {
+        this.entropy = msg
       }
     }
   }

@@ -1,5 +1,6 @@
 <template>
   <div class="result-wrapper">
+    <entropy v-if="entropy" :entropy="entropy"/>
     <div class="enjoy-progress">
       <p class="is-size-5 has-text-success has-text-centered">created dream is
         <NuxtLink :to="localePath(`/art/${dream_id}`)" class="has-text-info">#{{ dream_id }}</NuxtLink>
@@ -26,11 +27,12 @@
 import Liker from "@/components/utils/liker.vue";
 import Rnd from "@/components/flexheart/creation/rnd.vue";
 import Rrnd from "@/components/flexheart/creation/rrnd.vue";
+import Entropy from "@/components/flexheart/creation/entropy.vue";
 
 export default {
   name: "result",
-  components: {Rrnd, Rnd, Liker},
-  props: ["dream_id", "totalEnjoyTime", "currentEnjoyTime", "rndFour"],
+  components: {Entropy, Rrnd, Rnd, Liker},
+  props: ["dream_id", "totalEnjoyTime", "currentEnjoyTime", "rndFour", "entropy"],
   computed: {
     progress() {
       if (!this.totalEnjoyTime || !this.currentEnjoyTime) {

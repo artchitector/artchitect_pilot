@@ -4,6 +4,7 @@
       already created #{{message.CardID}}
     </div>
     <div v-else class="heart-heading">
+      <entropy v-if="entropy" :entropy="entropy"/>
       <h1 class="is-size-5 has-text-success has-text-centered">currently creating</h1>
       <div class="mb-3">
         <div class="is-size-7">Seed-number</div>
@@ -15,16 +16,18 @@
           <span class="tag" v-for="tag in message.Tags">{{ tag }}</span>
         </div>
       </div>
-      <div>creating</div>
+      <div class="is-size-7 has-text-centered">creating</div>
       <progress class="progress is-primary" :value="progress" max="100">-</progress>
     </div>
   </div>
 </template>
 
 <script>
+import Entropy from "@/components/flexheart/creation/entropy.vue";
 export default {
   name: "progress-view",
-  props: ["message"],
+  components: {Entropy},
+  props: ["message", "entropy"],
   computed: {
     progress() {
       if (!this.message) {

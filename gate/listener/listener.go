@@ -85,7 +85,6 @@ func (l *Listener) handle(ctx context.Context, msg *redis.Message) error {
 	case model.ChannelLottery:
 	case model.ChannelUnity:
 	case model.ChannelHeart:
-	case model.ChannelEntropy:
 
 	case model.ChannelPrehotCard:
 		if err := l.handlePrehotCard(ctx, msg); err != nil {
@@ -99,6 +98,10 @@ func (l *Listener) handle(ctx context.Context, msg *redis.Message) error {
 	case model.ChannelNewSelection:
 		if err := l.handleNewSelection(ctx, msg); err != nil {
 			return errors.Wrap(err, "[listener] failed to handle new selection")
+		}
+	case model.ChannelEntropy:
+		if err := l.handleEntropy(ctx, msg); err != nil {
+			return errors.Wrap(err, "[listener] failed to handle entropy message")
 		}
 
 	default:
@@ -165,6 +168,31 @@ func (l *Listener) cacheCard(ctx context.Context, cardID uint) error {
 		return errors.Wrapf(err, "[listener] failed to cache card, id=%d", card.ID)
 	}
 
+	return nil
+}
+
+func (l *Listener) handleEntropy(ctx context.Context, msg *redis.Message) error {
+	var state model.EntropyState
+	if err := json.Unmarshal([]byte(msg.Payload), &state); err != nil {
+		return errors.Wrap(err, "[listener] failed to unmarshal entropy")
+	}
+
+	// delete large jpg images and resend message to another channel
+	delete(state.ImagesEncoded, "source")
+	delete(state.ImagesEncoded, "noise")
+
+	if data, err := json.Marshal(state); err != nil {
+		return errors.Wrap(err, "[listener] failed to marshal mini entropy")
+	} else {
+		event := localmodel.Event{
+			Name:    model.ChannelEntropyMini,
+			Payload: string(data),
+		}
+		for _, ch := range l.eventChannels {
+			log.Info().Msgf("send entropy_mini message")
+			l.sendEvent(ctx, ch, event)
+		}
+	}
 	return nil
 }
 

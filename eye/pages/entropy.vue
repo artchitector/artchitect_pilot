@@ -178,7 +178,6 @@ export default {
   },
   methods: {
     onMessage(chan, msg) {
-
       if (msg.Entropy) {
         this.entropy.bytes = msg.Entropy.Binary
         this.entropy.float = msg.Entropy.Float64

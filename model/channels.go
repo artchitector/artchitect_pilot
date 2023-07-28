@@ -10,4 +10,5 @@ const (
 	ChannelUnity        = "unity"
 	ChannelHeart        = "heart"
 	ChannelEntropy      = "entropy"
+	ChannelEntropyMini  = "entropy_mini"
 )

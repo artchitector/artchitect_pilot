@@ -27,7 +27,7 @@ export default {
       },
       maintenance: false,
       connection: null,
-      activeComponent: 'empty',
+      activeComponent: 'empty'
     }
   },
   mounted() {
@@ -35,7 +35,12 @@ export default {
       this.maintenance = true
       return
     }
-    this.connection = new WsConnection(process.env.WS_URL, this.logPrefix, ['creation', 'lottery', 'unity', 'heart'], 100)
+    this.connection = new WsConnection(
+      process.env.WS_URL,
+      this.logPrefix,
+      ['creation', 'lottery', 'unity', 'heart', 'entropy_mini'],
+      100,
+    )
     this.connection.onmessage((channel, message) => {
       this.status.error = null
       this.status.reconnecting = null
@@ -72,7 +77,8 @@ export default {
       // Такое бывает, когда режим Архитектора переключается на иную задачу
       // (например, нарисовал и пошёл собирать множество)
 
-      if (channelName !== 'heart' && this.activeComponent !== channelName) {
+      const extraEvents = ['heart', 'entropy_mini']
+      if (extraEvents.indexOf(channelName) === -1 && this.activeComponent !== channelName) {
         this.activeComponent = channelName
         setTimeout(() => {
           this.$refs[channelName].onMessage(channelName, message)
@@ -80,6 +86,7 @@ export default {
       }
 
       switch (channelName) {
+        case 'entropy_mini':
         case 'creation':
         case 'heart':
           if (this.$refs.creation && this.$refs.creation.onMessage) {
