@@ -19,23 +19,27 @@
 <template>
   <section class="heart">
     <div v-if="maintenance" class="notification is-warning">
-      {{$t('maintenance')}}
+      {{ $t('maintenance') }}
     </div>
     <template v-else>
-      <h3 class="has-text-centered is-size-4">{{$t('heart')}}</h3>
+      <h3 class="has-text-centered is-size-4">
+        <NuxtLink :to="localePath('heart')" class="">
+          {{ $t('heart') }}
+        </NuxtLink>
+      </h3>
       <hr class="divider"/>
       <div v-if="status.error" class="notification is-danger has-text-centered">
-        {{$t('error')}}: {{ status.error.message }}
+        {{ $t('error') }}: {{ status.error.message }}
       </div>
       <div v-else-if="status.reconnecting" class="notification has-text-centered">
         <loader size="s"/>
         <br/>
-        {{$t('connecting')}} {{ status.reconnecting.attempt }}/{{ status.reconnecting.maxAttempts }}
+        {{ $t('connecting') }} {{ status.reconnecting.attempt }}/{{ status.reconnecting.maxAttempts }}
       </div>
       <p v-else-if="!stateChannel" class="notification has-text-centered">
         <loader size="s"/>
         <br/>
-        {{$t('connected')}}
+        {{ $t('connected') }}
       </p>
       <creation v-else-if="stateChannel === 'creation'" :state="state"/>
       <heart-lottery v-else-if="stateChannel === 'lottery'" :state="state"/>

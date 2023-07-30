@@ -1,8 +1,18 @@
+<i18n>
+{
+  "en": {
+    "created_art_is": "created art is"
+  },
+  "ru": {
+    "created_art_is": "создана картина"
+  }
+}
+</i18n>
 <template>
   <div class="result-wrapper">
     <entropy v-if="entropy" :entropy="entropy"/>
     <div class="enjoy-progress">
-      <p class="is-size-5 has-text-success has-text-centered">created art is
+      <p class="is-size-5 has-text-success has-text-centered">{{$t('created_art_is')}}
         <NuxtLink :to="localePath(`/art/${dream_id}`)" class="has-text-info">#{{ dream_id }}</NuxtLink>
       </p>
       <progress class="progress is-warning" :value="progress" max="100">-</progress>
