@@ -27,7 +27,7 @@
 import Liker from "@/components/utils/liker.vue";
 import Rnd from "@/components/flexheart/creation/rnd.vue";
 import Rrnd from "@/components/flexheart/creation/rrnd.vue";
-import Entropy from "@/components/flexheart/creation/entropy.vue";
+import Entropy from "@/components/entropy/entropy.vue";
 
 export default {
   name: "result",

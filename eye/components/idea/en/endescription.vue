@@ -16,7 +16,7 @@
     <a id="how_to_draw"></a>
     <h6>How does Artchitect create a picture without human help?</h6>
     <p>
-      At the very beginning of creative process, Artchitect must make several decisions that determine the essence of
+      At the beginning of creative process, Artchitect must make several decisions that determine the essence of
       the
       picture.
     </p>
@@ -26,20 +26,21 @@
       The idea of the Artchitect project is to give imagination, subconsciousness and creative randomness to machine.
     </blockquote>
     <p class="mb-0">
-      <br/>
-      Artchitect scans surrounding space (via webcam) to get answers to it's questions, what to draw. The frame from the
-      webcam is converted to int64-number (artchitect uses light
-      background noise, extracted from the frame, changing every moment). This is the int64-number the Artchitect needs
-      to make a specific decision.
-      <br/>
-      <br/>
+      For continuous creation Architect is connected to an entropy sensor, from which it receives float64
+      numbers. These numbers are transformed by special selection algorithms into the idea of the picture.
+    </p>
+    <div class="has-text-centered">
+      <entropy v-if="entropy" :entropy="entropy"/>
+      <NuxtLink :to="localePath('entropy')">About entropy sensor</NuxtLink>
+    </div>
+    <p class="mb-1">
       Artchitect constantly communicates with the background space (entropy), asking questions and getting answers.
       <br/>
       <br/>
       If we imagine a dialogue between Artchitect and Entropy, the creation of the picture will look like this:
     </p>
     <p class="pl-4">
-      <br/> <i>Artchitect:</i> Hello! I'm starting to draw a picture #271165.
+      <i>Artchitect:</i> Hello! I'm starting to draw a picture #271165.
       <br/> <i>Entropy:</i> Hi! What do you need to know for this?
       <br/> <i>Artchitect:</i> How many keywords I need to take for a new idea, from 1 to 28 words?
       <br/> <i>Entropy:</i> Take <b>3</b>.
@@ -161,50 +162,54 @@
       The frame-to-number conversion <a
       href="https://github.com/artchitector/artchitect/blob/master/soul/core/origin/driver/webcam.go#L56-L71">algorithm</a>
       is available on github.
-    <div class="has-text-centered">
-      <img src="/one_frame.jpeg" height="480" width="640"/>
-      <br/>
-      <span class="is-size-7">Usual Artchitect's frame - source of int64 number .
+      <div class="has-text-centered">
+        <img src="/one_frame.jpeg" height="480" width="640"/>
+        <br/>
+        <span class="is-size-7">Usual Artchitect's frame - source of int64 number .
 From such frames, where the image does not change for months, Artchitect draws all his arts</span>
-    </div>
+      </div>
 
-    <hr/>
-    <h6>Is there any human control in the process of creating art?</h6>
-    <p>
-      Human cannot interfere in the Artchitect's workflow (there is no such controls), but human sets the
-      initial conditions - transformation algorithms, and, most importantly, defines the Artchitect's dictionary of
-      knowledge. Artchitect can generate ideas only within the set of his knowledge about the real world. Artchitect's
-      dictionary includes more than 1200 different entities and styles from
-      which arts are made.
-      <br/>
-      Current dictionary can be found in
-      <a target="_blank"
-         href="https://github.com/artchitector/artchitect/blob/master/soul/files/tags_v12.yaml">sourcecode</a>. There
-      are multiple versions of dictionary (smaller, larger). Dictionary can be expanded in future to make more various
-      arts.
-    </p>
+      <hr/>
+      <h6>Is there any human control in the process of creating art?</h6>
+      <p>
+        Human cannot interfere in the Artchitect's workflow (there is no such controls), but human sets the
+        initial conditions - transformation algorithms, and, most importantly, defines the Artchitect's dictionary of
+        knowledge. Artchitect can generate ideas only within the set of his knowledge about the real world. Artchitect's
+        dictionary includes more than 1200 different entities and styles from
+        which arts are made.
+        <br/>
+        Current dictionary can be found in
+        <a target="_blank"
+           href="https://github.com/artchitector/artchitect/blob/master/soul/files/tags_v12.yaml">sourcecode</a>. There
+        are multiple versions of dictionary (smaller, larger). Dictionary can be expanded in future to make more various
+        arts.
+      </p>
 
-    <hr/>
-    <h6>Is there a possibility that the machine can
-      create several different pictures that visually will be very similar to each other?</h6>
-    <p>
-      Not every art of Artchitect is pretty and good.
-    </p>
-    <p>
-      In real life Artchitect's paintings are far from perfect. There are combinations where Artchitect creates
-      very similar works. In addition to really beautiful works, there are a
-      significant part that are broken and ugly, often devoid of artistic meaning.<br/>
-      <b>Artchitect is machine, and there are no good and bad pictures for itself.</b>
-    </p>
+      <hr/>
+      <h6>Is there a possibility that the machine can
+        create several different pictures that visually will be very similar to each other?</h6>
+      <p>
+        Not every art of Artchitect is pretty and good.
+      </p>
+      <p>
+        In real life Artchitect's paintings are far from perfect. There are combinations where Artchitect creates
+        very similar works. In addition to really beautiful works, there are a
+        significant part that are broken and ugly, often devoid of artistic meaning.<br/>
+        <b>Artchitect is machine, and there are no good and bad pictures for itself.</b>
+      </p>
 
-    <hr/>
+      <hr/>
 
   </section>
 </template>
 
 <script>
+import Entropy from "@/components/entropy/entropy.vue";
+
 export default {
-  name: "rudescription"
+  name: "rudescription",
+  components: {Entropy},
+  props: ['entropy']
 }
 </script>
 

@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import Entropy from "@/components/flexheart/creation/entropy.vue";
+import Entropy from "@/components/entropy/entropy.vue";
 export default {
   name: "progress-view",
   components: {Entropy},
