@@ -35,6 +35,10 @@ func (u *UnityWorker) Work(ctx context.Context) {
 		return
 	}
 	log.Info().Msgf("[unity_worker] got max %d", max)
+	if max < 100 {
+		log.Warn().Msgf("[unity_worker] not enough arts. need 100 minimum. got %d", max)
+		return
+	}
 	n := math.Ceil(float64(max) / model.Rank10000)
 	for i := 0; i <= int(n); i++ {
 		// когда будет миллионная карточка 1ХХХХХХ, то надо будет сюда не 2 нуля, а 3 нуля добавить и перегенерировать все единства (хз сколько это займёт, неделю?)
