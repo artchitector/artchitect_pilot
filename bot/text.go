@@ -7,9 +7,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-func getTextWithoutCaption(card model.Card) string {
+func getTextWithoutCaption(card model.Art) string {
 	return fmt.Sprintf(
-		"Card #%d. (https://artchitect.space/card/%d)\n\n"+
+		"Art #%d. (https://artchitect.space/card/%d)\n\n"+
 			"Created: %s\n"+
 			"Seed: %d\n"+
 			"Tags: %s",
@@ -21,10 +21,10 @@ func getTextWithoutCaption(card model.Card) string {
 	)
 }
 
-func getTextWithCaption(card model.Card, caption string) string {
+func getTextWithCaption(card model.Art, caption string) string {
 	return fmt.Sprintf(
 		"\"%s\"\n"+
-			"Card #%d. (https://artchitect.space/card/%d)\n\n"+
+			"Art #%d. (https://artchitect.space/card/%d)\n\n"+
 			"Created: %s\n"+
 			"Seed: %d\n"+
 			"Tags: %s",

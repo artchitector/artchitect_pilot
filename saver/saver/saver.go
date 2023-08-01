@@ -13,24 +13,24 @@ import (
 var sizes = []string{model.SizeF, model.SizeM, model.SizeS, model.SizeXS}
 
 type Saver struct {
-	cardsPath string
-	unityPath string
+	cardsPath    string
+	unityPath    string
+	fullsizePath string
 }
 
-func NewSaver(cardsPath string, unityPath string) *Saver {
-	return &Saver{cardsPath, unityPath}
+func NewSaver(cardsPath string, unityPath string, fullsizePath string) *Saver {
+	return &Saver{cardsPath, unityPath, fullsizePath}
 }
 
 /*
 file structure:
-  - all images are in /root/cards folder (specified from .env variable)
-  - every 10k cards is in separate folder: folder=(id % 10000)
-  - card names in these folders:
-    card-56910-f.jpg
-    card-56910-m.jpg
-    card-56910-s.jpg
-    card-56910-xs.jpg
-    these files statically served by nginx, and gate services can take img and proxy it
+  - all images are in /var/artchitect/arts folder (set in env)
+  - 10k-arts is in separate folder folder=(id % 10000)
+  - arts names in these folders:
+    art-56910-f.jpg
+    art-56910-m.jpg
+    art-56910-s.jpg
+    art-56910-xs.jpg
 */
 func (h *Saver) SaveImage(cardID uint, data []byte) error {
 	for _, size := range sizes {
@@ -41,37 +41,64 @@ func (h *Saver) SaveImage(cardID uint, data []byte) error {
 
 		idFolder := fmt.Sprintf("%d", model.GetCardThousand(cardID))
 		folderPath := path.Join(h.cardsPath, idFolder)
-		if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
-			return errors.Wrapf(err, "[saver_upload] failed to create folder")
-		}
+		filename := fmt.Sprintf("art-%d-%s.jpg", cardID, size)
 
-		p := path.Join(folderPath, fmt.Sprintf("card-%d-%s.jpg", cardID, size))
-		err = os.WriteFile(p, resized, os.ModePerm)
+		err = h.saveFile(
+			folderPath,
+			filename,
+			resized,
+		)
 		if err != nil {
-			return errors.Wrapf(err, "[saver_upload] failed to save file %s", p)
+			return err
 		}
 	}
 	return nil
 }
 
-func (h *Saver) SaveUnityImage(filename string, data []byte) error {
+func (h *Saver) SaveUnityImage(unityName string, data []byte) error {
 	for _, size := range sizes {
 		resized, err := resizer.ResizeBytes(data, size)
 		if err != nil {
-			return errors.Wrapf(err, "[saver_upload] failed to resize %s s:%s", filename, size)
+			return errors.Wrapf(err, "[saver_upload] failed to resize %s s:%s", unityName, size)
 		}
 
-		folderPath := path.Join(h.unityPath)
-		if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
-			return errors.Wrapf(err, "[saver_upload] failed to create folder %s", folderPath)
-		}
-
-		p := path.Join(folderPath, fmt.Sprintf("%s-%s.jpg", filename, size))
-		log.Info().Msgf("PATH: %s", p)
-		err = os.WriteFile(p, resized, os.ModePerm)
+		err = h.saveFile(
+			h.unityPath,
+			fmt.Sprintf("unity-%s-%s.jpg", unityName, size),
+			resized,
+		)
 		if err != nil {
-			return errors.Wrapf(err, "[saver_upload] failed to save file %s", p)
+			return err
 		}
+	}
+	return nil
+}
+
+func (h *Saver) SaveFullsizeArt(cardID uint, data []byte) error {
+	idFolder := fmt.Sprintf("%d", model.GetCardThousand(cardID))
+	folderPath := path.Join(h.fullsizePath, idFolder)
+	filename := fmt.Sprintf("art-%d.jpg", cardID)
+
+	err := h.saveFile(
+		folderPath,
+		filename,
+		data,
+	)
+	return err
+}
+
+func (h *Saver) saveFile(folder string, filename string, data []byte) error {
+	folderPath := path.Join(folder)
+	if err := os.MkdirAll(folderPath, os.ModePerm); err != nil {
+		return errors.Wrapf(err, "[saver_upload] failed to create folder %s", folderPath)
+	}
+
+	p := path.Join(folderPath, filename)
+	err := os.WriteFile(p, data, os.ModePerm)
+	if err != nil {
+		return errors.Wrapf(err, "[saver] failed to save file %s", p)
+	} else {
+		log.Info().Msgf("[saver] saved file %s. size=%d", p, len(data))
 	}
 	return nil
 }

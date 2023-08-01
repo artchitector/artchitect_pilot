@@ -13,7 +13,7 @@ type notifier interface {
 }
 
 type cardGiver interface {
-	GetOriginSelectedCard(ctx context.Context) (model.Card, error)
+	GetOriginSelectedCard(ctx context.Context) (model.Art, error)
 }
 
 // HeartState state updates 4-random dreams, sends them to client. Every client have same 4 rnd dreams.

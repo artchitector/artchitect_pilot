@@ -25,7 +25,7 @@ type entropy interface {
 }
 
 /*
-Speller generates Spell (combination of painting caption, tags and seed). Card will be created with this Spell.
+Speller generates Spell (combination of painting caption, tags and seed). Art will be created with this Spell.
 */
 type Speller struct {
 	spellRepository spellRepository

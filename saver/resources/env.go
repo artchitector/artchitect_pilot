@@ -7,10 +7,12 @@ import (
 )
 
 type Env struct {
-	HttpPort  string
-	DbDSN     string
-	CardsPath string
-	UnityPath string
+	HttpPort          string
+	DbDSN             string
+	ArtsPath          string
+	UnityPath         string
+	FullSizePath      string
+	IsFullsizeStorage bool
 }
 
 func initEnv() *Env {
@@ -20,9 +22,11 @@ func initEnv() *Env {
 	}
 
 	return &Env{
-		HttpPort:  os.Getenv("HTTP_PORT"),
-		DbDSN:     os.Getenv("DB_DSN"),
-		CardsPath: os.Getenv("CARDS_PATH"),
-		UnityPath: os.Getenv("UNITY_PATH"),
+		HttpPort:          os.Getenv("HTTP_PORT"),
+		DbDSN:             os.Getenv("DB_DSN"),
+		ArtsPath:          os.Getenv("ARTS_PATH"),
+		UnityPath:         os.Getenv("UNITY_PATH"),
+		FullSizePath:      os.Getenv("FULLSIZE_PATH"),
+		IsFullsizeStorage: os.Getenv("IS_FULLSIZE_STORAGE") == "true",
 	}
 }

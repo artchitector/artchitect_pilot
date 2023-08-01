@@ -17,7 +17,6 @@ import (
 	merciful2 "github.com/artchitector/artchitect/soul/core/merciful"
 	"github.com/artchitector/artchitect/soul/core/saver"
 	spellerService "github.com/artchitector/artchitect/soul/core/speller"
-	"github.com/artchitector/artchitect/soul/core/storage"
 	"github.com/artchitector/artchitect/soul/core/unifier"
 	"github.com/artchitector/artchitect/soul/core/watermark"
 	notifier2 "github.com/artchitector/artchitect/soul/notifier"
@@ -69,18 +68,6 @@ func main() {
 	selectionRepo := repository.NewSelectionRepository(res.GetDB())
 	unityRepo := repository.NewUnityRepository(res.GetDB())
 
-	// s3 storage
-	strg, err := storage.NewS3(
-		res.GetEnv().StorageEnabled,
-		res.GetEnv().MinioHost,
-		res.GetEnv().MinioAccessKey,
-		res.GetEnv().MinioSecretKey,
-		res.GetEnv().MinioBucket,
-	)
-	if err != nil {
-		log.Fatal().Err(err).Send()
-	}
-
 	// speller+artist+creator
 	speller := spellerService.NewSpeller(spellRepo, entrp, notifier)
 	var engine artistService.EngineContract
@@ -89,9 +76,9 @@ func main() {
 	} else {
 		engine = engine2.NewArtistEngine(res.GetEnv().ArtistURL)
 	}
-	sav := saver.NewSaver(res.GetEnv().SaverURL)
+	sav := saver.NewSaver(res.GetEnv().MemorySaverURL, res.GetEnv().StorageSaverURL)
 	watermarkMaker := watermark.NewWatermark()
-	artist := artistService.NewArtist(engine, cardsRepo, notifier, watermarkMaker, strg, sav)
+	artist := artistService.NewArtist(engine, cardsRepo, notifier, watermarkMaker, sav)
 
 	// memory (save images to memory-server)
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
@@ -121,7 +108,7 @@ func main() {
 		notifier,
 		unfr,
 		cardsRepo,
-		res.GetEnv().CardTotalTime,
+		res.GetEnv().ArtTotalTime,
 		res.GetEnv().PrehotDelay,
 	)
 

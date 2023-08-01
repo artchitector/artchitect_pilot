@@ -23,7 +23,7 @@ type memory interface {
 }
 
 type saver interface {
-	SaveUnity(filename string, imgFile []byte) error
+	SaveUnity(ctx context.Context, filename string, imgFile []byte) error
 }
 
 type watermark interface {
@@ -77,7 +77,7 @@ func (c *Combinator) CombineThumb(ctx context.Context, cardIDs []uint, mask stri
 		return errors.Wrapf(err, "failed to encode total jpeg image")
 	}
 	filename := fmt.Sprintf("%s-%d", mask, version)
-	err = c.saver.SaveUnity(filename, buf.Bytes())
+	err = c.saver.SaveUnity(ctx, filename, buf.Bytes())
 	if err != nil {
 		return errors.Wrapf(err, "[combinator] failed to combine total card")
 	}

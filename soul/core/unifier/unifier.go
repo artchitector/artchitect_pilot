@@ -32,7 +32,7 @@ type unityRepository interface {
 type cardRepository interface {
 	GetAnyCardIDFromHundred(ctx context.Context, rank uint, start uint) (uint, error)
 	GetPreviousCardID(ctx context.Context, cardID uint) (uint, error)
-	GetCard(ctx context.Context, ID uint) (model.Card, error)
+	GetCard(ctx context.Context, ID uint) (model.Art, error)
 }
 
 type entropy interface {

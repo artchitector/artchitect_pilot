@@ -20,7 +20,7 @@ type Response struct {
 	Type    string
 	Parent  model.Unity
 	Unities []model.Unity
-	Cards   []model.Card
+	Cards   []model.Art
 }
 
 type UnityHandler struct {
@@ -87,14 +87,14 @@ func (uh *UnityHandler) HandleUnity(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (uh *UnityHandler) getCards(ctx context.Context, unity model.Unity) ([]model.Card, error) {
+func (uh *UnityHandler) getCards(ctx context.Context, unity model.Unity) ([]model.Art, error) {
 	start, err := strconv.Atoi(strings.ReplaceAll(unity.Mask, "X", "0"))
 	if err != nil {
-		return []model.Card{}, errors.Wrapf(err, "[unity_repo] failed to get start of mask %s", unity.Mask)
+		return []model.Art{}, errors.Wrapf(err, "[unity_repo] failed to get start of mask %s", unity.Mask)
 	}
 	end, err := strconv.Atoi(strings.ReplaceAll(unity.Mask, "X", "9"))
 	if err != nil {
-		return []model.Card{}, errors.Wrapf(err, "[unity_repo] failed to get end of mask %s", unity.Mask)
+		return []model.Art{}, errors.Wrapf(err, "[unity_repo] failed to get end of mask %s", unity.Mask)
 	}
 	log.Info().Msgf("[unity_repo] mask %s become range %d-%d", unity.Mask, start, end)
 	return uh.cardsRepository.GetCardsByRange(uint(start), uint(end))

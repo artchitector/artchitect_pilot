@@ -16,20 +16,14 @@ import (
 /*
  1. Saver service saves image in different sized in file system
     file structure:
-    - all images are in /root/cards folder
-    - every 10k cards is in separate folder folder=(id % 10000)
-    - card names in these folders:
-    card-56910-f.jpg
-    card-56910-m.jpg
-    card-56910-s.jpg
-    card-56910-xs.jpg
+    - all images are in /var/artchitect/arts folder (set in env)
+    - 10k-arts is in separate folder folder=(id % 10000)
+    - arts names in these folders:
+    art-56910-f.jpg
+    art-56910-m.jpg
+    art-56910-s.jpg
+    art-56910-xs.jpg
     these files statically served by nginx, and gate services can take img and proxy it
- 2. NO DIRECT CONNECTIONS FROM CLIENTS.
-    Sometimes saver will be under VPN with only internal access
-    Gate take jpg and proxy it to the client
- 3. No image storage inside database. Database is lightweight - not binaries.
-    ID is universal to get any file
- 4. Initial scripts to download images from database and put it as files (one time script)
 */
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
@@ -39,8 +33,8 @@ func main() {
 
 	res := resources.InitResources()
 	log.Info().Msg("service gate started")
-	svr := saver.NewSaver(res.GetEnv().CardsPath, res.GetEnv().UnityPath)
-	uploadHandler := handler.NewUploadHandler(svr)
+	svr := saver.NewSaver(res.GetEnv().ArtsPath, res.GetEnv().UnityPath, res.GetEnv().FullSizePath)
+	uploadHandler := handler.NewUploadHandler(svr, res.GetEnv().IsFullsizeStorage)
 
 	go func() {
 		r := gin.Default()
@@ -51,8 +45,9 @@ func main() {
 		if err := r.SetTrustedProxies([]string{"127.0.0.1"}); err != nil {
 			log.Fatal().Err(err).Send()
 		}
-		r.POST("/upload", uploadHandler.Handle)
+		r.POST("/upload_art", uploadHandler.Handle)
 		r.POST("/upload_unity", uploadHandler.HandleUnity)
+		r.POST("/upload_fullsize", uploadHandler.HandleFullsize)
 		if err := r.Run("0.0.0.0:" + res.GetEnv().HttpPort); err != nil {
 			log.Fatal().Err(err).Send()
 		}

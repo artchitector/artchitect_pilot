@@ -82,16 +82,16 @@ func (f *Filler) makeWork(ctx context.Context) (bool, error) {
 	return false, nil
 }
 
-func (f *Filler) GetNextNotUploadedCard() (model.Card, model.Image, error) {
-	var card model.Card
+func (f *Filler) GetNextNotUploadedCard() (model.Art, model.Image, error) {
+	var card model.Art
 	var image model.Image
 	err := f.db.Where("uploaded_to_storage = false").Order("id asc").Limit(1).First(&card).Error
 	if err != nil {
-		return model.Card{}, model.Image{}, err
+		return model.Art{}, model.Image{}, err
 	}
 	err = f.db.Where("card_id = ?", card.ID).First(&image).Error
 	if err != nil {
-		return model.Card{}, model.Image{}, err
+		return model.Art{}, model.Image{}, err
 	}
 	return card, image, nil
 }
@@ -101,7 +101,7 @@ func (f *Filler) SaveImage(img model.Image) (model.Image, error) {
 	return img, err
 }
 
-func (f *Filler) SaveCard(card model.Card) (model.Card, error) {
+func (f *Filler) SaveCard(card model.Art) (model.Art, error) {
 	err := f.db.Save(&card).Error
 	return card, err
 }

@@ -86,7 +86,7 @@ func (e *Enhotter) ReloadCardWithoutImage(ctx context.Context, cardID uint) {
 	log.Info().Msgf("[enhotter] reloaded card %d", card.ID)
 }
 
-func (e *Enhotter) cacheCard(ctx context.Context, card model.Card) {
+func (e *Enhotter) cacheCard(ctx context.Context, card model.Art) {
 	if err := e.cache.SaveCard(ctx, card); err != nil {
 		log.Error().Msgf("[enhotter] failed to saveCard %d", card.ID)
 	}

@@ -5,7 +5,7 @@ import (
 )
 
 // TODO split card table and raw image data into separate tables and migrate database
-type Card struct {
+type Art struct {
 	gorm.Model
 	SpellID           uint
 	Spell             Spell

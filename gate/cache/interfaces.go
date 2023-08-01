@@ -6,8 +6,8 @@ import (
 )
 
 type cardRepository interface {
-	GetCard(ctx context.Context, ID uint) (model.Card, error)
-	GetLastCards(ctx context.Context, count uint) ([]model.Card, error)
+	GetCard(ctx context.Context, ID uint) (model.Art, error)
+	GetLastCards(ctx context.Context, count uint) ([]model.Art, error)
 }
 
 type selectionRepository interface {

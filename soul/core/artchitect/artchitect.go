@@ -13,7 +13,7 @@ type notifier interface {
 }
 
 type creator interface {
-	CreateWithEnjoy(ctx context.Context) (model.Card, error)
+	CreateWithEnjoy(ctx context.Context) (model.Art, error)
 }
 
 type merciful interface {

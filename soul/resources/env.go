@@ -20,21 +20,18 @@ type Env struct {
 	StorageEnabled       bool
 
 	// external resources
-	DbDSN          string
-	RedisHostRU    string
-	RedisHostEU    string
-	RedisPassword  string
-	OriginURL      string
-	ArtistURL      string
-	SaverURL       string
-	MemoryHost     string
-	MinioHost      string
-	MinioAccessKey string
-	MinioSecretKey string
-	MinioBucket    string
+	DbDSN           string
+	RedisHostRU     string
+	RedisHostEU     string
+	RedisPassword   string
+	OriginURL       string
+	ArtistURL       string
+	MemorySaverURL  string
+	MemoryHost      string
+	StorageSaverURL string
 
 	// settings
-	CardTotalTime      uint
+	ArtTotalTime       uint
 	PrehotDelay        uint
 	FakeGenerationTime uint
 
@@ -52,8 +49,8 @@ func initEnv() *Env {
 		log.Fatal().Err(err).Send()
 	}
 
-	cardTotalTimeStr := os.Getenv("CARD_TOTAL_TIME")
-	cardTotalTime, err := strconv.Atoi(cardTotalTimeStr)
+	artTotalTimeStr := os.Getenv("ART_TOTAL_TIME")
+	artTotalTime, err := strconv.Atoi(artTotalTimeStr)
 	if err != nil {
 		log.Fatal().Err(err)
 	}
@@ -86,20 +83,17 @@ func initEnv() *Env {
 		TelegramABotEnabled:  os.Getenv("TELEGRAM_ABOT_ENABLE") == "true",
 		StorageEnabled:       os.Getenv("STORAGE_ENABLED") == "true",
 
-		DbDSN:          os.Getenv("DB_DSN"),
-		RedisHostRU:    os.Getenv("REDIS_HOST_RU"),
-		RedisHostEU:    os.Getenv("REDIS_HOST_EU"),
-		RedisPassword:  os.Getenv("REDIS_PASSWORD"),
-		OriginURL:      os.Getenv("ORIGIN_URL"),
-		ArtistURL:      os.Getenv("ARTIST_URL"),
-		MemoryHost:     os.Getenv("MEMORY_HOST"),
-		MinioHost:      os.Getenv("MINIO_HOST"),
-		MinioAccessKey: os.Getenv("MINIO_ACCESS_KEY"),
-		MinioSecretKey: os.Getenv("MINIO_SECRET_KEY"),
-		MinioBucket:    os.Getenv("MINIO_BUCKET"),
-		SaverURL:       os.Getenv("SAVER_URL"),
+		DbDSN:           os.Getenv("DB_DSN"),
+		RedisHostRU:     os.Getenv("REDIS_HOST_RU"),
+		RedisHostEU:     os.Getenv("REDIS_HOST_EU"),
+		RedisPassword:   os.Getenv("REDIS_PASSWORD"),
+		OriginURL:       os.Getenv("ORIGIN_URL"),
+		ArtistURL:       os.Getenv("ARTIST_URL"),
+		MemoryHost:      os.Getenv("MEMORY_HOST"),
+		MemorySaverURL:  os.Getenv("SAVER_URL"),
+		StorageSaverURL: os.Getenv("STORAGE_SAVER_URL"),
 
-		CardTotalTime:      uint(cardTotalTime),
+		ArtTotalTime:       uint(artTotalTime),
 		PrehotDelay:        uint(prehotDelay),
 		FakeGenerationTime: uint(fakeGenerationTime),
 

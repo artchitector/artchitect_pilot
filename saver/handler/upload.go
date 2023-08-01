@@ -15,57 +15,67 @@ type UploadRequest struct {
 }
 
 type saver interface {
-	SaveImage(cardID uint, data []byte) error
+	SaveImage(artID uint, data []byte) error
 	SaveUnityImage(filename string, data []byte) error
+	SaveFullsizeArt(artID uint, data []byte) error
 }
 
 type UploadHandler struct {
-	saver saver
+	saver             saver
+	isFullsizeStorage bool
 }
 
-func NewUploadHandler(saver saver) *UploadHandler {
-	return &UploadHandler{saver}
+func NewUploadHandler(saver saver, isFullsizeStorage bool) *UploadHandler {
+	return &UploadHandler{saver, isFullsizeStorage}
 }
 
 func (h *UploadHandler) Handle(c *gin.Context) {
-	// single file
-	file, err := c.FormFile("file")
-	if err != nil {
-		log.Error().Err(err).Msgf("[upload:card] failed to get file")
-		c.String(http.StatusBadRequest, errors.Wrap(err, "[saver_upload] failed to get file from form").Error())
-		return
-	}
-	cardIdStr := c.PostForm("card_id")
-	if cardIdStr == "" {
-		log.Error().Msgf("[upload:card] card_id must be integer")
-		c.String(http.StatusBadRequest, "card_id must be integer")
-		return
-	}
-	cardID, err := strconv.Atoi(cardIdStr)
-	if err != nil {
-		log.Error().Msgf("[upload:card] card_id must be integer")
+	if h.isFullsizeStorage {
+		err := errors.New("[upload:art] is fullsize storage. arts save forbidden")
+		log.Error().Err(err).Send()
+		c.Status(http.StatusForbidden)
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	log.Info().Msgf("[saver_upload] incoming transmission for card id=%d", cardID)
+	// single file
+	file, err := c.FormFile("file")
+	if err != nil {
+		log.Error().Err(err).Msgf("[upload:art] failed to get file")
+		c.String(http.StatusBadRequest, errors.Wrap(err, "[saver_upload] failed to get file from form").Error())
+		return
+	}
+	artIdStr := c.PostForm("art_id")
+	if artIdStr == "" {
+		log.Error().Msgf("[upload:art] art_id must be integer")
+		c.String(http.StatusBadRequest, "art_id must be integer")
+		return
+	}
+	artID, err := strconv.Atoi(artIdStr)
+	if err != nil {
+		log.Error().Msgf("[upload:art] art_id must be integer")
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	log.Info().Msgf("[saver_upload] incoming transmission for art id=%d", artID)
 
 	f, err := file.Open()
 	if err != nil {
-		log.Error().Err(err).Msgf("[upload:card] failed to to open file")
+		log.Error().Err(err).Msgf("[upload:art] failed to to open file")
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	data, err := io.ReadAll(f)
 	if err != nil {
-		log.Error().Err(err).Msgf("[upload:card] failed to io readAll")
+		log.Error().Err(err).Msgf("[upload:art] failed to io readAll")
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	if err := h.saver.SaveImage(uint(cardID), data); err != nil {
-		log.Error().Err(err).Msgf("[upload:card] failed SaveImage card_id=%d", cardID)
+	if err := h.saver.SaveImage(uint(artID), data); err != nil {
+		log.Error().Err(err).Msgf("[upload:art] failed SaveArt art_id=%d", artID)
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -74,6 +84,14 @@ func (h *UploadHandler) Handle(c *gin.Context) {
 }
 
 func (h *UploadHandler) HandleUnity(c *gin.Context) {
+	if h.isFullsizeStorage {
+		err := errors.New("[upload:art] is fullsize storage. unity save forbidden")
+		log.Error().Err(err).Send()
+		c.Status(http.StatusForbidden)
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	// single file
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -111,6 +129,60 @@ func (h *UploadHandler) HandleUnity(c *gin.Context) {
 	}
 
 	log.Info().Msgf("[upload:HandleHundred] finished save %s", filename)
+
+	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+}
+
+func (h *UploadHandler) HandleFullsize(c *gin.Context) {
+	if !h.isFullsizeStorage {
+		err := errors.New("[upload:art] is NOT fullsize storage. fullsize save forbidden")
+		log.Error().Err(err).Send()
+		c.Status(http.StatusForbidden)
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// single file
+	file, err := c.FormFile("file")
+	if err != nil {
+		log.Error().Err(err).Msgf("[upload:fullsize_art] failed to get file")
+		c.String(http.StatusBadRequest, errors.Wrap(err, "[saver_upload] failed to get file from form").Error())
+		return
+	}
+	artIdStr := c.PostForm("art_id")
+	if artIdStr == "" {
+		log.Error().Msgf("[upload:fullsize_art] art_id must be integer")
+		c.String(http.StatusBadRequest, "art_id must be integer")
+		return
+	}
+	artID, err := strconv.Atoi(artIdStr)
+	if err != nil {
+		log.Error().Msgf("[upload:fullsize_art] art_id must be integer")
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	log.Info().Msgf("[saver_upload] incoming fullsize transmission for art id=%d", artID)
+
+	f, err := file.Open()
+	if err != nil {
+		log.Error().Err(err).Msgf("[upload:fullsize_art] failed to to open file")
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	data, err := io.ReadAll(f)
+	if err != nil {
+		log.Error().Err(err).Msgf("[upload:fullsize_art] failed to io readAll")
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if err := h.saver.SaveImage(uint(artID), data); err != nil {
+		log.Error().Err(err).Msgf("[upload:fullsize_art] failed SaveArt art_id=%d", artID)
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 }

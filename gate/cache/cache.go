@@ -36,27 +36,27 @@ func (c *Cache) Flushall(ctx context.Context) error {
 	return c.rdb.FlushAll(ctx).Err()
 }
 
-func (c *Cache) GetLastCards(ctx context.Context, count uint) ([]model.Card, error) {
+func (c *Cache) GetLastCards(ctx context.Context, count uint) ([]model.Art, error) {
 	start := int64(0)
 	stop := int64(count - 1)
 	result := c.rdb.LRange(ctx, KeyLastCards, start, stop)
 	if err := result.Err(); err != nil {
-		return []model.Card{}, errors.Wrapf(err, "[cache] failed to get LRange %d-%d", start, stop)
+		return []model.Art{}, errors.Wrapf(err, "[cache] failed to get LRange %d-%d", start, stop)
 	}
 
 	ids := make([]uint, 0, count)
 	if err := result.ScanSlice(&ids); err != nil {
-		return []model.Card{}, errors.Wrapf(err, "[cache] failed to scan slice")
+		return []model.Art{}, errors.Wrapf(err, "[cache] failed to scan slice")
 	}
 
 	if len(ids) < int(count) {
-		return []model.Card{}, errors.Errorf("[cache] requested cards count %d, but found only %d", count, len(ids))
+		return []model.Art{}, errors.Errorf("[cache] requested cards count %d, but found only %d", count, len(ids))
 	}
 
-	cards := make([]model.Card, 0, count)
+	cards := make([]model.Art, 0, count)
 	for _, id := range ids {
 		if card, err := c.GetCard(ctx, id); err != nil {
-			return []model.Card{}, errors.Wrapf(err, "[cache] not found cached card for last cards list. List: %+v, CardID: %d", ids, id)
+			return []model.Art{}, errors.Wrapf(err, "[cache] not found cached card for last cards list. List: %+v, CardID: %d", ids, id)
 		} else {
 			cards = append(cards, card)
 		}
@@ -65,25 +65,25 @@ func (c *Cache) GetLastCards(ctx context.Context, count uint) ([]model.Card, err
 	return cards, nil
 }
 
-func (c *Cache) GetCard(ctx context.Context, ID uint) (model.Card, error) {
+func (c *Cache) GetCard(ctx context.Context, ID uint) (model.Art, error) {
 	result := c.rdb.Get(ctx, fmt.Sprintf(KeyCard, ID))
 	if err := result.Err(); err == redis.Nil {
-		return model.Card{}, ErrorNotFound
+		return model.Art{}, ErrorNotFound
 	} else if err != nil {
-		return model.Card{}, errors.Wrapf(err, "[cache] failed to get card(id=%d)", ID)
+		return model.Art{}, errors.Wrapf(err, "[cache] failed to get card(id=%d)", ID)
 	}
 	str, err := result.Result()
 	if err != nil {
-		return model.Card{}, errors.Wrapf(err, "[cache] failed to get string content of card(id=%d)", ID)
+		return model.Art{}, errors.Wrapf(err, "[cache] failed to get string content of card(id=%d)", ID)
 	}
-	var card model.Card
+	var card model.Art
 	if err := json.Unmarshal([]byte(str), &card); err != nil {
-		return model.Card{}, errors.Wrapf(err, "[cache] failed to unmarshal content of card(id=%d)", ID)
+		return model.Art{}, errors.Wrapf(err, "[cache] failed to unmarshal content of card(id=%d)", ID)
 	}
 	return card, nil
 }
 
-func (c *Cache) RefreshLastCards(ctx context.Context, cards []model.Card) error {
+func (c *Cache) RefreshLastCards(ctx context.Context, cards []model.Art) error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -115,7 +115,7 @@ func (c *Cache) RefreshLastCards(ctx context.Context, cards []model.Card) error 
 	return nil
 }
 
-func (c *Cache) SaveCard(ctx context.Context, card model.Card) error {
+func (c *Cache) SaveCard(ctx context.Context, card model.Art) error {
 	str, err := json.Marshal(card)
 	if err != nil {
 		return errors.Wrapf(err, "[cache] failed to marshal card(id=%d)", card.ID)

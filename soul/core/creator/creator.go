@@ -11,14 +11,14 @@ import (
 
 type artist interface {
 	// TODO need to get image, not card. Artist is too complex
-	GetCard(ctx context.Context, spell model.Spell, artistState *model.CreationState) (model.Card, error)
+	GetArt(ctx context.Context, spell model.Spell, artistState *model.CreationState) (model.Art, error)
 }
 type speller interface {
 	MakeSpell(ctx context.Context, artistState *model.CreationState) (model.Spell, error)
 }
 type notifier interface {
-	NotifyPrehotCard(ctx context.Context, card model.Card) error
-	NotifyNewCard(ctx context.Context, card model.Card) error
+	NotifyPrehotCard(ctx context.Context, card model.Art) error
+	NotifyNewCard(ctx context.Context, card model.Art) error
 	NotifyCreationState(ctx context.Context, state model.CreationState) error
 }
 
@@ -30,7 +30,7 @@ type maxCardGetter interface {
 	GetMaxCardID(ctx context.Context) (uint, error)
 }
 
-// Creator used to make new Card with no input data. Used by Artchitect and Merciful
+// Creator used to make new Art with no input data. Used by Artchitect and Merciful
 type Creator struct {
 	mutex         sync.Mutex
 	artist        artist
@@ -63,7 +63,7 @@ func NewCreator(
 	}
 }
 
-func (c *Creator) CreateWithoutEnjoy(ctx context.Context) (model.Card, error) {
+func (c *Creator) CreateWithoutEnjoy(ctx context.Context) (model.Art, error) {
 	log.Info().Msgf("[creator] start card creation without enjoy")
 
 	state := model.CreationState{}
@@ -72,7 +72,7 @@ func (c *Creator) CreateWithoutEnjoy(ctx context.Context) (model.Card, error) {
 	return card, errors.Wrap(err, "[creator] failed to create card without enjoy")
 }
 
-func (c *Creator) CreateWithEnjoy(ctx context.Context) (model.Card, error) {
+func (c *Creator) CreateWithEnjoy(ctx context.Context) (model.Art, error) {
 	log.Info().Msgf("[creator] start card creation with enjoy")
 	cardStart := time.Now()
 
@@ -86,7 +86,7 @@ func (c *Creator) CreateWithEnjoy(ctx context.Context) (model.Card, error) {
 
 	card, err := c.create(ctx, &state)
 	if err != nil {
-		return model.Card{}, errors.Wrap(err, "[creator] failed to create card with enjoy")
+		return model.Art{}, errors.Wrap(err, "[creator] failed to create card with enjoy")
 	}
 
 	if err := c.enjoy(ctx, &state, cardStart); err != nil {
@@ -96,7 +96,7 @@ func (c *Creator) CreateWithEnjoy(ctx context.Context) (model.Card, error) {
 	return card, nil
 }
 
-func (c *Creator) create(ctx context.Context, state *model.CreationState) (model.Card, error) {
+func (c *Creator) create(ctx context.Context, state *model.CreationState) (model.Art, error) {
 	// only one creation process at same time
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -109,14 +109,14 @@ func (c *Creator) create(ctx context.Context, state *model.CreationState) (model
 	// generate Spell (base for card)
 	spell, err := c.speller.MakeSpell(ctx, state)
 	if err != nil {
-		return model.Card{}, err
+		return model.Art{}, err
 	}
 	log.Info().Msgf("[creator] got spell: %+v", spell)
 
 	// paint card in artist
-	card, err := c.artist.GetCard(ctx, spell, state)
+	card, err := c.artist.GetArt(ctx, spell, state)
 	if err != nil {
-		return model.Card{}, err
+		return model.Art{}, err
 	}
 	log.Info().Msgf("[creator] got card: id=%d, spell_id=%d", card.ID, spell.ID)
 

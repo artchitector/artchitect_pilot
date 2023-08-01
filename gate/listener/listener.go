@@ -13,12 +13,12 @@ import (
 )
 
 type cache interface {
-	SaveCard(ctx context.Context, card model.Card) error
+	SaveCard(ctx context.Context, card model.Art) error
 	PrependLastCardID(ctx context.Context, ID uint) error
 }
 
 type cardRepository interface {
-	GetCard(ctx context.Context, ID uint) (model.Card, error)
+	GetCard(ctx context.Context, ID uint) (model.Art, error)
 }
 
 type memory interface {
@@ -117,7 +117,7 @@ func (l *Listener) handle(ctx context.Context, msg *redis.Message) error {
 }
 
 func (l *Listener) handleNewCard(ctx context.Context, msg *redis.Message) error {
-	var card model.Card
+	var card model.Art
 	if err := json.Unmarshal([]byte(msg.Payload), &card); err != nil {
 		return errors.Wrap(err, "[listener] failed to unmarshal new card")
 	}
@@ -135,7 +135,7 @@ func (l *Listener) handleNewCard(ctx context.Context, msg *redis.Message) error 
 }
 
 func (l *Listener) handlePrehotCard(ctx context.Context, msg *redis.Message) error {
-	var card model.Card
+	var card model.Art
 	if err := json.Unmarshal([]byte(msg.Payload), &card); err != nil {
 		return errors.Wrap(err, "[listener] failed to unmarshal new card")
 	}

@@ -10,7 +10,7 @@ import (
 
 type cardRepository interface {
 	GetTotalCards(ctx context.Context) (uint, error)
-	GetCardWithOffset(offset uint) (model.Card, error)
+	GetCardWithOffset(offset uint) (model.Art, error)
 }
 
 type entropy interface {

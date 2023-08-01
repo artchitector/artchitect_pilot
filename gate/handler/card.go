@@ -30,7 +30,7 @@ func (ch *CardHandler) Handle(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var card model.Card
+	var card model.Art
 	var err error
 	card, err = ch.cache.GetCard(c, uint(request.ID))
 	if err != nil {

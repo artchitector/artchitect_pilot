@@ -10,7 +10,7 @@ import (
 )
 
 type creator interface {
-	CreateWithoutEnjoy(ctx context.Context) (model.Card, error)
+	CreateWithoutEnjoy(ctx context.Context) (model.Art, error)
 }
 
 type prayRepository interface {
@@ -20,7 +20,7 @@ type prayRepository interface {
 }
 
 type notifier interface {
-	NotifyNewCard(ctx context.Context, card model.Card) error
+	NotifyNewCard(ctx context.Context, card model.Art) error
 	NotifyCreationState(ctx context.Context, state model.CreationState) error
 }
 

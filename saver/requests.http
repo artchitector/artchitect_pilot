@@ -3,7 +3,7 @@ POST http://localhost:8083/upload
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
-Content-Disposition: form-data; name="card_id"
+Content-Disposition: form-data; name="art_id"
 Content-Type: text/plain
 
 1000

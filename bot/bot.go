@@ -20,9 +20,9 @@ const (
 )
 
 type cardRepository interface {
-	GetCard(ctx context.Context, cardID uint) (model.Card, error)
-	GetOriginSelectedCard(ctx context.Context) (model.Card, error)
-	GetOriginSelectedCardByPeriod(ctx context.Context, start time.Time, end time.Time) (model.Card, error)
+	GetCard(ctx context.Context, cardID uint) (model.Art, error)
+	GetOriginSelectedCard(ctx context.Context) (model.Art, error)
+	GetOriginSelectedCardByPeriod(ctx context.Context, start time.Time, end time.Time) (model.Art, error)
 }
 
 type memory interface {
@@ -123,7 +123,7 @@ func (t *Bot) sendCardBack(ctx context.Context, cardID uint, chatID string) erro
 	return t.sendCard(ctx, card, img, getTextWithoutCaption(card), chatID)
 }
 
-func (t *Bot) sendCard(ctx context.Context, card model.Card, img []byte, text string, chatID string) error {
+func (t *Bot) sendCard(ctx context.Context, card model.Art, img []byte, text string, chatID string) error {
 	if t.bot == nil {
 		return errors.Errorf("[bot] not initialized")
 	}
@@ -142,15 +142,15 @@ func (t *Bot) sendCard(ctx context.Context, card model.Card, img []byte, text st
 	return nil
 }
 
-func (t *Bot) getCard(ctx context.Context, cardID uint) (model.Card, []byte, error) {
+func (t *Bot) getCard(ctx context.Context, cardID uint) (model.Art, []byte, error) {
 	card, err := t.cardRepository.GetCard(ctx, cardID)
 	if err != nil {
-		return model.Card{}, nil, errors.Wrapf(err, "[bot] failed to GetCard %d", cardID)
+		return model.Art{}, nil, errors.Wrapf(err, "[bot] failed to GetArt %d", cardID)
 	}
 
 	image, err := t.memory.DownloadImage(ctx, cardID, model.SizeF)
 	if err != nil {
-		return model.Card{}, nil, errors.Wrapf(err, "[bot] failed to get image for card %d", card.ID)
+		return model.Art{}, nil, errors.Wrapf(err, "[bot] failed to get image for card %d", card.ID)
 	}
 	return card, image, nil
 }
@@ -205,7 +205,7 @@ func (t *Bot) giveHandler(ctx context.Context, b *bot.Bot, update *models.Update
 		return
 	}
 
-	var card model.Card
+	var card model.Art
 	var err error
 	args := t.parseArguments(update.Message.Text)
 	if len(args) == 0 {

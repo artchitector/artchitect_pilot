@@ -22,42 +22,38 @@ type notifier interface {
 }
 
 type watermark interface {
-	AddCardWatermark(originalImage image.Image, cardID uint) (image.Image, error)
+	AddArtWatermark(originalImage image.Image, artID uint) (image.Image, error)
 }
 
-type cardRepository interface {
-	SaveCard(ctx context.Context, painting model.Card) (model.Card, error)
-	GetLastCardPaintTime(ctx context.Context) (uint, error)
-	DeleteCard(ctx context.Context, cardID uint) error
-}
-
-type storage interface {
-	Upload(ctx context.Context, filename string, file []byte) error
+type artRepository interface {
+	SaveArt(ctx context.Context, painting model.Art) (model.Art, error)
+	GetLastArtPaintTime(ctx context.Context) (uint, error)
+	DeleteArt(ctx context.Context, artID uint) error
 }
 
 type saver interface {
-	SaveImage(cardID uint, imageData []byte) error
+	SaveArt(ctx context.Context, artID uint, imageData []byte) error
+	SaveFullsize(ctx context.Context, artID uint, imageData []byte) error
 }
 
 type Artist struct {
 	engine    EngineContract
-	cardRepo  cardRepository
+	artRepo   artRepository
 	notifier  notifier
 	watermark watermark
-	storage   storage
 	saver     saver
 }
 
-func NewArtist(engine EngineContract, cardRepository cardRepository, notifier notifier, watermark watermark, storage storage, saver saver) *Artist {
-	return &Artist{engine, cardRepository, notifier, watermark, storage, saver}
+func NewArtist(engine EngineContract, artRepository artRepository, notifier notifier, watermark watermark, saver saver) *Artist {
+	return &Artist{engine, artRepository, notifier, watermark, saver}
 }
 
-func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *model.CreationState) (model.Card, error) {
-	log.Info().Msgf("Start get card process from artist. tags: %s, seed: %d", spell.Tags, spell.Seed)
+func (a *Artist) GetArt(ctx context.Context, spell model.Spell, artistState *model.CreationState) (model.Art, error) {
+	log.Info().Msgf("Start get art process from artist. tags: %s, seed: %d", spell.Tags, spell.Seed)
 
-	lastPaintingTime, err := a.cardRepo.GetLastCardPaintTime(ctx)
+	lastPaintingTime, err := a.artRepo.GetLastArtPaintTime(ctx)
 	if err != nil {
-		return model.Card{}, errors.Wrap(err, "[artist] failed to get LastPaintingTime")
+		return model.Art{}, errors.Wrap(err, "[artist] failed to get LastPaintingTime")
 	}
 
 	paintStart := time.Now()
@@ -78,74 +74,74 @@ func (a *Artist) GetCard(ctx context.Context, spell model.Spell, artistState *mo
 		}
 	}()
 
-	log.Info().Msgf("[artist] start image card with spell(id=%d)", spell.ID)
+	log.Info().Msgf("[artist] start image art with spell(id=%d)", spell.ID)
 	img, err := a.engine.GetImage(ctx, spell)
 	cancel()
 	if err != nil {
-		return model.Card{}, errors.Wrap(err, "[artist] failed to get image-data for card")
+		return model.Art{}, errors.Wrap(err, "[artist] failed to get image-data for art")
 	}
 
 	paintTime := time.Now().Sub(paintStart)
-	card := model.Card{
+	art := model.Art{
 		Spell:     spell,
 		Version:   spell.Version,
 		PaintTime: uint(paintTime.Seconds()),
 	}
-	card, err = a.cardRepo.SaveCard(ctx, card)
+	art, err = a.artRepo.SaveArt(ctx, art)
 	if err != nil {
-		return model.Card{}, errors.Wrap(err, "[artist] failed to save card")
+		return model.Art{}, errors.Wrap(err, "[artist] failed to save art")
 	}
 
-	img, err = a.prepareImage(img, card.ID)
+	img, err = a.prepareImage(img, art.ID)
 	if err != nil {
-		return model.Card{}, errors.Wrap(err, "[artist] failed to prepare image")
+		return model.Art{}, errors.Wrap(err, "[artist] failed to prepare image")
 	}
 
-	err = a.uploadToStorage(ctx, img, card.ID)
+	err = a.uploadToStorage(ctx, img, art.ID)
 	if err != nil {
-		log.Error().Err(err).Msgf("[artist] failed to send image to storage. delete card %d", card.ID)
-		if err := a.cardRepo.DeleteCard(ctx, card.ID); err != nil {
-			log.Error().Err(err).Msgf("[artist] failed to delete card after failed image creation (id=%d)", card.ID)
+		log.Error().Err(err).Msgf("[artist] failed to send image to storage. delete art %d", art.ID)
+		if err := a.artRepo.DeleteArt(ctx, art.ID); err != nil {
+			log.Error().Err(err).Msgf("[artist] failed to delete art after failed image creation (id=%d)", art.ID)
 		}
-		return model.Card{}, errors.Wrap(err, "[artist] failed to upload card into storage")
+		return model.Art{}, errors.Wrap(err, "[artist] failed to upload art into storage")
 	}
 
 	bts, err := a.encodeImage(img)
 	if err != nil {
-		log.Error().Err(err).Msgf("[artist] failed to encode image. delete card %d", card.ID)
-		if err := a.cardRepo.DeleteCard(ctx, card.ID); err != nil {
-			log.Error().Err(err).Msgf("[artist] failed to delete card after failed image creation (id=%d)", card.ID)
+		log.Error().Err(err).Msgf("[artist] failed to encode image. delete art %d", art.ID)
+		if err := a.artRepo.DeleteArt(ctx, art.ID); err != nil {
+			log.Error().Err(err).Msgf("[artist] failed to delete art after failed image creation (id=%d)", art.ID)
 		}
-		return model.Card{}, errors.Wrap(err, "[artist] failed to upload card into storage")
+		return model.Art{}, errors.Wrap(err, "[artist] failed to upload art into storage")
 	}
 
-	if err := a.saver.SaveImage(card.ID, bts); err != nil {
-		log.Error().Err(err).Msgf("[artist] failed to save image to saver. delete card %d", card.ID)
-		if err := a.cardRepo.DeleteCard(ctx, card.ID); err != nil {
-			log.Error().Err(err).Msgf("[artist] failed to delete card after failed image creation (id=%d)", card.ID)
+	if err := a.saver.SaveArt(ctx, art.ID, bts); err != nil {
+		log.Error().Err(err).Msgf("[artist] failed to save image to saver. delete art %d", art.ID)
+		if err := a.artRepo.DeleteArt(ctx, art.ID); err != nil {
+			log.Error().Err(err).Msgf("[artist] failed to delete art after failed image creation (id=%d)", art.ID)
 		}
-		return model.Card{}, errors.Wrap(err, "[artist] failed to upload card into storage")
+		return model.Art{}, errors.Wrap(err, "[artist] failed to upload art into storage")
 	}
 
-	card.UploadedToMemory = true
-	card.UploadedToStorage = true
-	card, err = a.cardRepo.SaveCard(ctx, card)
+	art.UploadedToMemory = true
+	art.UploadedToStorage = true
+	art, err = a.artRepo.SaveArt(ctx, art)
 	if err != nil {
-		// TODO need to test delete failed card without image
-		if err := a.cardRepo.DeleteCard(ctx, card.ID); err != nil {
-			log.Error().Err(err).Msgf("[artist] failed to delete card after failed image creation (id=%d)", card.ID)
+		// TODO need to test delete failed art without image
+		if err := a.artRepo.DeleteArt(ctx, art.ID); err != nil {
+			log.Error().Err(err).Msgf("[artist] failed to delete art after failed image creation (id=%d)", art.ID)
 		}
-		return model.Card{}, errors.Wrap(err, "[artist] failed to save card")
+		return model.Art{}, errors.Wrap(err, "[artist] failed to save art")
 	}
 
-	log.Info().Msgf("Received and saved card from artist: id=%d", card.ID)
-	return card, err
+	log.Info().Msgf("Received and saved art from artist: id=%d", art.ID)
+	return art, err
 }
 
 // add watermark
-func (a *Artist) prepareImage(img image.Image, cardID uint) (image.Image, error) {
+func (a *Artist) prepareImage(img image.Image, artID uint) (image.Image, error) {
 	var err error
-	img, err = a.watermark.AddCardWatermark(img, cardID)
+	img, err = a.watermark.AddArtWatermark(img, artID)
 	if err != nil {
 		return nil, errors.Wrap(err, "[artist] failed to add watermark")
 	}
@@ -168,15 +164,15 @@ func (a *Artist) encodeImage(img image.Image) ([]byte, error) {
 }
 
 // upload image to storage with original size with quality 95
-func (a *Artist) uploadToStorage(ctx context.Context, img image.Image, cardID uint) error {
-	log.Info().Msgf("[artist] upload card %d to storage", cardID)
-	filename := fmt.Sprintf("card-%d.jpg", cardID)
+func (a *Artist) uploadToStorage(ctx context.Context, img image.Image, artID uint) error {
+	log.Info().Msgf("[artist] upload art %d to storage", artID)
+	filename := fmt.Sprintf("art-%d.jpg", artID)
 	buf := new(bytes.Buffer)
 
 	if err := jpeg.Encode(buf, img, &jpeg.Options{Quality: model.QualityXF}); err != nil {
 		return errors.Wrapf(err, "[artist] failed to encode image into jpeg with q=%d", model.QualityXF)
 	}
-	if err := a.storage.Upload(ctx, filename, buf.Bytes()); err != nil {
+	if err := a.saver.SaveFullsize(ctx, artID, buf.Bytes()); err != nil {
 		return errors.Wrapf(err, "[artist] failed to save image to storage %s", filename)
 	}
 	return nil

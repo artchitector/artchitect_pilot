@@ -27,7 +27,7 @@ func NewWatermark() *Watermark {
 
 // RU: Так как тут сложно, многие комментарии будут на русском
 
-func (w *Watermark) AddCardWatermark(originalImage image.Image, cardID uint) (image.Image, error) {
+func (w *Watermark) AddArtWatermark(originalImage image.Image, cardID uint) (image.Image, error) {
 	text := fmt.Sprintf("#%d", cardID) // RU: Все номера карточек начинаются с #, там исторически пошло
 	return w.addWatermark(originalImage, text)
 }
