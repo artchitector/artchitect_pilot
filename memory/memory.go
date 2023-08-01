@@ -73,7 +73,7 @@ func (m *Memory) DownloadImage(ctx context.Context, cardID uint, size string) ([
 	}
 	// get image from remote memory server
 	thousand := model.GetCardThousand(cardID)
-	url := fmt.Sprintf("%s/cards/%d/card-%d-%s.jpg", m.memoryURL, thousand, cardID, size)
+	url := fmt.Sprintf("%s/arts/%d/art-%d-%s.jpg", m.memoryURL, thousand, cardID, size)
 	resp, err := http.Get(url)
 	if err != nil {
 		return []byte{}, errors.Wrapf(err, "[memory] failed to get image from memory-server %s", url)
