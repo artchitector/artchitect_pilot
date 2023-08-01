@@ -177,6 +177,11 @@ func (pr *ArtRepository) GetMaxArtID(ctx context.Context) (uint, error) {
 	return id, err
 }
 
+func (pr *ArtRepository) GetNextCardID(ctx context.Context) (uint, error) {
+	max, err := pr.GetMaxArtID(ctx)
+	return max + 1, err
+}
+
 func (pr *ArtRepository) GetPreviousCardID(ctx context.Context, artID uint) (uint, error) {
 	var id uint
 	err := pr.db.Select("id").

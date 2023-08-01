@@ -48,7 +48,12 @@ func NewArtist(engine EngineContract, artRepository artRepository, notifier noti
 	return &Artist{engine, artRepository, notifier, watermark, saver}
 }
 
-func (a *Artist) GetArt(ctx context.Context, spell model.Spell, artistState *model.CreationState) (model.Art, error) {
+func (a *Artist) GetArt(
+	ctx context.Context,
+	newArtID uint,
+	spell model.Spell,
+	artistState *model.CreationState,
+) (model.Art, error) {
 	log.Info().Msgf("Start get art process from artist. tags: %s, seed: %d", spell.Tags, spell.Seed)
 
 	lastPaintingTime, err := a.artRepo.GetLastArtPaintTime(ctx)
@@ -87,6 +92,9 @@ func (a *Artist) GetArt(ctx context.Context, spell model.Spell, artistState *mod
 		Version:   spell.Version,
 		PaintTime: uint(paintTime.Seconds()),
 	}
+
+	art.ID = newArtID
+
 	art, err = a.artRepo.SaveArt(ctx, art)
 	if err != nil {
 		return model.Art{}, errors.Wrap(err, "[artist] failed to save art")

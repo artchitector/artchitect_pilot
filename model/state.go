@@ -6,6 +6,7 @@ import (
 )
 
 type CreationState struct {
+	NextArtID            uint
 	PreviousCardID       uint
 	Version              string
 	Seed                 uint

@@ -11,7 +11,7 @@ import (
 
 type artist interface {
 	// TODO need to get image, not card. Artist is too complex
-	GetArt(ctx context.Context, spell model.Spell, artistState *model.CreationState) (model.Art, error)
+	GetArt(ctx context.Context, newArtID uint, spell model.Spell, artistState *model.CreationState) (model.Art, error)
 }
 type speller interface {
 	MakeSpell(ctx context.Context, artistState *model.CreationState) (model.Spell, error)
@@ -28,6 +28,7 @@ type unifier interface {
 
 type maxCardGetter interface {
 	GetMaxArtID(ctx context.Context) (uint, error)
+	GetNextCardID(ctx context.Context) (uint, error)
 }
 
 // Creator used to make new Art with no input data. Used by Artchitect and Merciful
@@ -66,37 +67,52 @@ func NewCreator(
 func (c *Creator) CreateWithoutEnjoy(ctx context.Context) (model.Art, error) {
 	log.Info().Msgf("[creator] start card creation without enjoy")
 
-	state := model.CreationState{}
-	card, err := c.create(ctx, &state)
+	nextArtID, err := c.getNextArtID(ctx)
+	if err != nil {
+		return model.Art{}, errors.Wrap(err, "[creator] failed to get nextArtID")
+	}
+	state := model.CreationState{
+		NextArtID: nextArtID,
+	}
+
+	card, err := c.create(ctx, nextArtID, &state)
 
 	return card, errors.Wrap(err, "[creator] failed to create card without enjoy")
 }
 
 func (c *Creator) CreateWithEnjoy(ctx context.Context) (model.Art, error) {
-	log.Info().Msgf("[creator] start card creation with enjoy")
-	cardStart := time.Now()
+	log.Info().Msgf("[creator] start art creation with enjoy")
+	artStart := time.Now()
 
-	maxCardId, err := c.maxCardGetter.GetMaxArtID(ctx)
+	maxArtId, err := c.maxCardGetter.GetMaxArtID(ctx)
 	if err != nil {
-		maxCardId = 0
+		maxArtId = 0
 	}
+
+	nextArtID, err := c.getNextArtID(ctx)
+	if err != nil {
+		return model.Art{}, errors.Wrap(err, "[creator] failed to get nextArtID")
+	}
+
 	state := model.CreationState{
-		PreviousCardID: maxCardId,
+		NextArtID:      nextArtID,
+		PreviousCardID: maxArtId,
 	}
 
-	card, err := c.create(ctx, &state)
+	art, err := c.create(ctx, nextArtID, &state)
 	if err != nil {
-		return model.Art{}, errors.Wrap(err, "[creator] failed to create card with enjoy")
+		return model.Art{}, errors.Wrap(err, "[creator] failed to create art with enjoy")
 	}
 
-	if err := c.enjoy(ctx, &state, cardStart); err != nil {
+	if err := c.enjoy(ctx, &state, artStart); err != nil {
 		log.Error().Err(err).Msgf("[creator] failed enjoy :(")
 	}
 
-	return card, nil
+	return art, nil
 }
 
-func (c *Creator) create(ctx context.Context, state *model.CreationState) (model.Art, error) {
+func (c *Creator) create(ctx context.Context, nextArtID uint, state *model.CreationState) (model.Art, error) {
+	log.Info().Msgf("[creator] CREATE NEW ART %d", nextArtID)
 	// only one creation process at same time
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -114,7 +130,7 @@ func (c *Creator) create(ctx context.Context, state *model.CreationState) (model
 	log.Info().Msgf("[creator] got spell: %+v", spell)
 
 	// paint card in artist
-	card, err := c.artist.GetArt(ctx, spell, state)
+	card, err := c.artist.GetArt(ctx, nextArtID, spell, state)
 	if err != nil {
 		return model.Art{}, err
 	}
@@ -189,4 +205,8 @@ func (c *Creator) updateUnity(ctx context.Context, id uint) error {
 	}
 	log.Info().Msgf("[creator] unifier worked=%t for card %d", worked, id)
 	return nil
+}
+
+func (c *Creator) getNextArtID(ctx context.Context) (uint, error) {
+	return c.maxCardGetter.GetNextCardID(ctx)
 }
