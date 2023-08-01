@@ -80,6 +80,7 @@ func (m *Memory) DownloadImage(ctx context.Context, cardID uint, size string) ([
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusNotFound {
+		log.Error().Msgf("[memory] not found art-image %s in memory-server", url)
 		return []byte{}, ErrNotFound
 	}
 	if resp.StatusCode != http.StatusOK {
@@ -110,6 +111,7 @@ func (m *Memory) downloadUnityImage(ctx context.Context, mask string, size strin
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusNotFound {
+		log.Error().Msgf("[memory] not found unity-image %s in memory-server", url)
 		return []byte{}, ErrNotFound
 	}
 	if resp.StatusCode != http.StatusOK {
