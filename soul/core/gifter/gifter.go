@@ -56,6 +56,9 @@ func (g *Gifter) sendCard(ctx context.Context) error {
 	cardID, err := g.getArt(ctx)
 	if err != nil {
 		return errors.Wrap(err, "[gifter] failed to getArt")
+	} else if cardID == 0 {
+		log.Warn().Msgf("[gifter] no arts")
+		return nil
 	}
 
 	err = g.artchitectBot.SendArtTo10Min(ctx, cardID)
@@ -69,7 +72,9 @@ func (g *Gifter) sendCard(ctx context.Context) error {
 
 func (g *Gifter) getArt(ctx context.Context) (uint, error) {
 	art, err := g.artsRepository.GetOriginSelectedArt(ctx)
-	if err != nil {
+	if err != nil && errors.Is(err, model.ErrArtsEmpty) {
+		return 0, nil
+	} else if err != nil {
 		return 0, errors.Wrapf(err, "[gifter] failed to GetOriginSelectedArt")
 	}
 	return art.ID, nil

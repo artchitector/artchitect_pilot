@@ -90,7 +90,10 @@ func (pr *ArtRepository) GetTotalArts(ctx context.Context) (uint, error) {
 func (pr *ArtRepository) GetOriginSelectedArt(ctx context.Context) (model.Art, error) {
 	totalArts, err := pr.GetTotalArts(ctx)
 	if err != nil {
-		return model.Art{}, errors.Wrap(err, "[gifter] failed get total arts")
+		return model.Art{}, errors.Wrap(err, "[art_repository] failed get total arts")
+	}
+	if totalArts == 0 {
+		return model.Art{}, model.ErrArtsEmpty
 	}
 	selection, err := pr.entropy.Select(ctx, totalArts)
 	if err != nil {
