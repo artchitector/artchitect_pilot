@@ -34,7 +34,7 @@ func main() {
 	res := resources.InitResources()
 	log.Info().Msg("service gate started")
 	svr := saver.NewSaver(res.GetEnv().ArtsPath, res.GetEnv().UnityPath, res.GetEnv().FullSizePath)
-	uploadHandler := handler.NewUploadHandler(svr, res.GetEnv().IsFullsizeStorage)
+	uploadHandler := handler.NewUploadHandler(svr)
 
 	go func() {
 		r := gin.Default()

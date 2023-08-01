@@ -21,23 +21,14 @@ type saver interface {
 }
 
 type UploadHandler struct {
-	saver             saver
-	isFullsizeStorage bool
+	saver saver
 }
 
-func NewUploadHandler(saver saver, isFullsizeStorage bool) *UploadHandler {
-	return &UploadHandler{saver, isFullsizeStorage}
+func NewUploadHandler(saver saver) *UploadHandler {
+	return &UploadHandler{saver}
 }
 
 func (h *UploadHandler) Handle(c *gin.Context) {
-	if h.isFullsizeStorage {
-		err := errors.New("[upload:art] is fullsize storage. arts save forbidden")
-		log.Error().Err(err).Send()
-		c.Status(http.StatusForbidden)
-		c.String(http.StatusBadRequest, err.Error())
-		return
-	}
-
 	// single file
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -84,14 +75,6 @@ func (h *UploadHandler) Handle(c *gin.Context) {
 }
 
 func (h *UploadHandler) HandleUnity(c *gin.Context) {
-	if h.isFullsizeStorage {
-		err := errors.New("[upload:art] is fullsize storage. unity save forbidden")
-		log.Error().Err(err).Send()
-		c.Status(http.StatusForbidden)
-		c.String(http.StatusBadRequest, err.Error())
-		return
-	}
-
 	// single file
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -134,14 +117,6 @@ func (h *UploadHandler) HandleUnity(c *gin.Context) {
 }
 
 func (h *UploadHandler) HandleFullsize(c *gin.Context) {
-	if !h.isFullsizeStorage {
-		err := errors.New("[upload:art] is NOT fullsize storage. fullsize save forbidden")
-		log.Error().Err(err).Send()
-		c.Status(http.StatusForbidden)
-		c.String(http.StatusBadRequest, err.Error())
-		return
-	}
-
 	// single file
 	file, err := c.FormFile("file")
 	if err != nil {
