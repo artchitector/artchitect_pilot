@@ -189,7 +189,6 @@ func (l *Listener) handleEntropy(ctx context.Context, msg *redis.Message) error 
 			Payload: string(data),
 		}
 		for _, ch := range l.eventChannels {
-			log.Info().Msgf("send entropy_mini message")
 			l.sendEvent(ctx, ch, event)
 		}
 	}
