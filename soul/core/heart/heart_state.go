@@ -12,14 +12,14 @@ type notifier interface {
 	NotifyHeart(ctx context.Context, state model.HeartState) error
 }
 
-type cardGiver interface {
-	GetOriginSelectedCard(ctx context.Context) (model.Art, error)
+type artsGiver interface {
+	GetOriginSelectedArt(ctx context.Context) (model.Art, error)
 }
 
 // HeartState state updates 4-random dreams, sends them to client. Every client have same 4 rnd dreams.
 type HeartState struct {
 	notifier              notifier
-	cardGiver             cardGiver
+	cardGiver             artsGiver
 	rndSize               int // сколько картинок держать
 	lastChangedImageIndex int
 
@@ -28,7 +28,7 @@ type HeartState struct {
 
 func NewHeartState(
 	notifier notifier,
-	cardGiver cardGiver,
+	cardGiver artsGiver,
 	rndSize int,
 ) *HeartState {
 	return &HeartState{
@@ -83,7 +83,7 @@ func (hs *HeartState) work(ctx context.Context) error {
 }
 
 func (hs *HeartState) replace(ctx context.Context, index int) error {
-	if newCard, err := hs.cardGiver.GetOriginSelectedCard(ctx); err != nil {
+	if newCard, err := hs.cardGiver.GetOriginSelectedArt(ctx); err != nil {
 		return errors.Wrapf(err, "[heart_state] failed to get new card number")
 	} else {
 		log.Info().Msgf("[heart_state] selected new image #%d into index %d", newCard.ID, index)

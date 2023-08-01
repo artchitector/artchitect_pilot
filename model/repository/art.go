@@ -150,7 +150,7 @@ func (pr *ArtRepository) GetAnyCardIDFromHundred(ctx context.Context, rank uint,
 }
 
 // TODO deprecated public use, need make internal and remove usage from gifter.
-// use GetOriginSelectedCard instead
+// use GetOriginSelectedArt instead
 func (pr *ArtRepository) GetArtWithOffset(offset uint) (model.Art, error) {
 	var art model.Art
 	err := pr.db.

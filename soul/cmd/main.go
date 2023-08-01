@@ -144,7 +144,7 @@ func main() {
 
 	// gifter
 	if res.GetEnv().GifterActive && artchitectBot != nil {
-		gift := gifter.NewGifter(artsRepo, entrp, artchitectBot)
+		gift := gifter.NewGifter(artsRepo, artchitectBot)
 		go func() {
 			if err := gift.Run(ctx); err != nil {
 				log.Fatal().Err(err).Send()
