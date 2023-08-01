@@ -153,7 +153,7 @@ func (h *UploadHandler) HandleFullsize(c *gin.Context) {
 		return
 	}
 
-	if err := h.saver.SaveImage(uint(artID), data); err != nil {
+	if err := h.saver.SaveFullsizeArt(uint(artID), data); err != nil {
 		log.Error().Err(err).Msgf("[upload:fullsize_art] failed SaveArt art_id=%d", artID)
 		c.String(http.StatusInternalServerError, err.Error())
 		return

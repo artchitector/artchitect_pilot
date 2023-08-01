@@ -90,7 +90,7 @@ func initEnv() *Env {
 		OriginURL:       os.Getenv("ORIGIN_URL"),
 		ArtistURL:       os.Getenv("ARTIST_URL"),
 		MemoryHost:      os.Getenv("MEMORY_HOST"),
-		MemorySaverURL:  os.Getenv("SAVER_URL"),
+		MemorySaverURL:  os.Getenv("MEMORY_SAVER_URL"),
 		StorageSaverURL: os.Getenv("STORAGE_SAVER_URL"),
 
 		ArtTotalTime:       uint(artTotalTime),
