@@ -38,7 +38,7 @@ func (pr *ArtRepository) GetLastArts(ctx context.Context, count uint) ([]model.A
 	return arts, err
 }
 
-func (pr *ArtRepository) GetCard(ctx context.Context, ID uint) (model.Art, error) {
+func (pr *ArtRepository) GetArt(ctx context.Context, ID uint) (model.Art, error) {
 	art := model.Art{}
 	err := pr.db.
 		Joins("Spell").

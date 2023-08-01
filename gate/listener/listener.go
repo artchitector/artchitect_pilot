@@ -17,8 +17,8 @@ type cache interface {
 	PrependLastCardID(ctx context.Context, ID uint) error
 }
 
-type cardRepository interface {
-	GetCard(ctx context.Context, ID uint) (model.Art, error)
+type artsRepository interface {
+	GetArt(ctx context.Context, ID uint) (model.Art, error)
 }
 
 type memory interface {
@@ -31,17 +31,17 @@ type Listener struct {
 	mutex          sync.Mutex
 	red            *redis.Client
 	cache          cache
-	cardRepository cardRepository
+	artsRepository artsRepository
 	memory         memory
 	eventChannels  []chan localmodel.Event
 }
 
-func NewListener(red *redis.Client, cache cache, cardRepository cardRepository, memory memory) *Listener {
+func NewListener(red *redis.Client, cache cache, artsRepository artsRepository, memory memory) *Listener {
 	return &Listener{
 		sync.Mutex{},
 		red,
 		cache,
-		cardRepository,
+		artsRepository,
 		memory,
 		[]chan localmodel.Event{},
 	}
@@ -153,7 +153,7 @@ func (l *Listener) handleNewSelection(ctx context.Context, msg *redis.Message) e
 }
 
 func (l *Listener) cacheCard(ctx context.Context, cardID uint) error {
-	card, err := l.cardRepository.GetCard(ctx, cardID)
+	card, err := l.artsRepository.GetArt(ctx, cardID)
 	if err != nil {
 		return errors.Wrapf(err, "[listener] failed to get card id=%d", card.ID)
 	}

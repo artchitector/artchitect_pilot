@@ -21,7 +21,7 @@ type bot interface {
 
 type LikeHandler struct {
 	likeRepository       likeRepository
-	cardsRepository      cardsRepository
+	cardsRepository      artsRepository
 	authService          *AuthService
 	enhotter             enhotter
 	artchitector         uint
@@ -31,7 +31,7 @@ type LikeHandler struct {
 
 func NewLikeHandler(
 	likeRepository likeRepository,
-	cardsRepository cardsRepository,
+	cardsRepository artsRepository,
 	authService *AuthService,
 	enhotter enhotter,
 	bot bot,

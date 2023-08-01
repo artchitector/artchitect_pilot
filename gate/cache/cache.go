@@ -55,7 +55,7 @@ func (c *Cache) GetLastCards(ctx context.Context, count uint) ([]model.Art, erro
 
 	cards := make([]model.Art, 0, count)
 	for _, id := range ids {
-		if card, err := c.GetCard(ctx, id); err != nil {
+		if card, err := c.GetArt(ctx, id); err != nil {
 			return []model.Art{}, errors.Wrapf(err, "[cache] not found cached card for last cards list. List: %+v, CardID: %d", ids, id)
 		} else {
 			cards = append(cards, card)
@@ -65,7 +65,7 @@ func (c *Cache) GetLastCards(ctx context.Context, count uint) ([]model.Art, erro
 	return cards, nil
 }
 
-func (c *Cache) GetCard(ctx context.Context, ID uint) (model.Art, error) {
+func (c *Cache) GetArt(ctx context.Context, ID uint) (model.Art, error) {
 	result := c.rdb.Get(ctx, fmt.Sprintf(KeyCard, ID))
 	if err := result.Err(); err == redis.Nil {
 		return model.Art{}, ErrorNotFound
@@ -83,7 +83,7 @@ func (c *Cache) GetCard(ctx context.Context, ID uint) (model.Art, error) {
 	return card, nil
 }
 
-func (c *Cache) RefreshLastCards(ctx context.Context, cards []model.Art) error {
+func (c *Cache) RefreshLastArts(ctx context.Context, cards []model.Art) error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 

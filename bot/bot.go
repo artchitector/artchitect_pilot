@@ -20,7 +20,7 @@ const (
 )
 
 type cardRepository interface {
-	GetCard(ctx context.Context, cardID uint) (model.Art, error)
+	GetArt(ctx context.Context, cardID uint) (model.Art, error)
 	GetOriginSelectedArt(ctx context.Context) (model.Art, error)
 	GetOriginSelectedArtByPeriod(ctx context.Context, start time.Time, end time.Time) (model.Art, error)
 }
@@ -143,7 +143,7 @@ func (t *Bot) sendCard(ctx context.Context, card model.Art, img []byte, text str
 }
 
 func (t *Bot) getCard(ctx context.Context, cardID uint) (model.Art, []byte, error) {
-	card, err := t.cardRepository.GetCard(ctx, cardID)
+	card, err := t.cardRepository.GetArt(ctx, cardID)
 	if err != nil {
 		return model.Art{}, nil, errors.Wrapf(err, "[bot] failed to GetArt %d", cardID)
 	}

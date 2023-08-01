@@ -9,19 +9,19 @@ import (
 )
 
 type Enhotter struct {
-	cardRepository      cardRepository
+	artsRepository      artsRepository
 	selectionRepository selectionRepository
 	cache               *Cache
 	memory              memory
 }
 
-func NewEnhotter(cardRepository cardRepository, selectionRepository selectionRepository, cache *Cache, memory memory) *Enhotter {
-	return &Enhotter{cardRepository, selectionRepository, cache, memory}
+func NewEnhotter(artsRepository artsRepository, selectionRepository selectionRepository, cache *Cache, memory memory) *Enhotter {
+	return &Enhotter{artsRepository, selectionRepository, cache, memory}
 }
 
 func (e *Enhotter) Run(ctx context.Context) {
 	go func() {
-		if err := e.EnhotLastCards(ctx); err != nil {
+		if err := e.EnhotLastArts(ctx); err != nil {
 			log.Error().Err(err).Send()
 		}
 	}()
@@ -35,7 +35,7 @@ func (e *Enhotter) Run(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case <-time.NewTicker(time.Minute * 5).C:
-			if err := e.EnhotLastCards(ctx); err != nil {
+			if err := e.EnhotLastArts(ctx); err != nil {
 				log.Error().Err(err).Send()
 			}
 		case <-time.NewTicker(time.Minute * 10).C:
@@ -46,16 +46,16 @@ func (e *Enhotter) Run(ctx context.Context) {
 	}()
 }
 
-func (e *Enhotter) EnhotLastCards(ctx context.Context) error {
-	last, err := e.cardRepository.GetLastCards(ctx, 99)
+func (e *Enhotter) EnhotLastArts(ctx context.Context) error {
+	last, err := e.artsRepository.GetLastArts(ctx, 99)
 	if err != nil {
 		return errors.Wrap(err, "[enhotter] failed to getLastCards")
 	}
-	for _, card := range last {
-		e.cacheCard(ctx, card)
+	for _, art := range last {
+		e.cacheArt(ctx, art)
 	}
-	err = e.cache.RefreshLastCards(ctx, last)
-	return errors.Wrapf(err, "[enhotter] failed to RefreshLastCards in cache")
+	err = e.cache.RefreshLastArts(ctx, last)
+	return errors.Wrapf(err, "[enhotter] failed to RefreshLastArts in cache")
 }
 
 func (e *Enhotter) EnhotSelection(ctx context.Context) error {
@@ -63,37 +63,37 @@ func (e *Enhotter) EnhotSelection(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrapf(err, "[enhotter] selection get failed")
 	}
-	for _, cardID := range selected {
-		card, err := e.cardRepository.GetCard(ctx, cardID)
+	for _, artID := range selected {
+		card, err := e.artsRepository.GetArt(ctx, artID)
 		if err != nil {
-			log.Error().Err(err).Msgf("[enhotter] failed to get card from repository id=%d", cardID)
+			log.Error().Err(err).Msgf("[enhotter] failed to get card from repository id=%d", artID)
 		} else {
-			e.cacheCard(ctx, card)
+			e.cacheArt(ctx, card)
 		}
 	}
 	return nil
 }
 
-func (e *Enhotter) ReloadCardWithoutImage(ctx context.Context, cardID uint) {
-	card, err := e.cardRepository.GetCard(ctx, cardID)
+func (e *Enhotter) ReloadCardWithoutImage(ctx context.Context, artID uint) {
+	art, err := e.artsRepository.GetArt(ctx, artID)
 	if err != nil {
-		log.Error().Msgf("[enhotter] failed to reload card %d", card.ID)
+		log.Error().Msgf("[enhotter] failed to reload art %d", art.ID)
 		return
 	}
-	if err := e.cache.SaveCard(ctx, card); err != nil {
-		log.Error().Msgf("[enhotter] failed to saveCard %d", card.ID)
+	if err := e.cache.SaveCard(ctx, art); err != nil {
+		log.Error().Msgf("[enhotter] failed to saveCard %d", art.ID)
 	}
-	log.Info().Msgf("[enhotter] reloaded card %d", card.ID)
+	log.Info().Msgf("[enhotter] reloaded art %d", art.ID)
 }
 
-func (e *Enhotter) cacheCard(ctx context.Context, card model.Art) {
-	if err := e.cache.SaveCard(ctx, card); err != nil {
-		log.Error().Msgf("[enhotter] failed to saveCard %d", card.ID)
+func (e *Enhotter) cacheArt(ctx context.Context, art model.Art) {
+	if err := e.cache.SaveCard(ctx, art); err != nil {
+		log.Error().Msgf("[enhotter] failed to saveCard %d", art.ID)
 	}
 	for _, size := range model.PublicSizes {
 		// memory automatically cache image on get
-		if _, err := e.memory.GetCardImage(ctx, card.ID, size); err != nil {
-			log.Error().Err(err).Msgf("[enhotter] failed to memory.GetCardImage %d/%s", card.ID, size)
+		if _, err := e.memory.GetCardImage(ctx, art.ID, size); err != nil {
+			log.Error().Err(err).Msgf("[enhotter] failed to memory.GetCardImage %d/%s", art.ID, size)
 		}
 	}
 }

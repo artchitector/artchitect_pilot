@@ -32,7 +32,7 @@ type unityRepository interface {
 type cardRepository interface {
 	GetAnyCardIDFromHundred(ctx context.Context, rank uint, start uint) (uint, error)
 	GetPreviousCardID(ctx context.Context, cardID uint) (uint, error)
-	GetCard(ctx context.Context, ID uint) (model.Art, error)
+	GetArt(ctx context.Context, ID uint) (model.Art, error)
 }
 
 type entropy interface {
@@ -341,7 +341,7 @@ func (u *Unifier) promoteLeads(ctx context.Context, unity model.Unity, state *mo
 				return model.Unity{}, errors.Wrapf(err, "[unifier] failed to get data from entropy")
 			}
 			lead := unity.Start() + selection // Выбираем даже несуществующие карточки. Они будут заполняться чёрным цветом.
-			if _, err := u.cardRepository.GetCard(ctx, lead); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+			if _, err := u.cardRepository.GetArt(ctx, lead); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 				log.Info().Msgf("[unifier] not found lead card %d, use 0", lead)
 				lead = 0
 			} else if err != nil {

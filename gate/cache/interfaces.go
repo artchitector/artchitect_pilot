@@ -5,9 +5,9 @@ import (
 	"github.com/artchitector/artchitect/model"
 )
 
-type cardRepository interface {
-	GetCard(ctx context.Context, ID uint) (model.Art, error)
-	GetLastCards(ctx context.Context, count uint) ([]model.Art, error)
+type artsRepository interface {
+	GetArt(ctx context.Context, ID uint) (model.Art, error)
+	GetLastArts(ctx context.Context, count uint) ([]model.Art, error)
 }
 
 type selectionRepository interface {

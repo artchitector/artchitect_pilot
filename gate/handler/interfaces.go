@@ -6,11 +6,11 @@ import (
 	"github.com/artchitector/artchitect/model"
 )
 
-type cardsRepository interface {
-	GetCard(ctx context.Context, ID uint) (model.Art, error)
-	GetLastCards(ctx context.Context, count uint) ([]model.Art, error)
-	GetCards(ctx context.Context, IDs []uint) ([]model.Art, error)
-	GetCardsByRange(start uint, end uint) ([]model.Art, error)
+type artsRepository interface {
+	GetArt(ctx context.Context, ID uint) (model.Art, error)
+	GetLastArts(ctx context.Context, count uint) ([]model.Art, error)
+	GetArts(ctx context.Context, IDs []uint) ([]model.Art, error)
+	GetArtsByRange(start uint, end uint) ([]model.Art, error)
 	Like(ctx context.Context, cardID uint) error
 	Unlike(ctx context.Context, cardID uint) error
 }
@@ -31,7 +31,7 @@ type selectionRepository interface {
 }
 
 type cache interface {
-	GetCard(ctx context.Context, ID uint) (model.Art, error)
+	GetArt(ctx context.Context, ID uint) (model.Art, error)
 	GetLastCards(ctx context.Context, count uint) ([]model.Art, error)
 }
 

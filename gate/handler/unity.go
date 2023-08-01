@@ -25,10 +25,10 @@ type Response struct {
 
 type UnityHandler struct {
 	unityRepository unityRepository
-	cardsRepository cardsRepository
+	cardsRepository artsRepository
 }
 
-func NewUnityHandler(unityRepository unityRepository, cardsRepository cardsRepository) *UnityHandler {
+func NewUnityHandler(unityRepository unityRepository, cardsRepository artsRepository) *UnityHandler {
 	return &UnityHandler{unityRepository, cardsRepository}
 }
 
@@ -97,5 +97,5 @@ func (uh *UnityHandler) getCards(ctx context.Context, unity model.Unity) ([]mode
 		return []model.Art{}, errors.Wrapf(err, "[unity_repo] failed to get end of mask %s", unity.Mask)
 	}
 	log.Info().Msgf("[unity_repo] mask %s become range %d-%d", unity.Mask, start, end)
-	return uh.cardsRepository.GetCardsByRange(uint(start), uint(end))
+	return uh.cardsRepository.GetArtsByRange(uint(start), uint(end))
 }

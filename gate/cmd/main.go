@@ -28,7 +28,7 @@ func main() {
 	log.Info().Msg("service gate started")
 
 	// repos
-	cardsRepo := repository2.NewCardRepository(res.GetDB(), &fake.FakeOrigin{})
+	artsRepo := repository2.NewCardRepository(res.GetDB(), &fake.FakeOrigin{})
 	lotteryRepo := repository2.NewLotteryRepository(res.GetDB())
 	prayRepo := repository2.NewPrayRepository(res.GetDB())
 	selectionRepo := repository2.NewSelectionRepository(res.GetDB())
@@ -39,12 +39,12 @@ func main() {
 	cache := cache2.NewCache(res.GetRedis())
 	//_ = cache.Flushall(ctx)
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, cache)
-	enhotter := cache2.NewEnhotter(cardsRepo, selectionRepo, cache, mmr)
+	enhotter := cache2.NewEnhotter(artsRepo, selectionRepo, cache, mmr)
 	enhotter.Run(ctx)
 
 	artchitectBot := bot.NewBot(
 		res.GetEnv().Telegram10BotToken,
-		cardsRepo,
+		artsRepo,
 		mmr,
 		res.GetEnv().ChatIDArtchitector,
 		res.GetEnv().ChatID10,
@@ -52,7 +52,7 @@ func main() {
 	)
 
 	// listeners with websocket handler
-	lis := listener.NewListener(res.GetRedis(), cache, cardsRepo, mmr)
+	lis := listener.NewListener(res.GetRedis(), cache, artsRepo, mmr)
 	websocketHandler := handler.NewWebsocketHandler(lis)
 
 	go func() {
@@ -64,18 +64,18 @@ func main() {
 	}()
 
 	// handlers
-	lastCardsHandler := handler.NewLastCardsHandler(cardsRepo, cache)
+	lastCardsHandler := handler.NewLastCardsHandler(artsRepo, cache)
 	lotteryHandler := handler.NewLotteryHandler(
 		log.With().Str("service", "lottery_handler").Logger(),
 		lotteryRepo,
 	)
 	authS := handler.NewAuthService(res.GetEnv().JWTSecret, res.GetEnv().AllowFakeAuth)
-	cardHandler := handler.NewCardHandler(cardsRepo, cache, likeRepo, authS)
+	cardHandler := handler.NewCardHandler(artsRepo, cache, likeRepo, authS)
 	selectionHander := handler.NewSelectionHandler(selectionRepo)
 	prayHandler := handler.NewPrayHandler(prayRepo)
 	lh := handler.NewLoginHandler(res.GetEnv().TelegramABotToken, res.GetEnv().JWTSecret, res.GetEnv().ArtchitectHost)
-	llh := handler.NewLikeHandler(likeRepo, cardsRepo, authS, enhotter, artchitectBot, uint(res.GetEnv().ChatIDArtchitector), res.GetEnv().SendToInfiniteOnLike)
-	uh := handler.NewUnityHandler(unityRepo, cardsRepo)
+	llh := handler.NewLikeHandler(likeRepo, artsRepo, authS, enhotter, artchitectBot, uint(res.GetEnv().ChatIDArtchitector), res.GetEnv().SendToInfiniteOnLike)
+	uh := handler.NewUnityHandler(unityRepo, artsRepo)
 	ih := handler.NewImageHandler(mmr)
 
 	go func() {

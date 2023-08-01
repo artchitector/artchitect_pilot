@@ -11,11 +11,11 @@ type LastCardsRequest struct {
 }
 
 type LastCardsHandler struct {
-	cardsRepository cardsRepository
-	cache           cache
+	artsRepository artsRepository
+	cache          cache
 }
 
-func NewLastCardsHandler(paintingsRepository cardsRepository, cache cache) *LastCardsHandler {
+func NewLastCardsHandler(paintingsRepository artsRepository, cache cache) *LastCardsHandler {
 	return &LastCardsHandler{paintingsRepository, cache}
 }
 
@@ -37,7 +37,7 @@ func (lph *LastCardsHandler) Handle(c *gin.Context) {
 		c.JSON(http.StatusOK, cards)
 		return
 	}
-	cards, err = lph.cardsRepository.GetLastCards(c, uint(quantity))
+	cards, err = lph.artsRepository.GetLastArts(c, uint(quantity))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "internal error")
 		return

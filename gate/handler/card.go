@@ -14,13 +14,13 @@ type CardRequest struct {
 }
 
 type CardHandler struct {
-	cardsRepository cardsRepository
+	cardsRepository artsRepository
 	cache           cache
 	likeRepository  likeRepository
 	authService     *AuthService
 }
 
-func NewCardHandler(cardsRepository cardsRepository, cache cache, likeRepository likeRepository, authService *AuthService) *CardHandler {
+func NewCardHandler(cardsRepository artsRepository, cache cache, likeRepository likeRepository, authService *AuthService) *CardHandler {
 	return &CardHandler{cardsRepository, cache, likeRepository, authService}
 }
 
@@ -32,13 +32,13 @@ func (ch *CardHandler) Handle(c *gin.Context) {
 	}
 	var card model.Art
 	var err error
-	card, err = ch.cache.GetCard(c, uint(request.ID))
+	card, err = ch.cache.GetArt(c, uint(request.ID))
 	if err != nil {
 		log.Error().Err(err).Msgf("[card_handler:Handle] failed to get card(id=%d) from cache", request.ID)
 	}
 
 	if card.ID == 0 {
-		card, err = ch.cardsRepository.GetCard(c, request.ID)
+		card, err = ch.cardsRepository.GetArt(c, request.ID)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 			return
