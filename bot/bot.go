@@ -21,8 +21,8 @@ const (
 
 type cardRepository interface {
 	GetCard(ctx context.Context, cardID uint) (model.Art, error)
-	GetOriginSelectedCard(ctx context.Context) (model.Art, error)
-	GetOriginSelectedCardByPeriod(ctx context.Context, start time.Time, end time.Time) (model.Art, error)
+	GetOriginSelectedArt(ctx context.Context) (model.Art, error)
+	GetOriginSelectedArtByPeriod(ctx context.Context, start time.Time, end time.Time) (model.Art, error)
 }
 
 type memory interface {
@@ -67,7 +67,7 @@ func (t *Bot) Start(ctx context.Context) {
 	log.Info().Msgf("[bot] bot finished")
 }
 
-func (t *Bot) SendCardTo10Min(ctx context.Context, cardID uint) error {
+func (t *Bot) SendArtTo10Min(ctx context.Context, cardID uint) error {
 	card, img, err := t.getCard(ctx, cardID)
 	if err != nil {
 		return errors.Wrapf(err, "[bot] failed to get card by ID=%d", cardID)
@@ -209,7 +209,7 @@ func (t *Bot) giveHandler(ctx context.Context, b *bot.Bot, update *models.Update
 	var err error
 	args := t.parseArguments(update.Message.Text)
 	if len(args) == 0 {
-		card, err = t.cardRepository.GetOriginSelectedCard(ctx)
+		card, err = t.cardRepository.GetOriginSelectedArt(ctx)
 		if err != nil {
 			log.Error().Err(err).Msgf("[bot_give] failed to get card")
 			t.replyError(ctx, update.Message, errors.Errorf("failed to get card. try once more"))
@@ -223,9 +223,9 @@ func (t *Bot) giveHandler(ctx context.Context, b *bot.Bot, update *models.Update
 		}
 		now := time.Now()
 		start := now.Add(-1 * dur)
-		card, err = t.cardRepository.GetOriginSelectedCardByPeriod(ctx, start, now)
+		card, err = t.cardRepository.GetOriginSelectedArtByPeriod(ctx, start, now)
 		if err != nil {
-			log.Error().Err(err).Msgf("[bot_give] failed to get GetOriginSelectedCardByPeriod")
+			log.Error().Err(err).Msgf("[bot_give] failed to get GetOriginSelectedArtByPeriod")
 			t.replyError(ctx, update.Message, errors.Errorf("failed to get card with period. try once more"))
 			return
 		}

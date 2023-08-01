@@ -87,7 +87,7 @@ func (pr *ArtRepository) GetTotalArts(ctx context.Context) (uint, error) {
 	return count, err
 }
 
-func (pr *ArtRepository) GetOriginSelectedCard(ctx context.Context) (model.Art, error) {
+func (pr *ArtRepository) GetOriginSelectedArt(ctx context.Context) (model.Art, error) {
 	totalArts, err := pr.GetTotalArts(ctx)
 	if err != nil {
 		return model.Art{}, errors.Wrap(err, "[gifter] failed get total arts")
@@ -103,7 +103,7 @@ func (pr *ArtRepository) GetOriginSelectedCard(ctx context.Context) (model.Art, 
 	return art, nil
 }
 
-func (pr *ArtRepository) GetOriginSelectedCardByPeriod(ctx context.Context, start time.Time, end time.Time) (model.Art, error) {
+func (pr *ArtRepository) GetOriginSelectedArtByPeriod(ctx context.Context, start time.Time, end time.Time) (model.Art, error) {
 	var total uint
 	err := pr.db.Select("count(id)").Where("created_at between ? and ?", start, end).Model(&model.Art{}).Scan(&total).Error
 	if err != nil {

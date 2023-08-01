@@ -9,16 +9,11 @@ import (
 )
 
 type artsRepository interface {
-	GetTotalArts(ctx context.Context) (uint, error)
-	GetArtWithOffset(offset uint) (model.Art, error)
-}
-
-type entropy interface {
-	Select(ctx context.Context, totalVariants uint) (uint, error)
+	GetOriginSelectedArt(ctx context.Context) (model.Art, error)
 }
 
 type artchitectBot interface {
-	SendCardTo10Min(ctx context.Context, cardID uint) error
+	SendArtTo10Min(ctx context.Context, cardID uint) error
 }
 
 const (
@@ -26,17 +21,15 @@ const (
 )
 
 type Gifter struct {
-	entropy        entropy
 	artsRepository artsRepository
 	artchitectBot  artchitectBot
 }
 
 func NewGifter(
 	artsRepository artsRepository,
-	entropy entropy,
 	bot artchitectBot,
 ) *Gifter {
-	return &Gifter{entropy, artsRepository, bot}
+	return &Gifter{artsRepository, bot}
 }
 
 func (g *Gifter) Run(ctx context.Context) error {
@@ -60,12 +53,12 @@ func (g *Gifter) Run(ctx context.Context) error {
 }
 
 func (g *Gifter) sendCard(ctx context.Context) error {
-	cardID, err := g.getCard(ctx)
+	cardID, err := g.getArt(ctx)
 	if err != nil {
-		return errors.Wrap(err, "[gifter] failed to getCard")
+		return errors.Wrap(err, "[gifter] failed to getArt")
 	}
 
-	err = g.artchitectBot.SendCardTo10Min(ctx, cardID)
+	err = g.artchitectBot.SendArtTo10Min(ctx, cardID)
 	if err != nil {
 		return errors.Wrapf(err, "[gifter] failed to send card id=%d to 10minchat", cardID)
 	} else {
@@ -74,19 +67,10 @@ func (g *Gifter) sendCard(ctx context.Context) error {
 	}
 }
 
-func (g *Gifter) getCard(ctx context.Context) (uint, error) {
-	// TODO use artsRepository.GetOriginSelectedCard
-	totalCards, err := g.artsRepository.GetTotalArts(ctx)
+func (g *Gifter) getArt(ctx context.Context) (uint, error) {
+	art, err := g.artsRepository.GetOriginSelectedArt(ctx)
 	if err != nil {
-		return 0, errors.Wrap(err, "[gifter] failed get total cards")
+		return 0, errors.Wrapf(err, "[gifter] failed to GetOriginSelectedArt")
 	}
-	selection, err := g.entropy.Select(ctx, totalCards)
-	if err != nil {
-		return 0, errors.Wrap(err, "[gifter] failed to select from entropy")
-	}
-	card, err := g.artsRepository.GetArtWithOffset(selection)
-	if err != nil {
-		return 0, errors.Wrapf(err, "[gifter] failed to GetArtWithOffset %d", selection-1)
-	}
-	return card.ID, nil
+	return art.ID, nil
 }
