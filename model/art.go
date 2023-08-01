@@ -1,12 +1,14 @@
 package model
 
 import (
-	"gorm.io/gorm"
+	"time"
 )
 
 // TODO split card table and raw image data into separate tables and migrate database
 type Art struct {
-	gorm.Model
+	ID                uint `gorm:"primarykey"`
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
 	SpellID           uint
 	Spell             Spell
 	Version           string // in what environment made card (tags set, version on StableDiffusion etc.)
