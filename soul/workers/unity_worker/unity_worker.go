@@ -11,7 +11,7 @@ import (
 )
 
 type cardsRepo interface {
-	GetMaxCardID(ctx context.Context) (uint, error)
+	GetMaxArtID(ctx context.Context) (uint, error)
 }
 
 type unityRepo interface {
@@ -29,14 +29,14 @@ func NewUnityWorker(cardsRepo cardsRepo, unityRepo unityRepo) *UnityWorker {
 }
 
 func (u *UnityWorker) Work(ctx context.Context) {
-	max, err := u.cardsRepo.GetMaxCardID(ctx)
+	max, err := u.cardsRepo.GetMaxArtID(ctx)
 	if err != nil {
 		log.Error().Err(err).Msgf("[unity_worker] failed to get max card id")
 		return
 	}
 	log.Info().Msgf("[unity_worker] got max %d", max)
 	n := math.Ceil(float64(max) / model.Rank10000)
-	for i := 0; i < int(n); i++ {
+	for i := 0; i <= int(n); i++ {
 		// когда будет миллионная карточка 1ХХХХХХ, то надо будет сюда не 2 нуля, а 3 нуля добавить и перегенерировать все единства (хз сколько это займёт, неделю?)
 		mask := fmt.Sprintf("%02dXXXX", i)
 		log.Info().Msgf("[unity_worker] made mask %s", mask)

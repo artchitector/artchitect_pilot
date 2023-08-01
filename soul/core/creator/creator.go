@@ -27,7 +27,7 @@ type unifier interface {
 }
 
 type maxCardGetter interface {
-	GetMaxCardID(ctx context.Context) (uint, error)
+	GetMaxArtID(ctx context.Context) (uint, error)
 }
 
 // Creator used to make new Art with no input data. Used by Artchitect and Merciful
@@ -76,7 +76,7 @@ func (c *Creator) CreateWithEnjoy(ctx context.Context) (model.Art, error) {
 	log.Info().Msgf("[creator] start card creation with enjoy")
 	cardStart := time.Now()
 
-	maxCardId, err := c.maxCardGetter.GetMaxCardID(ctx)
+	maxCardId, err := c.maxCardGetter.GetMaxArtID(ctx)
 	if err != nil {
 		maxCardId = 0
 	}

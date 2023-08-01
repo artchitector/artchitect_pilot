@@ -68,7 +68,8 @@ export default {
       return moment(this.card.CreatedAt).format("YYYY MMM Do HH:mm:ss")
     },
     fullSizeUrl() {
-      return `${process.env.STORAGE_URL}/cards/card-${this.card.ID}.jpg`
+      const part = Math.floor(this.card.ID / 10000) + 1
+      return `${process.env.STORAGE_URL}/art/${part}/art-${this.card.ID}.jpg`
     }
   },
   async fetch() {

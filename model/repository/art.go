@@ -171,7 +171,7 @@ func (pr *ArtRepository) GetLastArtPaintTime(ctx context.Context) (uint, error) 
 	return paintTime, err
 }
 
-func (pr *ArtRepository) GetMaxCardID(ctx context.Context) (uint, error) {
+func (pr *ArtRepository) GetMaxArtID(ctx context.Context) (uint, error) {
 	var id uint
 	err := pr.db.Select("case when max(id) is null then 0 else max(id) end as max_id").Model(&model.Art{}).Scan(&id).Error
 	return id, err
