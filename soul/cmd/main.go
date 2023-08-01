@@ -61,7 +61,7 @@ func main() {
 	entrp := entropy.NewEntropy(lightMaster)
 
 	// repositoties
-	cardsRepo := repository.NewCardRepository(res.GetDB(), entrp)
+	artsRepo := repository.NewCardRepository(res.GetDB(), entrp)
 	spellRepo := repository.NewSpellRepository(res.GetDB())
 	lotteryRepo := repository.NewLotteryRepository(res.GetDB())
 	prayRepo := repository.NewPrayRepository(res.GetDB())
@@ -78,7 +78,7 @@ func main() {
 	}
 	sav := saver.NewSaver(res.GetEnv().MemorySaverURL, res.GetEnv().StorageSaverURL)
 	watermarkMaker := watermark.NewWatermark()
-	artist := artistService.NewArtist(engine, cardsRepo, notifier, watermarkMaker, sav)
+	artist := artistService.NewArtist(engine, artsRepo, notifier, watermarkMaker, sav)
 
 	// memory (save images to memory-server)
 	mmr := memory.NewMemory(res.GetEnv().MemoryHost, nil)
@@ -88,7 +88,7 @@ func main() {
 	if res.GetEnv().Telegram10BotEnabled {
 		artchitectBot = bot.NewBot(
 			res.GetEnv().Telegram10BotToken,
-			cardsRepo,
+			artsRepo,
 			mmr,
 			res.GetEnv().ChatIDArtchitector,
 			res.GetEnv().ChatID10,
@@ -98,8 +98,8 @@ func main() {
 	}
 
 	// combinator (makes unity images), unifier (makes unities)
-	cmbntr := combinator.NewCombinator(cardsRepo, mmr, sav, watermarkMaker)
-	unfr := unifier.NewUnifier(unityRepo, cardsRepo, entrp, cmbntr, notifier, artchitectBot)
+	cmbntr := combinator.NewCombinator(artsRepo, mmr, sav, watermarkMaker)
+	unfr := unifier.NewUnifier(unityRepo, artsRepo, entrp, cmbntr, notifier, artchitectBot)
 
 	// creator makes arts
 	creator := creator2.NewCreator(
@@ -107,18 +107,18 @@ func main() {
 		speller,
 		notifier,
 		unfr,
-		cardsRepo,
+		artsRepo,
 		res.GetEnv().ArtTotalTime,
 		res.GetEnv().PrehotDelay,
 	)
 
 	// lottery runner
-	runner := lottery.NewRunner(lotteryRepo, selectionRepo, cardsRepo, entrp, notifier)
+	runner := lottery.NewRunner(lotteryRepo, selectionRepo, artsRepo, entrp, notifier)
 
 	// merciful
 	merciful := merciful2.NewMerciful(prayRepo, creator, notifier)
 
-	heartStateOperator := heart.NewHeartState(notifier, cardsRepo, 4) // 4 dreams
+	heartStateOperator := heart.NewHeartState(notifier, artsRepo, 4) // 4 dreams
 	go func() {
 		if err := heartStateOperator.Run(ctx, 3); err != nil { // 3 seconds
 			log.Error().Err(err).Send()
@@ -144,7 +144,7 @@ func main() {
 
 	// gifter
 	if res.GetEnv().GifterActive && artchitectBot != nil {
-		gift := gifter.NewGifter(cardsRepo, entrp, artchitectBot)
+		gift := gifter.NewGifter(artsRepo, entrp, artchitectBot)
 		go func() {
 			if err := gift.Run(ctx); err != nil {
 				log.Fatal().Err(err).Send()
@@ -152,7 +152,7 @@ func main() {
 		}()
 	}
 
-	uw := unity_worker.NewUnityWorker(cardsRepo, unityRepo)
+	uw := unity_worker.NewUnityWorker(artsRepo, unityRepo)
 	uw.Work(ctx)
 
 	// main loop to make artworks

@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-type cardRepository interface {
-	GetTotalCards(ctx context.Context) (uint, error)
-	GetCardWithOffset(offset uint) (model.Art, error)
+type artsRepository interface {
+	GetTotalArts(ctx context.Context) (uint, error)
+	GetArtWithOffset(offset uint) (model.Art, error)
 }
 
 type entropy interface {
@@ -27,16 +27,16 @@ const (
 
 type Gifter struct {
 	entropy        entropy
-	cardRepository cardRepository
+	artsRepository artsRepository
 	artchitectBot  artchitectBot
 }
 
 func NewGifter(
-	cardRepository cardRepository,
+	artsRepository artsRepository,
 	entropy entropy,
 	bot artchitectBot,
 ) *Gifter {
-	return &Gifter{entropy, cardRepository, bot}
+	return &Gifter{entropy, artsRepository, bot}
 }
 
 func (g *Gifter) Run(ctx context.Context) error {
@@ -75,8 +75,8 @@ func (g *Gifter) sendCard(ctx context.Context) error {
 }
 
 func (g *Gifter) getCard(ctx context.Context) (uint, error) {
-	// TODO use cardRepository.GetOriginSelectedCard
-	totalCards, err := g.cardRepository.GetTotalCards(ctx)
+	// TODO use artsRepository.GetOriginSelectedCard
+	totalCards, err := g.artsRepository.GetTotalArts(ctx)
 	if err != nil {
 		return 0, errors.Wrap(err, "[gifter] failed get total cards")
 	}
@@ -84,9 +84,9 @@ func (g *Gifter) getCard(ctx context.Context) (uint, error) {
 	if err != nil {
 		return 0, errors.Wrap(err, "[gifter] failed to select from entropy")
 	}
-	card, err := g.cardRepository.GetCardWithOffset(selection)
+	card, err := g.artsRepository.GetArtWithOffset(selection)
 	if err != nil {
-		return 0, errors.Wrapf(err, "[gifter] failed to GetCardWithOffset %d", selection-1)
+		return 0, errors.Wrapf(err, "[gifter] failed to GetArtWithOffset %d", selection-1)
 	}
 	return card.ID, nil
 }

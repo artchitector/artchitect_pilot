@@ -17,8 +17,8 @@ type selectionRepository interface {
 	SaveSelection(ctx context.Context, selected model.Selection) (model.Selection, error)
 }
 
-type cardsRepository interface {
-	GetCardsIDsByPeriod(ctx context.Context, start time.Time, end time.Time) ([]uint, error)
+type artsRepository interface {
+	GetArtsIDsByPeriod(ctx context.Context, start time.Time, end time.Time) ([]uint, error)
 }
 
 type notifier interface {
@@ -33,7 +33,7 @@ type entropy interface {
 type Runner struct {
 	lotteryRepository   lotteryRepository
 	selectionRepository selectionRepository
-	cardsRepository     cardsRepository
+	artsRepository      artsRepository
 	entropy             entropy
 	notifier            notifier
 }
@@ -41,14 +41,14 @@ type Runner struct {
 func NewRunner(
 	lotteryRepository lotteryRepository,
 	selectionRepository selectionRepository,
-	cardsRepository cardsRepository,
+	artsRepository artsRepository,
 	entropy entropy,
 	notifier notifier,
 ) *Runner {
 	return &Runner{
 		lotteryRepository,
 		selectionRepository,
-		cardsRepository,
+		artsRepository,
 		entropy,
 		notifier,
 	}
@@ -114,7 +114,7 @@ func (lr *Runner) performLotteryStep(ctx context.Context, lottery model.Lottery)
 		// need to finish lottery
 		return lottery, true, nil
 	}
-	cards, err := lr.cardsRepository.GetCardsIDsByPeriod(ctx, lottery.CollectPeriodStart, lottery.CollectPeriodEnd)
+	cards, err := lr.artsRepository.GetArtsIDsByPeriod(ctx, lottery.CollectPeriodStart, lottery.CollectPeriodEnd)
 	if err != nil {
 		return model.Lottery{}, false, errors.Wrapf(err, "[runner] failed to GetCardsIDsByPeriod for lottery(id=%d)", lottery.ID)
 	}

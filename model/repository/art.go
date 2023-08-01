@@ -96,9 +96,9 @@ func (pr *ArtRepository) GetOriginSelectedCard(ctx context.Context) (model.Art, 
 	if err != nil {
 		return model.Art{}, errors.Wrap(err, "[gifter] failed to select from origin")
 	}
-	art, err := pr.GetCardWithOffset(selection)
+	art, err := pr.GetArtWithOffset(selection)
 	if err != nil {
-		return model.Art{}, errors.Wrapf(err, "[gifter] failed to GetCardWithOffset %d", selection-1)
+		return model.Art{}, errors.Wrapf(err, "[gifter] failed to GetArtWithOffset %d", selection-1)
 	}
 	return art, nil
 }
@@ -151,7 +151,7 @@ func (pr *ArtRepository) GetAnyCardIDFromHundred(ctx context.Context, rank uint,
 
 // TODO deprecated public use, need make internal and remove usage from gifter.
 // use GetOriginSelectedCard instead
-func (pr *ArtRepository) GetCardWithOffset(offset uint) (model.Art, error) {
+func (pr *ArtRepository) GetArtWithOffset(offset uint) (model.Art, error) {
 	var art model.Art
 	err := pr.db.
 		Joins("Spell").
