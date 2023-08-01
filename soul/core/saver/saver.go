@@ -73,7 +73,11 @@ func (s *Saver) SaveArt(ctx context.Context, artID uint, imageData []byte) error
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return errors.Errorf("[saver] failed to upload art. URL: %s. Status: %d", pth, res.StatusCode)
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return errors.Wrapf(err, "[saver] failed to parse body")
+		}
+		return errors.Errorf("[saver] failed to upload art. URL: %s. Status: %d Response: %s", pth, res.StatusCode, string(body))
 	}
 
 	log.Info().Msgf("[saver] uploaded art %d to saver. URL: %s, Status: %d", artID, pth, res.StatusCode)
