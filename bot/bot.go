@@ -56,8 +56,8 @@ func NewBot(
 func (t *Bot) setup() {
 	log.Info().Msgf("[bot] Setup telegram bot")
 	opts := []bot.Option{
-		bot.WithDebug(),
-		bot.WithCheckInitTimeout(time.Second * 10),
+		//bot.WithDebug(),
+		//bot.WithCheckInitTimeout(time.Second * 10),
 		//bot.WithDefaultHandler(t.handler),
 
 	}
