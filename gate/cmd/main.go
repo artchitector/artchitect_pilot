@@ -43,7 +43,7 @@ func main() {
 	enhotter.Run(ctx)
 
 	artchitectBot := bot.NewBot(
-		res.GetEnv().Telegram10BotToken,
+		res.GetEnv().TelegramABotToken,
 		artsRepo,
 		mmr,
 		res.GetEnv().ChatIDArtchitector,

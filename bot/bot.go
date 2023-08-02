@@ -40,13 +40,21 @@ type Bot struct {
 	chatInfinite     string
 }
 
-func NewBot(token string, cardRepository cardRepository, memory memory, artchitectorChat int64, chat10Min string, chatInfinite string) *Bot {
+func NewBot(
+	token string,
+	cardRepository cardRepository,
+	memory memory,
+	artchitectorChat int64,
+	chat10Min string,
+	chatInfinite string,
+) *Bot {
 	b := &Bot{token, nil, cardRepository, memory, artchitectorChat, chat10Min, chatInfinite}
 	b.setup()
 	return b
 }
 
 func (t *Bot) setup() {
+	log.Info().Msgf("[bot] Setup telegram bot")
 	opts := []bot.Option{
 		bot.WithDefaultHandler(t.handler),
 	}
