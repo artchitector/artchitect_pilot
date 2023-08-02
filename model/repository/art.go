@@ -55,7 +55,11 @@ func (pr *ArtRepository) GetArt(ctx context.Context, ID uint) (model.Art, error)
 func (pr *ArtRepository) GetArtsByRange(start uint, end uint) ([]model.Art, error) {
 	var arts []model.Art
 	log.Info().Msgf("[art_repo] get arts between %d and %d", start, end)
-	err := pr.db.Joins("Spell").Where("arts.id between ? and ?", start, end).Find(&arts).Error
+	err := pr.db.Joins("Spell").
+		Where("arts.id between ? and ?", start, end).
+		Order("arts.id asc").
+		Find(&arts).
+		Error
 	return arts, err
 }
 
