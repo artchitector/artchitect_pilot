@@ -54,8 +54,16 @@ import Liker from "@/components/utils/liker.vue";
 export default {
   components: {Liker},
   head() {
+    const artId = this.$route.params.id;
     return {
-      title: this.$t('title') + ` #${this.$route.params.id}`
+      title: this.$t('title') + ` #${artId}`,
+      meta: [
+        {hid: 'description', name: 'description', content: `Artchitect Art ${artId}`},
+        {property: 'og:title', content: `Artchitect Art ${artId}`},
+        {property: 'og:description', content: "Artchitect is autonomous creative machine making arts every 60 seconds"},
+        {property: 'og:type', content: 'image'},
+        {property: 'og:image', content: `https://artchitect.space/api/image/m/${artId}`}
+      ]
     }
   },
   data() {
