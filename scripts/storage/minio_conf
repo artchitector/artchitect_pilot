@@ -1,9 +1,0 @@
-# /etc/default/minio
-
-MINIO_ROOT_USER=*
-MINIO_ROOT_PASSWORD=*
-
-# MINIO_VOLUMES sets the storage volume or path to use for the MinIO server.
-
-MINIO_VOLUMES="/usr/local/share/minio/"
-MINIO_OPTS="-C /etc/minio --address *9000"
