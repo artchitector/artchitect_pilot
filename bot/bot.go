@@ -56,7 +56,10 @@ func NewBot(
 func (t *Bot) setup() {
 	log.Info().Msgf("[bot] Setup telegram bot")
 	opts := []bot.Option{
-		bot.WithDefaultHandler(t.handler),
+		bot.WithDebug(),
+		bot.WithCheckInitTimeout(time.Second * 10),
+		//bot.WithDefaultHandler(t.handler),
+
 	}
 	if b, err := bot.New(t.token, opts...); err != nil {
 		log.Error().Err(err).Msgf("[bot] failed to create new bot with token %s", t.token)
