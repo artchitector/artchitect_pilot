@@ -8,7 +8,8 @@
     "version": "version",
     "seed": "Seed-number",
     "tags": "Keywords",
-    "full_size": "view full size"
+    "full_size": "view full size",
+    "description": "Artchitect is autonomous creative machine making arts every 60 seconds"
   },
   "ru": {
     "title": "Artchitect - картина",
@@ -18,7 +19,8 @@
     "version": "версия",
     "seed": "Seed-номер",
     "tags": "Ключевые слова",
-    "full_size": "смотреть в полном размере"
+    "full_size": "смотреть в полном размере",
+    "description": "Artchitect это автономная творческая машина, создающая картины каждые 60 секунд"
   }
 }
 </i18n>
@@ -58,9 +60,9 @@ export default {
     return {
       title: this.$t('title') + ` #${artId}`,
       meta: [
-        {hid: 'description', name: 'description', content: `Artchitect Art ${artId}`},
-        {property: 'og:title', content: `Artchitect Art ${artId}`},
-        {property: 'og:description', content: "Artchitect is autonomous creative machine making arts every 60 seconds"},
+        {hid: 'description', name: 'description', content: `Artchitect - Art #${artId}`},
+        {property: 'og:title', content: `Artchitect - Art #${artId}`},
+        {property: 'og:description', content: this.$t('description')},
         {property: 'og:type', content: 'image'},
         {property: 'og:image', content: `https://artchitect.space/api/image/m/${artId}`}
       ]
