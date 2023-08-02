@@ -91,7 +91,7 @@ func (m *Memory) DownloadImage(ctx context.Context, cardID uint, size string) ([
 
 func (m *Memory) GetUnityImage(ctx context.Context, mask string, size string, version string) ([]byte, error) {
 	start := time.Now()
-	defer log.Info().Msgf("[memory] get hundred image success m:%s s:%s v:%s, time: %s", mask, size, version, time.Now().Sub(start))
+	defer log.Info().Msgf("[memory] get unity image success m:%s s:%s v:%s, time: %s", mask, size, version, time.Now().Sub(start))
 	// TODO make cached unity image
 	img, err := m.downloadUnityImage(ctx, mask, size, version)
 	if err != nil {
@@ -103,7 +103,7 @@ func (m *Memory) GetUnityImage(ctx context.Context, mask string, size string, ve
 func (m *Memory) downloadUnityImage(ctx context.Context, mask string, size string, version string) ([]byte, error) {
 	// get image from remote memory server
 
-	url := fmt.Sprintf("%s/unity/%s-%s-%s.jpg", m.memoryURL, mask, version, size)
+	url := fmt.Sprintf("%s/unity/unity-%s-%s-%s.jpg", m.memoryURL, mask, version, size)
 	log.Info().Msgf("[memory] get unity image from path %s", url)
 	resp, err := http.Get(url)
 	if err != nil {
